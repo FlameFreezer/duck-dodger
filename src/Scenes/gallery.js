@@ -24,6 +24,7 @@ class Gallery extends Phaser.Scene {
         this.load.setPath("./config");
         this.load.json("playerData", "player.json");
         this.load.json("duckData", "ducks.json");
+        this.load.json("waveData", "waves.json");
         //Load shader
         this.load.setPath("./src/Shaders/");
         this.load.glsl("background", "backgroundEffect.glsl");
@@ -32,13 +33,18 @@ class Gallery extends Phaser.Scene {
     create() {
         let my = this.my;
         my.player = new Player(this, this.cache.json.get("playerData"));
-        my.duck = new Duck(this, this.cache.json.get("duckData").RubberDucky, 50, 370);
-        my.mallard = new Duck(this, this.cache.json.get("duckData").Mallard, 350, 370);
+        this.waves = [];
+        for(let waveData of this.cache.json.get("waveData")) {
+            waveData.duckData = this.cache.json.get("duckData");
+            this.waves.push(new Wave(this, waveData));
+        }
         this.keys.a = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
         this.keys.d = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
         this.keys.w = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
         this.keys.space = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         this.keys.shift = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
+        this.currentWave = this.waves.shift();
+        this.currentWave.start();
         //this.bgShader = this.add.shader("background", 0, 0, canvasW, canvasH);
     }
     update(time, delta) {

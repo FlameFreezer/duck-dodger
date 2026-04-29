@@ -1,0 +1,13 @@
+[
+    {
+        "rubberDuckyPositions" : [
+            150, 100,
+            300, 125,
+            375, 125,
+            450, 115
+        ],
+        "mallardPositions" : [
+            300, 250
+        ]
+    }
+]
