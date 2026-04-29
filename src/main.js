@@ -7,6 +7,10 @@ let config = {
     render: {
         pixelArt: false  
     },
+    scale: {
+        mode: Phaser.Scale.FIT,
+        autoCenter: Phaser.Scale.CENTER_BOTH
+    },
     width: canvasW,
     height: canvasH,
     scene: [Gallery]

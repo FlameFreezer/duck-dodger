@@ -23,10 +23,13 @@ class Gallery extends Phaser.Scene {
         //Load shader
         this.load.setPath("./src/Shaders/");
         this.load.glsl("background", "backgroundEffect.glsl");
+        //Load player data
+        this.load.setPath("./config");
+        this.load.json("playerData", "player.json");
     }
     create() {
         let my = this.my;
-        my.player = new Player(this, 300, 750);
+        my.player = new Player(this, this.cache.json.get("playerData"));
         this.keys.a = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
         this.keys.d = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
         this.keys.w = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);

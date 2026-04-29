@@ -1,0 +1,15 @@
+{
+    "spawnPoint" : {
+        "x" : 300,
+        "y" : 750
+    },
+    "sprite" : "fishPink.png",
+    "fastSpeed" : 200,
+    "slowSpeed" : 100,
+    "scale" : 0.5,
+    "angle" : 90,
+    "shootDelay" : 100,
+    "shootOffset" : {
+        "y" : -25
+    }
+}
