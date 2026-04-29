@@ -19,8 +19,15 @@ class Wave {
     start() {
         for(let spawn of this.spawns) {
             let duck = new Duck(this.scene, this.duckData[spawn.duckType], spawn.x, spawn.y);
-            duck.startLoop();
             this.activeDucks[spawn.duckType].push(duck);
+        }
+    }
+    update(delta) {
+        for(let rubberDucky of this.activeDucks.RubberDucky) {
+            rubberDucky.update(delta);
+        }
+        for(let mallard of this.activeDucks.Mallard) {
+            mallard.update(delta);
         }
     }
 };

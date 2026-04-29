@@ -49,6 +49,7 @@ class Gallery extends Phaser.Scene {
     }
     update(time, delta) {
         let my = this.my;
+        this.currentWave.update(delta);
         //Update bullets
         for(let bullet of this.bullets) {
             bullet.y -= bullet.speed * delta / 1000;
