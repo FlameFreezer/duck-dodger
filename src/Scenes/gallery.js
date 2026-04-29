@@ -29,9 +29,10 @@ class Gallery extends Phaser.Scene {
     }
     update(time, delta) {
         let my = this.my;
+        //Update bullets
         for(let bullet of this.bullets) {
             bullet.y -= bullet.speed * delta / 1000;
-            if(bullet.y + 10 <= 0) bullet.destroy();
+            if(bullet.y + bullet.height * bullet.scaleY / 2 <= 0) bullet.destroy();
         }
         //Use slow speed if holding shift
         if(this.keys.shift.isDown) {
@@ -40,6 +41,7 @@ class Gallery extends Phaser.Scene {
         else {
             my.player.speed = my.player.fastSpeed;
         }
+
         //Move left
         if(this.keys.a.isDown) {
             my.player.x -= my.player.speed * (delta / 1000);
@@ -56,12 +58,12 @@ class Gallery extends Phaser.Scene {
                 my.player.shootBullet(this);
             }
         }
-        //Keep fish within bounds
-        if(my.player.x > canvasW) {
-            my.player.x = canvasW;
+        //Keep fish within bounds plus a little wiggle room
+        if(my.player.x + my.player.width * my.player.scaleX / 2 > canvasW) {
+            my.player.x = canvasW - my.player.width * my.player.scaleX / 2;
         }
-        if(my.player.x < 0) {
-            my.player.x = 0;
+        if(my.player.x - my.player.width * my.player.scaleX / 2 < 0) {
+            my.player.x = my.player.width * my.player.scaleX / 2;
         }
     }
 }
