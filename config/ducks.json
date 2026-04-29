@@ -5,15 +5,25 @@
         "points" : 10,
         "scale" : 0.45,
         "path" : [
-            87, 220,
-            198, 267,
-            320, 227
-        ]
+            0, 0,
+            75, 20,
+            150, 0
+        ],
+        "duration" : 1500
     },
     "Mallard" : {
         "sprite" : "duck_brown.png",
         "hp" : 10,
         "points" : 15,
-        "scale" : 0.45
+        "scale" : 0.45,
+        "path" : [
+            0, 0,
+            50, 50,
+            0, 100,
+            -50, 50,
+            0, 0
+        ],
+        "yoyo" : false,
+        "duration" : 2000
     }
 }

@@ -32,7 +32,8 @@ class Gallery extends Phaser.Scene {
     create() {
         let my = this.my;
         my.player = new Player(this, this.cache.json.get("playerData"));
-        my.duck = new Duck(this, this.cache.json.get("duckData").Mallard, 250, 370);
+        my.duck = new Duck(this, this.cache.json.get("duckData").RubberDucky, 50, 370);
+        my.mallard = new Duck(this, this.cache.json.get("duckData").Mallard, 350, 370);
         this.keys.a = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
         this.keys.d = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
         this.keys.w = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);

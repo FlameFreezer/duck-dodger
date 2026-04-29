@@ -9,18 +9,28 @@ class Duck extends Phaser.GameObjects.PathFollower {
         this.hp = json.hp;
         this.points = json.points;
         this.setScale(json.scale);
+        if(json.yoyo === undefined) {
+            this.yoyo = true;
+        }
+        else this.yoyo = json.yoyo;
+        if(json.duration === undefined) {
+            this.duration = 2000;
+        }
+        else this.duration = json.duration;
         //Flip ducks around if on the right side of the screen
         if(x > canvasW / 2) this.scaleX *= -1;
+        scene.add.existing(this);
+    }
+    startLoop() {
         this.startFollow({
             from: 0,
             to: 1,
             delay: 0,
-            duration: 2000,
+            duration: this.duration,
             ease: 'Sine.easeInOut',
             repeat: -1,
-            yoyo: true,
+            yoyo: this.yoyo,
             rotateToPath: false
         });
-        scene.add.existing(this);
     }
 }
