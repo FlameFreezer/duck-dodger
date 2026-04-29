@@ -20,13 +20,14 @@ class Gallery extends Phaser.Scene {
         this.load.atlasXML("player", "enemies.png", "enemies.xml");
         //Load in duck sprites
         this.load.atlasXML("ducks", "spritesheet_objects.png", "spritesheet_objects.xml");
-        //Load shader
-        this.load.setPath("./src/Shaders/");
-        this.load.glsl("background", "backgroundEffect.glsl");
         //Load player data
         this.load.setPath("./config");
         this.load.json("playerData", "player.json");
         this.load.json("duckData", "ducks.json");
+        //Load shader
+        this.load.setPath("./src/Shaders/");
+        this.load.glsl("background", "backgroundEffect.glsl");
+
     }
     create() {
         let my = this.my;

@@ -3,7 +3,12 @@
         "sprite" : "duck_yellow.png",
         "hp" : 7,
         "points" : 10,
-        "scale" : 0.45
+        "scale" : 0.45,
+        "path" : [
+            87, 220,
+            198, 267,
+            320, 227
+        ]
     },
     "Mallard" : {
         "sprite" : "duck_brown.png",
