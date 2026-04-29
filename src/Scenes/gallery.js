@@ -8,24 +8,31 @@ class Gallery extends Phaser.Scene {
             a: null,
             d: null,
             space: null,
-            shift: null
+            shift: null,
+            w: null
         };
         this.bullets = [];
     }
     preload() {
+        //Load sprites
         this.load.setPath("./assets/spritesheets/");
         //Load in player sprite
         this.load.atlasXML("player", "enemies.png", "enemies.xml");
         //Load in duck sprites
         this.load.atlasXML("ducks", "spritesheet_objects.png", "spritesheet_objects.xml");
+        //Load shader
+        this.load.setPath("./src/Shaders/");
+        this.load.glsl("background", "backgroundEffect.glsl");
     }
     create() {
         let my = this.my;
         my.player = new Player(this, 300, 750);
         this.keys.a = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
         this.keys.d = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+        this.keys.w = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
         this.keys.space = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         this.keys.shift = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
+        //this.bgShader = this.add.shader("background", 0, 0, canvasW, canvasH);
     }
     update(time, delta) {
         let my = this.my;
