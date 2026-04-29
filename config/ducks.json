@@ -1,0 +1,14 @@
+{
+    "RubberDucky" : {
+        "sprite" : "duck_yellow.png",
+        "hp" : 7,
+        "points" : 10,
+        "scale" : 0.45
+    },
+    "Mallard" : {
+        "sprite" : "duck_brown.png",
+        "hp" : 10,
+        "points" : 15,
+        "scale" : 0.45
+    }
+}

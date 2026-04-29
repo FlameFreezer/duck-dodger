@@ -1,21 +1,11 @@
 class Duck extends Sprite {
-    constructor(scene, x, y, sprite, hp, points) {
-        super(scene, x, y, "ducks", sprite);
-        this.hp = hp;
-        this.points = points;
-        this.setScale(0.65);
+    constructor(scene, json, x, y) {
+        super(scene, x, y, "ducks", json.sprite);
+        this.hp = json.hp;
+        this.points = json.points;
+        this.setScale(json.scale);
+        //Flip ducks around if on the right side of the screen
+        if(x > canvasW / 2) this.scaleX *= -1;
         scene.add.existing(this);
-    }
-}
-
-class RubberDucky extends Duck {
-    constructor(scene, x, y) {
-        super(scene, x, y, "duck_yellow.png", 5, 10);
-    }
-}
-
-class Mallard extends Duck {
-    constructor(scene, x, y) {
-        super(scene, x, y, "duck_brown.png", 10, 15);
     }
 }

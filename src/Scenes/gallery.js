@@ -26,10 +26,12 @@ class Gallery extends Phaser.Scene {
         //Load player data
         this.load.setPath("./config");
         this.load.json("playerData", "player.json");
+        this.load.json("duckData", "ducks.json");
     }
     create() {
         let my = this.my;
         my.player = new Player(this, this.cache.json.get("playerData"));
+        my.duck = new Duck(this, this.cache.json.get("duckData").Mallard, 250, 370);
         this.keys.a = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
         this.keys.d = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
         this.keys.w = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
@@ -68,7 +70,7 @@ class Gallery extends Phaser.Scene {
                 my.player.shootBullet(this);
             }
         }
-        //Keep fish within bounds plus a little wiggle room
+        //Keep fish within bounds
         if(my.player.x + my.player.width * my.player.scaleX / 2 > canvasW) {
             my.player.x = canvasW - my.player.width * my.player.scaleX / 2;
         }
