@@ -1,5 +1,15 @@
 const canvasW = 600;
 const canvasH = 800;
+const yellow = {
+    r: 255, g: 213, b: 0
+};
+function colorToVector(color) {
+    return {
+        x: color.r,
+        y: color.g,
+        z: color.b
+    };
+}
 class Gallery extends Phaser.Scene {
     constructor() {
         super("gallery");
@@ -27,9 +37,14 @@ class Gallery extends Phaser.Scene {
         //Load shader
         this.load.setPath("./src/Shaders/");
         this.load.glsl("background", "backgroundEffect.glsl");
-
     }
     create() {
+        this.bgShader = this.add.shader("background", 0, 0, canvasW * 2, canvasH * 2);
+        this.bgShader.uniforms.baseColor = {
+            type: '3f',
+            value: colorToVector(yellow)
+        };
+        this.bgShader.initUniforms();
         this.player = new Player(this, this.cache.json.get("playerData"));
         this.waves = [];
         for(let waveData of this.cache.json.get("waveData")) {
@@ -43,7 +58,6 @@ class Gallery extends Phaser.Scene {
         this.keys.shift = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
         this.currentWave = this.waves.shift();
         this.currentWave.start();
-        //this.bgShader = this.add.shader("background", 0, 0, canvasW, canvasH);
     }
     update(time, delta) {
         this.currentWave.update(delta);

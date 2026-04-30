@@ -3,7 +3,7 @@
 // game config
 let config = {
     parent: 'phaser-game',
-    type: Phaser.CANVAS,
+    type: Phaser.WEBGL,
     render: {
         pixelArt: false  
     },
