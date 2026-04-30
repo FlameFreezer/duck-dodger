@@ -10,6 +10,7 @@ class Player extends Sprite {
         this.shootDelay = json.shootDelay;
         this.timeSinceShoot = this.shootDelay;
         this.shootOffset = json.shootOffset;
+        this.activeColor = yellow;
         //Offsets are optional
         if(this.shootOffset.x === undefined) this.shootOffset.x = 0;
         if(this.shootOffset.y === undefined) this.shootOffset.y = 0;
@@ -37,6 +38,14 @@ class Player extends Sprite {
         if(scene.keys.d.isDown) {
             this.x += this.speed * (delta / 1000)
         }
+        //Change color
+        if(Phaser.Input.Keyboard.JustDown(scene.keys.w)) {
+            if(this.activeColor === yellow) {
+                this.activeColor = green;
+            }
+            else this.activeColor = yellow;
+        }
+        scene.bgShader.setUniform("baseColor.value", colorToVector(this.activeColor));
         //Accumulate shoot delay
         this.timeSinceShoot += delta;
         //Shoot

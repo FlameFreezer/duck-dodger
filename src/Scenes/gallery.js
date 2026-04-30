@@ -3,6 +3,9 @@ const canvasH = 800;
 const yellow = {
     r: 255, g: 213, b: 0
 };
+const green = {
+    r: 5, g: 179, b: 20
+};
 function colorToVector(color) {
     return {
         x: color.r,
@@ -39,6 +42,7 @@ class Gallery extends Phaser.Scene {
         this.load.glsl("background", "backgroundEffect.glsl");
     }
     create() {
+        //Shader wants to be half-size for some reason. Hope that isn't platform specific
         this.bgShader = this.add.shader("background", 0, 0, canvasW * 2, canvasH * 2);
         this.bgShader.uniforms.baseColor = {
             type: '3f',

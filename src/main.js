@@ -11,6 +11,7 @@ let config = {
         mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH
     },
+    backgroundColor: '#415ce0',
     width: canvasW,
     height: canvasH,
     scene: [Gallery]
