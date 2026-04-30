@@ -21,7 +21,7 @@ class Duck extends Phaser.GameObjects.PathFollower {
         }
         else this.duration = json.duration;
         //Flip ducks around if on the right side of the screen
-        if(x > canvasW / 2) this.scaleX *= -1;
+        if(x >= canvasW / 2) this.scaleX *= -1;
         scene.add.existing(this);
     }
     enter(delta) {
@@ -33,7 +33,12 @@ class Duck extends Phaser.GameObjects.PathFollower {
         }
     }
     loop(delta) {
-
+        if(this.x >= canvasW / 2) {
+            if(this.scaleX > 0) this.scaleX *= -1;
+        }
+        else if(this.x < canvasW / 2) {
+            if(this.scaleX < 0) this.scaleX *= -1;
+        }
     }
     startLoop() {
         this.startFollow({

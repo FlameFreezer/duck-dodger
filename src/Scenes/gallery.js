@@ -3,7 +3,6 @@ const canvasH = 800;
 class Gallery extends Phaser.Scene {
     constructor() {
         super("gallery");
-        this.my = {sprite: {}};
         this.keys = {
             a: null,
             d: null,
@@ -31,8 +30,7 @@ class Gallery extends Phaser.Scene {
 
     }
     create() {
-        let my = this.my;
-        my.player = new Player(this, this.cache.json.get("playerData"));
+        this.player = new Player(this, this.cache.json.get("playerData"));
         this.waves = [];
         for(let waveData of this.cache.json.get("waveData")) {
             waveData.duckData = this.cache.json.get("duckData");
@@ -48,43 +46,11 @@ class Gallery extends Phaser.Scene {
         //this.bgShader = this.add.shader("background", 0, 0, canvasW, canvasH);
     }
     update(time, delta) {
-        let my = this.my;
         this.currentWave.update(delta);
         //Update bullets
         for(let bullet of this.bullets) {
-            bullet.y -= bullet.speed * delta / 1000;
-            if(bullet.y + bullet.height * bullet.scaleY / 2 <= 0) bullet.destroy();
+            bullet.update(delta);
         }
-        //Use slow speed if holding shift
-        if(this.keys.shift.isDown) {
-            my.player.speed = my.player.slowSpeed; 
-        }
-        else {
-            my.player.speed = my.player.fastSpeed;
-        }
-
-        //Move left
-        if(this.keys.a.isDown) {
-            my.player.x -= my.player.speed * (delta / 1000);
-        }
-        //Move right
-        if(this.keys.d.isDown) {
-            my.player.x += my.player.speed * (delta / 1000)
-        }
-        //Accumulate shoot delay
-        my.player.timeSinceShoot += delta;
-        //Shoot
-        if(this.keys.space.isDown) {
-            if(my.player.timeSinceShoot >= my.player.shootDelay) {
-                my.player.shootBullet(this);
-            }
-        }
-        //Keep fish within bounds
-        if(my.player.x + my.player.width * my.player.scaleX / 2 > canvasW) {
-            my.player.x = canvasW - my.player.width * my.player.scaleX / 2;
-        }
-        if(my.player.x - my.player.width * my.player.scaleX / 2 < 0) {
-            my.player.x = my.player.width * my.player.scaleX / 2;
-        }
+        this.player.update(delta);
     }
 }

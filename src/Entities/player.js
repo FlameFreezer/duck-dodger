@@ -1,6 +1,7 @@
 class Player extends Sprite {
     constructor(scene, json) {
         super(scene, json.spawnPoint.x, json.spawnPoint.y, "player", json.sprite);
+        this.scene = scene;
         this.fastSpeed = json.fastSpeed;
         this.slowSpeed = json.slowSpeed;
         this.speed = this.fastSpeed;
@@ -14,8 +15,43 @@ class Player extends Sprite {
         if(this.shootOffset.y === undefined) this.shootOffset.y = 0;
         scene.add.existing(this);
     }
-    shootBullet(scene) {
-        scene.bullets.push(new PlayerBullet(scene, this.x + this.shootOffset.x, this.y + this.shootOffset.y));
+    shootBullet() {
+        this.scene.bullets.push(new PlayerBullet(this.scene, this.x + this.shootOffset.x, this.y + this.shootOffset.y));
         this.timeSinceShoot = 0;
+    }
+    update(delta) {
+        let scene = this.scene;
+        //Use slow speed if holding shift
+        if(scene.keys.shift.isDown) {
+            this.speed = this.slowSpeed; 
+        }
+        else {
+            this.speed = this.fastSpeed;
+        }
+
+        //Move left
+        if(scene.keys.a.isDown) {
+            this.x -= this.speed * (delta / 1000);
+        }
+        //Move right
+        if(scene.keys.d.isDown) {
+            this.x += this.speed * (delta / 1000)
+        }
+        //Accumulate shoot delay
+        this.timeSinceShoot += delta;
+        //Shoot
+        if(scene.keys.space.isDown) {
+            if(this.timeSinceShoot >= this.shootDelay) {
+                this.shootBullet();
+            }
+        }
+        //Keep fish within bounds
+        if(this.x + this.width * this.scaleX / 2 > canvasW) {
+            this.x = canvasW - this.width * this.scaleX / 2;
+        }
+        if(this.x - this.width * this.scaleX / 2 < 0) {
+            this.x = this.width * this.scaleX / 2;
+        }
+
     }
 }

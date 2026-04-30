@@ -6,4 +6,8 @@ class PlayerBullet extends Sprite {
         this.angle = 90;
         scene.add.existing(this);
     }
+    update(delta) {
+        this.y -= this.speed * delta / 1000;
+        if(this.y + this.height * this.scaleY / 2 <= 0) this.destroy();
+    }
 }
