@@ -3,6 +3,7 @@ class Wave {
         this.scene = scene;
         this.spawns = [];
         this.duckData = json.duckData;
+        this.isOver = false;
         for(let i = 0; i < json.rubberDuckyPositions.length / 2; i++) {
             this.spawns.push(new Spawn("RubberDucky", json.rubberDuckyPositions[i * 2], json.rubberDuckyPositions[i * 2 + 1]));
         }
@@ -13,10 +14,6 @@ class Wave {
             classType: Phaser.GameObjects.Sprite,
             active: true,
             maxSize: -1,
-            runChildUpdate: false,
-            createCallback: null,
-            removeCallback: null,
-            createMultipleCallback: null
         });
     }
     start() {
@@ -28,6 +25,9 @@ class Wave {
     update(delta) {
         for(let duck of this.activeDucks.getChildren()) {
             duck.update(delta);
+        }
+        if(this.activeDucks.getLength() == 0) {
+            this.isOver = true;
         }
     }
     destroyDuck(duck) {

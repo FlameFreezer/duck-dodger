@@ -6,6 +6,11 @@ const yellow = {
 const green = {
     r: 5, g: 179, b: 20
 };
+const states = Object.freeze({
+    WAVE_ENTRANCE: 0,
+    WAVE_ACTIVE: 1,
+    WAVE_TRANSITION: 2
+});
 function colorToVector(color) {
     return {
         x: color.r,
@@ -54,10 +59,6 @@ class Gallery extends Phaser.Scene {
             classType: Phaser.Physics.Arcade.Sprite,
             active: true,
             maxSize: -1,
-            runChildUpdate: false,
-            createCallback: null,
-            removeCallback: null,
-            createMultipleCallback: null
         });
         for(let waveData of this.cache.json.get("waveData")) {
             waveData.duckData = this.cache.json.get("duckData");
@@ -68,19 +69,80 @@ class Gallery extends Phaser.Scene {
         this.keys.w = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
         this.keys.space = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         this.keys.shift = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
+        this.currentState = states.WAVE_ENTRANCE;
         this.currentWave = this.waves.shift();
+        this.transitionTime = 0;
+        this.entranceTime = 0;
         this.currentWave.start();
     }
     update(time, delta) {
-        this.currentWave.update(delta);
-        //Update bullets
         let bullets = this.bullets.getChildren();
         let ducks = this.currentWave.activeDucks.getChildren();
         for(let bullet of bullets) {
             if(!bullet.update(delta)) {
                 bullet.queueDestroy = true;
             }
+        }
+        switch(this.currentState) {
+            case states.WAVE_ACTIVE:
+                this.updateActive(delta);
+                break;
+            case states.WAVE_ENTRANCE:
+                this.updateEntrance(delta);
+                break;
+            case states.WAVE_TRANSITION:
+                this.updateTransition(delta);
+                break;
+        }
+        ducks.forEach((duck) => {
+            if(duck.queueDestroy) {
+                this.currentWave.destroyDuck(duck);
+            }
+        });
+        bullets.forEach((bullet) => {
+            if(bullet.queueDestroy) {
+                bullet.destroy(true);
+                this.bullets.remove(bullet);
+            }
+        })
+        this.player.update(delta);
+    }
+    updateTransition(delta) {
+        this.transitionTime += delta;
+        if(this.transitionTime > 2000) {
+            let nextWave = this.waves.shift();
+            //If we have a new wave to start, start it
+            if(nextWave !== undefined) {
+                this.currentWave = nextWave;
+            }
+            //Otherwise, restart the last wave
             else {
+                this.currentWave.isOver = false;
+            }
+            this.currentWave.start();
+            this.transitionTime = 0;
+            this.currentState = states.WAVE_ENTRANCE;
+        }
+    }
+    updateEntrance(delta) {
+        this.currentWave.update(delta);
+        this.entranceTime += delta;
+        if(this.entranceTime > 1000) {
+            this.entranceTime = 0;
+            this.currentState = states.WAVE_ACTIVE;
+        }
+    }
+    updateActive(delta) {
+        this.currentWave.update(delta);
+        if(this.currentWave.isOver) {
+            console.log("wave complete!");
+            this.currentState = states.WAVE_TRANSITION;
+        }
+        //Update bullets
+        let bullets = this.bullets.getChildren();
+        let ducks = this.currentWave.activeDucks.getChildren();
+        for(let bullet of bullets) {
+            if(!bullet.queueDestroy) {
                 ducks.forEach((duck) => {
                     if(bullet.collisionCheck(duck)) {
                         bullet.queueDestroy = true;
@@ -95,17 +157,5 @@ class Gallery extends Phaser.Scene {
                 });
             }
         }
-        ducks.forEach((duck) => {
-            if(duck.queueDestroy) {
-                this.currentWave.destroyDuck(duck);
-            }
-        });
-        bullets.forEach((bullet) => {
-            if(bullet.queueDestroy) {
-                bullet.destroy(true);
-                this.bullets.remove(bullet);
-            }
-        })
-        this.player.update(delta);
     }
 }
