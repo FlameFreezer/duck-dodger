@@ -1,6 +1,6 @@
 class Player extends Sprite {
     constructor(scene, json) {
-        super(scene, json.spawnPoint.x, json.spawnPoint.y, "player", json.sprite);
+        super(scene, json.spawnPoint.x, json.spawnPoint.y, "player");
         this.scene = scene;
         this.fastSpeed = json.fastSpeed;
         this.slowSpeed = json.slowSpeed;
@@ -14,7 +14,19 @@ class Player extends Sprite {
         //Offsets are optional
         if(this.shootOffset.x === undefined) this.shootOffset.x = 0;
         if(this.shootOffset.y === undefined) this.shootOffset.y = 0;
+        let config = {
+            key: "swim",
+            frameRate: 4,
+            repeat: -1,
+            showOnStart: true,
+            frames: []
+        };
+        for(let frame of json.frames) {
+            config.frames.push({key: "player", frame: frame});
+        } 
+        this.anims.create(config);        
         scene.add.existing(this);
+        this.play("swim");
     }
     shootBullet() {
         this.scene.bullets.add(new PlayerBullet(this.scene, this.x + this.shootOffset.x, this.y + this.shootOffset.y));

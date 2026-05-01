@@ -3,7 +3,10 @@
         "x" : 300,
         "y" : 750
     },
-    "sprite" : "fishPink.png",
+    "frames" : [
+        "fishPink.png",
+        "fishPink_swim.png"
+    ],
     "fastSpeed" : 200,
     "slowSpeed" : 100,
     "scale" : 0.5,
