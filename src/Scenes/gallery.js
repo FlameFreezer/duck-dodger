@@ -75,7 +75,23 @@ class Gallery extends Phaser.Scene {
         this.entranceTime = 0;
         this.currentWave.start();
     }
+    flushDestroyQueue() {
+        let bullets = this.bullets.getChildren();
+        let ducks = this.currentWave.activeDucks.getChildren();
+        ducks.forEach((duck) => {
+            if(duck.queueDestroy) {
+                this.currentWave.destroyDuck(duck);
+            }
+        });
+        bullets.forEach((bullet) => {
+            if(bullet.queueDestroy) {
+                bullet.destroy(true);
+                this.bullets.remove(bullet);
+            }
+        })
+    }
     update(time, delta) {
+        this.player.update(delta);
         let bullets = this.bullets.getChildren();
         let ducks = this.currentWave.activeDucks.getChildren();
         for(let bullet of bullets) {
@@ -94,18 +110,7 @@ class Gallery extends Phaser.Scene {
                 this.updateTransition(delta);
                 break;
         }
-        ducks.forEach((duck) => {
-            if(duck.queueDestroy) {
-                this.currentWave.destroyDuck(duck);
-            }
-        });
-        bullets.forEach((bullet) => {
-            if(bullet.queueDestroy) {
-                bullet.destroy(true);
-                this.bullets.remove(bullet);
-            }
-        })
-        this.player.update(delta);
+        this.flushDestroyQueue();
     }
     updateTransition(delta) {
         this.transitionTime += delta;

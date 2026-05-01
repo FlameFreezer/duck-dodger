@@ -13,6 +13,6 @@
     "angle" : 90,
     "shootDelay" : 100,
     "shootOffset" : {
-        "y" : -25
+        "y" : -10
     }
 }
