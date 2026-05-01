@@ -70,10 +70,6 @@ class Gallery extends Phaser.Scene {
         this.keys.shift = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
         this.currentWave = this.waves.shift();
         this.currentWave.start();
-        this.physics.add.overlap(this.bullets, this.currentWave.activeDucks, (bullet, duck) => {
-            bullet.queueDestroy = true;
-            duck.queueDestroy = true;
-        });
     }
     update(time, delta) {
         this.currentWave.update(delta);
@@ -83,6 +79,14 @@ class Gallery extends Phaser.Scene {
         for(let bullet of bullets) {
             if(!bullet.update(delta)) {
                 bullet.queueDestroy = true;
+            }
+            else {
+                ducks.forEach((duck) => {
+                    if(bullet.collisionCheck(duck)) {
+                        bullet.queueDestroy = true;
+                        duck.queueDestroy = true;
+                    }
+                });
             }
         }
         ducks.forEach((duck) => {

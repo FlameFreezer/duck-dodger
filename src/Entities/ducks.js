@@ -25,7 +25,7 @@ class Duck extends Phaser.GameObjects.PathFollower {
         if(x >= canvasW / 2) this.scaleX *= -1;
         scene.add.existing(this);
         scene.physics.add.existing(this);
-        this.body.setSize(this.width * this.scaleX / 2, this.height * this.scaleY / 2);
+        this.body.setSize(this.width * this.scaleX, this.height * this.scaleY);
     }
     enter(delta) {
         this.y += this.entranceSpeed * delta / 1000;
