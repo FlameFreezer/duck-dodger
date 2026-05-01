@@ -1,3 +1,4 @@
+const onHitFlashTime = 100;
 class Duck extends Phaser.GameObjects.PathFollower {
     constructor(scene, json, x, y) {
         //May specify no path
@@ -23,9 +24,10 @@ class Duck extends Phaser.GameObjects.PathFollower {
         else this.duration = json.duration;
         //Flip ducks around if on the right side of the screen
         if(x >= canvasW / 2) this.scaleX *= -1;
+        this.spriteOnHit = scene.add.sprite(0, 0, "ducks", json.spriteOnHit);
+        this.spriteOnHit.visible = false;
+        this.onHitFlashTimer = 0;
         scene.add.existing(this);
-        scene.physics.add.existing(this);
-        this.body.setSize(this.width * this.scaleX, this.height * this.scaleY);
     }
     enter(delta) {
         this.y += this.entranceSpeed * delta / 1000;
@@ -42,6 +44,20 @@ class Duck extends Phaser.GameObjects.PathFollower {
         else if(this.x < canvasW / 2) {
             if(this.scaleX < 0) this.scaleX *= -1;
         }
+        if(this.onHitFlashTimer != 0) {
+            this.onHitFlashTimer += delta;
+            this.spriteOnHit.visible = true;
+            this.visible = true;
+        }
+        if(this.onHitFlashTimer >= onHitFlashTime) {
+            this.onHitFlashTimer = 0;
+            this.spriteOnHit.visible = false;
+            this.visible = true;
+        }
+        this.spriteOnHit.x = this.x;
+        this.spriteOnHit.y = this.y;
+        this.spriteOnHit.scaleX = this.scaleX;
+        this.spriteOnHit.scaleY = this.scaleY;
     }
     startLoop() {
         this.startFollow({

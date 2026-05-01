@@ -84,15 +84,20 @@ class Gallery extends Phaser.Scene {
                 ducks.forEach((duck) => {
                     if(bullet.collisionCheck(duck)) {
                         bullet.queueDestroy = true;
-                        duck.queueDestroy = true;
+                        duck.hp -= 1;
+                        if(duck.onHitFlashTimer == 0) {
+                            duck.onHitFlashTimer += delta;
+                        }
+                        if(duck.hp == 0) {
+                            duck.queueDestroy = true;
+                        }
                     }
                 });
             }
         }
         ducks.forEach((duck) => {
             if(duck.queueDestroy) {
-                duck.destroy(true);
-                this.currentWave.activeDucks.remove(duck);
+                this.currentWave.destroyDuck(duck);
             }
         });
         bullets.forEach((bullet) => {

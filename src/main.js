@@ -14,7 +14,7 @@ let config = {
     physics: {
         default: "arcade"
     },
-    backgroundColor: '#a7b2eb',
+    backgroundColor: '#203b9e',
     width: canvasW,
     height: canvasH,
     scene: [Gallery]

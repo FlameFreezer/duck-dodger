@@ -30,4 +30,9 @@ class Wave {
             duck.update(delta);
         }
     }
+    destroyDuck(duck) {
+        duck.spriteOnHit.destroy(true);
+        duck.destroy(true);
+        this.activeDucks.remove(duck);
+    }
 };
