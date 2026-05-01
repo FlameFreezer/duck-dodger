@@ -4,7 +4,6 @@ class PlayerBullet extends Phaser.Physics.Arcade.Sprite {
         this.speed = 700;
         this.setScale(0.25);
         this.angle = 90;
-        this.queueDestroy = false;
         scene.add.existing(this);
     }
     update(delta) {

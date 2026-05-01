@@ -30,9 +30,4 @@ class Wave {
             this.isOver = true;
         }
     }
-    destroyDuck(duck) {
-        duck.spriteOnHit.destroy(true);
-        duck.destroy(true);
-        this.activeDucks.remove(duck);
-    }
 };

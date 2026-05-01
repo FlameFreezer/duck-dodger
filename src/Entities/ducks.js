@@ -13,7 +13,6 @@ class Duck extends Phaser.GameObjects.PathFollower {
         this.targetY = y;
         this.entranceSpeed = this.targetY;
         this.update = this.enter;
-        this.queueDestroy = false;
         if(json.yoyo === undefined) {
             this.yoyo = true;
         }
@@ -27,7 +26,13 @@ class Duck extends Phaser.GameObjects.PathFollower {
         this.spriteOnHit = scene.add.sprite(0, 0, "ducks", json.spriteOnHit);
         this.spriteOnHit.visible = false;
         this.onHitFlashTimer = 0;
+        this.innerDestroy = this.destroy;
+        this.destroy = this.outerDestroy;
         scene.add.existing(this);
+    }
+    outerDestroy() {
+        this.spriteOnHit.destroy(true);
+        this.innerDestroy(true);
     }
     enter(delta) {
         this.y += this.entranceSpeed * delta / 1000;
