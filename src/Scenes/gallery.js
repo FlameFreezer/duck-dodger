@@ -23,7 +23,6 @@ class Gallery extends Phaser.Scene {
             shift: null,
             w: null
         };
-        this.bullets = [];
     }
     preload() {
         //Load sprites
@@ -51,6 +50,15 @@ class Gallery extends Phaser.Scene {
         this.bgShader.initUniforms();
         this.player = new Player(this, this.cache.json.get("playerData"));
         this.waves = [];
+        this.bullets = this.add.group({
+            classType: Phaser.Physics.Arcade.Sprite,
+            active: true,
+            maxSize: -1,
+            runChildUpdate: false,
+            createCallback: null,
+            removeCallback: null,
+            createMultipleCallback: null
+        });
         for(let waveData of this.cache.json.get("waveData")) {
             waveData.duckData = this.cache.json.get("duckData");
             this.waves.push(new Wave(this, waveData));
@@ -62,13 +70,33 @@ class Gallery extends Phaser.Scene {
         this.keys.shift = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
         this.currentWave = this.waves.shift();
         this.currentWave.start();
+        this.physics.add.overlap(this.bullets, this.currentWave.activeDucks, (bullet, duck) => {
+            bullet.queueDestroy = true;
+            duck.queueDestroy = true;
+        });
     }
     update(time, delta) {
         this.currentWave.update(delta);
         //Update bullets
-        for(let bullet of this.bullets) {
-            bullet.update(delta);
+        let bullets = this.bullets.getChildren();
+        let ducks = this.currentWave.activeDucks.getChildren();
+        for(let bullet of bullets) {
+            if(!bullet.update(delta)) {
+                bullet.queueDestroy = true;
+            }
         }
+        ducks.forEach((duck) => {
+            if(duck.queueDestroy) {
+                duck.destroy(true);
+                this.currentWave.activeDucks.remove(duck);
+            }
+        });
+        bullets.forEach((bullet) => {
+            if(bullet.queueDestroy) {
+                bullet.destroy(true);
+                this.bullets.remove(bullet);
+            }
+        })
         this.player.update(delta);
     }
 }

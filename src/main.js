@@ -11,7 +11,10 @@ let config = {
         mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH
     },
-    backgroundColor: '#415ce0',
+    physics: {
+        default: "arcade"
+    },
+    backgroundColor: '#a7b2eb',
     width: canvasW,
     height: canvasH,
     scene: [Gallery]

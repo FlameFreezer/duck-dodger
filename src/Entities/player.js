@@ -17,7 +17,7 @@ class Player extends Sprite {
         scene.add.existing(this);
     }
     shootBullet() {
-        this.scene.bullets.push(new PlayerBullet(this.scene, this.x + this.shootOffset.x, this.y + this.shootOffset.y));
+        this.scene.bullets.add(new PlayerBullet(this.scene, this.x + this.shootOffset.x, this.y + this.shootOffset.y));
         this.timeSinceShoot = 0;
     }
     update(delta) {

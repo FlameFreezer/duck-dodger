@@ -12,6 +12,7 @@ class Duck extends Phaser.GameObjects.PathFollower {
         this.targetY = y;
         this.entranceSpeed = this.targetY;
         this.update = this.enter;
+        this.queueDestroy = false;
         if(json.yoyo === undefined) {
             this.yoyo = true;
         }
@@ -23,6 +24,8 @@ class Duck extends Phaser.GameObjects.PathFollower {
         //Flip ducks around if on the right side of the screen
         if(x >= canvasW / 2) this.scaleX *= -1;
         scene.add.existing(this);
+        scene.physics.add.existing(this);
+        this.body.setSize(this.width * this.scaleX / 2, this.height * this.scaleY / 2);
     }
     enter(delta) {
         this.y += this.entranceSpeed * delta / 1000;
