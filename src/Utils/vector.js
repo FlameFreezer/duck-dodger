@@ -25,3 +25,11 @@ function vecNormalize(vec) {
     let length = vecLength(vec);
     return vecScale(vec, 1 / length);
 }
+
+function vecSubtract(v1, v2) {
+    let result = {};
+    for(let component in v1) {
+        result[component] = v1[component] - v2[component];
+    }
+    return result;
+}

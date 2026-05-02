@@ -10,19 +10,20 @@ class Duck extends Phaser.GameObjects.PathFollower {
         this.hp = json.hp;
         this.points = json.points;
         this.setScale(json.scale);
-        if(json.bulletPattern == 1) {
+        if(json.bulletPattern.type == 1) {
             this.bulletPattern = {
-                ringDelay: 500,
-                patternDelay: 2000,
+                shootDelay: json.bulletPattern.shootDelay,
+                patternDelay: json.bulletPattern.patternDelay,
                 spawnNumber: 0,
+                recharged: true,
                 do: (self) => {
+                    self.bulletPattern.recharged = false;
                     const angularVelocities = [0, -1, -1, 1];
                     //Spawn bullet rings in sequence
                     self.scene.time.addEvent({
-                        delay: self.bulletPattern.ringDelay,
+                        delay: self.bulletPattern.shootDelay,
                         repeat: angularVelocities.length - 1,
                         callback: (self) => {
-                            if(!self.scene) return;
                             let bulletRing = new BulletRing(self.scene, self.x, self.y, angularVelocities[self.bulletPattern.spawnNumber]);
                             self.scene.duckBulletRings.push(bulletRing);
                             self.bulletPattern.spawnNumber = (self.bulletPattern.spawnNumber + 1) % angularVelocities.length;
@@ -38,16 +39,14 @@ class Duck extends Phaser.GameObjects.PathFollower {
                     });
                     //Cleanup bullet rings and repeat sequence
                     self.scene.time.addEvent({
-                        delay: self.bulletPattern.ringDelay * angularVelocities.length,
+                        delay: self.bulletPattern.shootDelay * angularVelocities.length,
                         callback: (self) => {
-                            if(!self.scene) return;
                             //Set new timer to restart ring pattern
                             self.scene.time.addEvent({
                                 delay: self.bulletPattern.patternDelay,
                                 callback: (self) => {
-                                    if(!self.scene) return;
                                     //Do pattern again
-                                    self.bulletPattern.do(self);
+                                    self.bulletPattern.recharged = true;
                                 },
                                 args: [self]
                             })
@@ -57,9 +56,52 @@ class Duck extends Phaser.GameObjects.PathFollower {
                 }
             }
         }
-        else if(json.bulletPattern == 0) {
+        else if(json.bulletPattern.type == 0) {
             this.bulletPattern = {
-                do: (self) => {}
+                shootDelay: json.bulletPattern.shootDelay,
+                patternDelay: json.bulletPattern.patternDelay,
+                recharged: true,
+                do: (self) => {
+                    self.bulletPattern.recharged = false;
+                    self.scene.time.addEvent({
+                        delay: self.bulletPattern.shootDelay,
+                        repeat: 1,
+                        callback: (self) => {
+                            let dir = {
+                                x: self.scene.player.x - self.x,
+                                y: self.scene.player.y - self.y
+                            };
+                            dir = vecNormalize(dir);
+                            let bullet = new EnemyBullet(self.scene, self.x, self.y, duckSprites[Math.floor(Math.random() * duckSprites.length)], dir);
+                            self.scene.duckBullets.push(bullet);
+                        },
+                        args: [self]
+                    });
+                    self.scene.time.addEvent({
+                        delay: self.bulletPattern.shootDelay * 3,
+                        callback: (self) => {
+                            let dir = {
+                                x: self.scene.player.x - self.x,
+                                y: self.scene.player.y - self.y
+                            };
+                            dir = vecNormalize(dir);
+                            let b1 = new EnemyBullet(self.scene, self.x, self.y, duckSprites[Math.floor(Math.random() * duckSprites.length)], dir);
+                            let b2 = new EnemyBullet(self.scene, self.x, self.y, duckSprites[Math.floor(Math.random() * duckSprites.length)], vecRotate(dir, -Math.PI / 6));
+                            let b3 = new EnemyBullet(self.scene, self.x, self.y, duckSprites[Math.floor(Math.random() * duckSprites.length)], vecRotate(dir, Math.PI / 6));
+                            self.scene.duckBullets.push(b1);
+                            self.scene.duckBullets.push(b2);
+                            self.scene.duckBullets.push(b3);
+                        },
+                        args: [self]
+                    });
+                    self.scene.time.addEvent({
+                        delay: self.bulletPattern.shootDelay * 3 + self.bulletPattern.patternDelay,
+                        callback: (self) => {
+                            self.bulletPattern.recharged = true;
+                        },
+                        args: [self]
+                    });
+                }
             }
         };
         this.targetY = y;
@@ -92,10 +134,12 @@ class Duck extends Phaser.GameObjects.PathFollower {
             this.y = this.targetY;
             this.update = this.loop;
             this.startLoop();
-            this.bulletPattern.do(this);
         }
     }
     loop(delta) {
+        if(this.bulletPattern.recharged) {
+            this.bulletPattern.do(this);
+        }
         if(this.x >= canvasW / 2) {
             if(this.scaleX > 0) this.scaleX *= -1;
         }

@@ -104,6 +104,9 @@ class Gallery extends Phaser.Scene {
         for(let bulletRing of this.duckBulletRings) {
             bulletRing.update(delta);
         }
+        for(let bullet of this.duckBullets) {
+            bullet.update(delta);
+        }
         switch(this.currentState) {
             case states.WAVE_ACTIVE:
                 this.updateActive(delta);

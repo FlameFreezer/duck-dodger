@@ -11,7 +11,11 @@
             150, 0
         ],
         "duration" : 1500,
-        "bulletPattern" : 0
+        "bulletPattern" : {
+            "type" : 0,
+            "shootDelay" : 250,
+            "patternDelay" : 1500
+        }
     },
     "Mallard" : {
         "sprite" : "duck_brown.png",
@@ -28,6 +32,10 @@
         ],
         "yoyo" : false,
         "duration" : 2000,
-        "bulletPattern" : 1
+        "bulletPattern" : {
+            "type" : 1,
+            "shootDelay" : 500,
+            "patternDelay" : 2000
+        }
     }
 }
