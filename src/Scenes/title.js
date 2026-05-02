@@ -1,0 +1,38 @@
+class Title extends Phaser.Scene {
+    constructor() {
+        super("title");
+        this.keys = {
+            space: null
+        };
+    }
+    preload() {
+        this.load.setPath("assets/daydream_3");
+        this.load.bitmapFont("daydream_3", "daydream_3_0.png", "daydream_3.fnt");
+    }
+    create() {
+        this.keys.space = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+        this.text = this.add.bitmapText(canvasW / 2, canvasH / 2, "daydream_3", "press space to play", 24).setOrigin(0.5);
+        this.text.setBlendMode(Phaser.BlendModes.ADD);
+        //Text flashing: outer event shows text, inner event hides text
+        this.textFlashTimer = this.time.addEvent({
+            delay: 1500,
+            loop: true,
+            callback: (self, txt) => {
+                txt.visible = false;
+                self.time.addEvent({
+                    delay: 500,
+                    callback: (txt) => {
+                        txt.visible = true;
+                    } ,
+                    args: [txt]
+                });
+            },
+            args: [this, this.text]
+        });
+    }
+    update(time, delta) {
+        if(this.keys.space.isDown) {
+            this.scene.start("gallery");
+        }
+    }
+}

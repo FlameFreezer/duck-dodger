@@ -44,6 +44,9 @@ class Gallery extends Phaser.Scene {
         //Load shader
         this.load.setPath("./src/Shaders/");
         this.load.glsl("background", "backgroundEffect.glsl");
+        //Load font
+        this.load.setPath("assets/daydream_3");
+        this.load.bitmapFont("daydream_3", "daydream_3_0.png", "daydream_3.fnt");
     }
     create() {
         //Shader wants to be half-size for some reason. Hope that isn't platform specific
