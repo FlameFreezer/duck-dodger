@@ -33,8 +33,8 @@ class BulletRing {
             bullet.update(delta);
             //Get vector from ring center to bullet
             let posFromRing = {
-                x: this.x - bullet.x,
-                y: this.y - bullet.y
+                x: bullet.x - this.x,
+                y: bullet.y - this.y
             };
             //Rotate bullet around ring center
             let newPos = vecRotate(posFromRing, this.angularSpeed * delta / 1000);
@@ -53,5 +53,8 @@ class BulletRing {
         for(let bullet of removeQueue) {
             this.bullets.remove(bullet);
         }
+        this.scene.duckBulletRings.filter((ring) => {
+            if(ring != this) return ring;
+        });
     }
 }

@@ -79,6 +79,8 @@ class Gallery extends Phaser.Scene {
         this.currentWave.start();
         this.bulletRemoveQueue = [];
         this.duckRemoveQueue = [];
+        this.duckBulletRings = [];
+        this.duckBullets = [];
     }
     flushRemoveQueues() {
         for(let bullet of this.bulletRemoveQueue) {
@@ -98,6 +100,9 @@ class Gallery extends Phaser.Scene {
             if(!bullet.update(delta)) {
                 this.bullets.remove(bullet);
             }
+        }
+        for(let bulletRing of this.duckBulletRings) {
+            bulletRing.update(delta);
         }
         switch(this.currentState) {
             case states.WAVE_ACTIVE:

@@ -15,47 +15,51 @@ class Duck extends Phaser.GameObjects.PathFollower {
                 ringDelay: 500,
                 patternDelay: 2000,
                 spawnNumber: 0,
-                bulletRings: [],
                 do: (self) => {
                     const angularVelocities = [0, -1, -1, 1];
-                    let ringTimerConfig = {
+                    //Spawn bullet rings in sequence
+                    self.scene.time.addEvent({
                         delay: self.bulletPattern.ringDelay,
                         repeat: angularVelocities.length - 1,
                         callback: (self) => {
-                            self.bulletPattern.bulletRings.push(new BulletRing(self.scene, self.x, self.y, angularVelocities[self.bulletPattern.spawnNumber]));
+                            if(!self.scene) return;
+                            let bulletRing = new BulletRing(self.scene, self.x, self.y, angularVelocities[self.bulletPattern.spawnNumber]);
+                            self.scene.duckBulletRings.push(bulletRing);
                             self.bulletPattern.spawnNumber = (self.bulletPattern.spawnNumber + 1) % angularVelocities.length;
-                        },
-                        args: [self]
-                    };
-                    self.scene.time.addEvent(ringTimerConfig);
-                    self.scene.time.addEvent({
-                        delay: self.bulletPattern.ringDelay * angularVelocities.length,
-                        callback: (self) => {
-                            //Set new timer to wait to destroy bullets
                             self.scene.time.addEvent({
-                                delay: 3000,
-                                callback: (self) => {
-                                    while(self.bulletPattern.bulletRings.length > 0) {
-                                        self.bulletPattern.bulletRings.pop().destroy();
-                                    }
+                                delay: 2000,
+                                callback: (bulletRing) => {
+                                    bulletRing.destroy();
                                 },
-                                args: [self]
+                                args: [bulletRing]
                             });
                         },
                         args: [self]
-                    })
-                },
-                update: (self, delta) => {
-                    for(let bulletRing of self.bulletPattern.bulletRings) {
-                        bulletRing.update(delta);
-                    }
+                    });
+                    //Cleanup bullet rings and repeat sequence
+                    self.scene.time.addEvent({
+                        delay: self.bulletPattern.ringDelay * angularVelocities.length,
+                        callback: (self) => {
+                            if(!self.scene) return;
+                            //Set new timer to restart ring pattern
+                            self.scene.time.addEvent({
+                                delay: self.bulletPattern.patternDelay,
+                                callback: (self) => {
+                                    if(!self.scene) return;
+                                    //Do pattern again
+                                    self.bulletPattern.do(self);
+                                },
+                                args: [self]
+                            })
+                        },
+                        args: [self]
+                    });
                 }
             }
         }
         else if(json.bulletPattern == 0) {
             this.bulletPattern = {
-                do: (self) => {},
-                update: (self, delta) => {}
+                do: (self) => {}
             }
         };
         this.targetY = y;
@@ -112,7 +116,6 @@ class Duck extends Phaser.GameObjects.PathFollower {
         this.spriteOnHit.y = this.y;
         this.spriteOnHit.scaleX = this.scaleX;
         this.spriteOnHit.scaleY = this.scaleY;
-        this.bulletPattern.update(this, delta);
     }
     startLoop() {
         this.startFollow({
