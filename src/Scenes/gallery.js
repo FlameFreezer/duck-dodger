@@ -168,5 +168,27 @@ class Gallery extends Phaser.Scene {
                 }
             });
         }
+        let duckBulletRemoveQueue = [];
+        for(let bullet of this.duckBullets) {
+            if(bullet.x + bullet.width * bullet.scaleX / 2 <= 0) {
+                bullet.destroy();
+                duckBulletRemoveQueue.push(bullet);
+            };
+            if(bullet.x - bullet.width * bullet.scaleX / 2 >= canvasW) {
+                bullet.destroy();
+                duckBulletRemoveQueue.push(bullet);
+            }
+            if(bullet.y + bullet.height * bullet.scaleY / 2 <= 0) {
+                bullet.destroy();
+                duckBulletRemoveQueue.push(bullet);
+            }
+            if(bullet.y - bullet.height * bullet.scaleY / 2 >= canvasH) {
+                bullet.destroy();
+                duckBulletRemoveQueue.push(bullet);
+            }
+        }
+        this.duckBullets = this.duckBullets.filter((bullet) => {
+            if(!(bullet in duckBulletRemoveQueue)) return bullet;
+        });
     }
 }
