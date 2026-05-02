@@ -120,11 +120,11 @@ class Duck extends Phaser.GameObjects.PathFollower {
         this.destroy = this.outerDestroy;
         scene.add.existing(this);
     }
-    outerDestroy() {
-        this.spriteOnHit.destroy(true);
-        this.bulletPattern.shootTimer.remove();
-        this.bulletPattern.patternTimer.remove();
-        this.innerDestroy(true);
+    outerDestroy(destroyedByScene = false) {
+        this.spriteOnHit.destroy(destroyedByScene);
+        this.bulletPattern.shootTimer.remove(destroyedByScene);
+        this.bulletPattern.patternTimer.remove(destroyedByScene);
+        this.innerDestroy(destroyedByScene);
     }
     enter(delta) {
         this.y += this.entranceSpeed * delta / 1000;

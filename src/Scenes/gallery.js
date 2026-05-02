@@ -61,10 +61,7 @@ class Gallery extends Phaser.Scene {
         this.bullets = this.add.group({
             classType: Phaser.Physics.Arcade.Sprite,
             active: true,
-            maxSize: -1,
-            removeCallback: (bullet) => {
-                bullet.destroy();
-            }
+            maxSize: -1
         });
         for(let waveData of this.cache.json.get("waveData")) {
             waveData.duckData = this.cache.json.get("duckData");
@@ -88,10 +85,12 @@ class Gallery extends Phaser.Scene {
     flushRemoveQueues() {
         for(let bullet of this.bulletRemoveQueue) {
             this.bullets.remove(bullet);
+            bullet.destroy();
         }
         this.bulletRemoveQueue = [];
         for(let duck of this.duckRemoveQueue) {
             this.currentWave.activeDucks.remove(duck);
+            duck.destroy();
         }
         this.duckRemoveQueue = [];
     }
@@ -171,6 +170,18 @@ class Gallery extends Phaser.Scene {
                 }
             });
         }
+        for(let bullet of this.duckBullets) {
+            if(bullet.collisionCheck(this.player)) {
+                this.gameOver();
+            }
+        }
+        for(let ring of this.duckBulletRings) {
+            for(let bullet of ring.bullets.getChildren()) {
+                if(bullet.collisionCheck(this.player)) {
+                    this.gameOver();
+                }
+            }
+        }
         let duckBulletRemoveQueue = [];
         for(let bullet of this.duckBullets) {
             if(bullet.x + bullet.width * bullet.scaleX / 2 <= 0) {
@@ -193,5 +204,8 @@ class Gallery extends Phaser.Scene {
         this.duckBullets = this.duckBullets.filter((bullet) => {
             if(!(bullet in duckBulletRemoveQueue)) return bullet;
         });
+    }
+    gameOver() {
+        this.scene.start("title");
     }
 }

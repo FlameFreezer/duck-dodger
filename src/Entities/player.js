@@ -73,6 +73,5 @@ class Player extends Phaser.GameObjects.Sprite {
         if(this.x - this.width * this.scaleX / 2 < 0) {
             this.x = this.width * this.scaleX / 2;
         }
-
     }
 }

@@ -10,10 +10,7 @@ class BulletRing {
         this.bullets = scene.add.group({
             classType: Phaser.GameObjects.Sprite,
             active: true,
-            maxSize: maxRingSize,
-            removeCallback: (bullet) => {
-                bullet.destroy();
-            }
+            maxSize: maxRingSize
         });
         this.angularSpeed = angularSpeed;
         let initialDir = {
@@ -52,6 +49,7 @@ class BulletRing {
         }
         for(let bullet of removeQueue) {
             this.bullets.remove(bullet);
+            bullet.destroy();
         }
         this.scene.duckBulletRings.filter((ring) => {
             if(ring != this) return ring;

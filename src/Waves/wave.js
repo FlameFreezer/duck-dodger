@@ -13,10 +13,7 @@ class Wave {
         this.activeDucks = scene.add.group({
             classType: Phaser.GameObjects.Sprite,
             active: true,
-            maxSize: -1,
-            removeCallback: (duck) => {
-                duck.destroy();
-            }
+            maxSize: -1        
         });
     }
     start() {
