@@ -10,7 +10,8 @@
             75, 20,
             150, 0
         ],
-        "duration" : 1500
+        "duration" : 1500,
+        "bulletPattern" : 0
     },
     "Mallard" : {
         "sprite" : "duck_brown.png",
@@ -26,6 +27,7 @@
             0, 0
         ],
         "yoyo" : false,
-        "duration" : 2000
+        "duration" : 2000,
+        "bulletPattern" : 1
     }
 }

@@ -10,6 +10,38 @@ class Duck extends Phaser.GameObjects.PathFollower {
         this.hp = json.hp;
         this.points = json.points;
         this.setScale(json.scale);
+        if(json.bulletPattern == 1) {
+            this.bulletPattern = {
+                ringDelay: 500,
+                patternDelay: 2000,
+                spawnNumber: 0,
+                bulletRings: [],
+                do: (self) => {
+                    const angularVelocities = [0, -1, -1, 1];
+                    let ringTimerConfig = {
+                        delay: self.bulletPattern.ringDelay,
+                        repeat: angularVelocities.length - 1,
+                        callback: (self) => {
+                            self.bulletPattern.bulletRings.push(new BulletRing(self.scene, self.x, self.y, angularVelocities[self.bulletPattern.spawnNumber]));
+                            self.bulletPattern.spawnNumber = (self.bulletPattern.spawnNumber + 1) % angularVelocities.length;
+                        },
+                        args: [self]
+                    };
+                    self.scene.time.addEvent(ringTimerConfig);
+                },
+                update: (self, delta) => {
+                    for(let bulletRing of self.bulletPattern.bulletRings) {
+                        bulletRing.update(delta);
+                    }
+                }
+            }
+        }
+        else if(json.bulletPattern == 0) {
+            this.bulletPattern = {
+                do: (self) => {},
+                update: (self, delta) => {}
+            }
+        };
         this.targetY = y;
         this.entranceSpeed = this.targetY;
         this.update = this.enter;
@@ -40,6 +72,7 @@ class Duck extends Phaser.GameObjects.PathFollower {
             this.y = this.targetY;
             this.update = this.loop;
             this.startLoop();
+            this.bulletPattern.do(this);
         }
     }
     loop(delta) {
@@ -63,6 +96,7 @@ class Duck extends Phaser.GameObjects.PathFollower {
         this.spriteOnHit.y = this.y;
         this.spriteOnHit.scaleX = this.scaleX;
         this.spriteOnHit.scaleY = this.scaleY;
+        this.bulletPattern.update(this, delta);
     }
     startLoop() {
         this.startFollow({

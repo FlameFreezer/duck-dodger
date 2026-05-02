@@ -1,4 +1,4 @@
-class Player extends Sprite {
+class Player extends Phaser.GameObjects.Sprite {
     constructor(scene, json) {
         super(scene, json.spawnPoint.x, json.spawnPoint.y, "player");
         this.scene = scene;
