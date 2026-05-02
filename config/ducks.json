@@ -35,7 +35,8 @@
         "bulletPattern" : {
             "type" : 1,
             "shootDelay" : 500,
-            "patternDelay" : 2000
+            "patternDelay" : 2000,
+            "angularVelocities" : [0, -1, -1, 1]
         }
     }
 }
