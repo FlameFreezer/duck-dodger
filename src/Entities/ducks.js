@@ -28,6 +28,22 @@ class Duck extends Phaser.GameObjects.PathFollower {
                         args: [self]
                     };
                     self.scene.time.addEvent(ringTimerConfig);
+                    self.scene.time.addEvent({
+                        delay: self.bulletPattern.ringDelay * angularVelocities.length,
+                        callback: (self) => {
+                            //Set new timer to wait to destroy bullets
+                            self.scene.time.addEvent({
+                                delay: 3000,
+                                callback: (self) => {
+                                    while(self.bulletPattern.bulletRings.length > 0) {
+                                        self.bulletPattern.bulletRings.pop().destroy();
+                                    }
+                                },
+                                args: [self]
+                            });
+                        },
+                        args: [self]
+                    })
                 },
                 update: (self, delta) => {
                     for(let bulletRing of self.bulletPattern.bulletRings) {

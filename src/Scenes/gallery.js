@@ -59,6 +59,9 @@ class Gallery extends Phaser.Scene {
             classType: Phaser.Physics.Arcade.Sprite,
             active: true,
             maxSize: -1,
+            removeCallback: (bullet) => {
+                bullet.destroy();
+            }
         });
         for(let waveData of this.cache.json.get("waveData")) {
             waveData.duckData = this.cache.json.get("duckData");
@@ -74,13 +77,18 @@ class Gallery extends Phaser.Scene {
         this.transitionTime = 0;
         this.entranceTime = 0;
         this.currentWave.start();
-        this.destroyQueue = [];
+        this.bulletRemoveQueue = [];
+        this.duckRemoveQueue = [];
     }
-    flushDestroyQueue() {
-        for(let object of this.destroyQueue) {
-            object.destroy();
+    flushRemoveQueues() {
+        for(let bullet of this.bulletRemoveQueue) {
+            this.bullets.remove(bullet);
         }
-        this.destroyQueue = [];
+        this.bulletRemoveQueue = [];
+        for(let duck of this.duckRemoveQueue) {
+            this.currentWave.activeDucks.remove(duck);
+        }
+        this.duckRemoveQueue = [];
     }
     update(time, delta) {
         this.player.update(delta);
@@ -88,7 +96,6 @@ class Gallery extends Phaser.Scene {
         let ducks = this.currentWave.activeDucks.getChildren();
         for(let bullet of bullets) {
             if(!bullet.update(delta)) {
-                this.destroyQueue.push(bullet);
                 this.bullets.remove(bullet);
             }
         }
@@ -103,7 +110,7 @@ class Gallery extends Phaser.Scene {
                 this.updateTransition(delta);
                 break;
         }
-        this.flushDestroyQueue();
+        this.flushRemoveQueues();
     }
     updateTransition(delta) {
         this.transitionTime += delta;
@@ -142,15 +149,13 @@ class Gallery extends Phaser.Scene {
         for(let bullet of bullets) {
             ducks.forEach((duck) => {
                 if(bullet.collisionCheck(duck)) {
-                    this.destroyQueue.push(bullet);
-                    this.bullets.remove(bullet);
+                    this.bulletRemoveQueue.push(bullet);
                     duck.hp -= 1;
                     if(duck.onHitFlashTimer == 0) {
                         duck.onHitFlashTimer += delta;
                     }
                     if(duck.hp == 0) {
-                        this.destroyQueue.push(duck);
-                        this.currentWave.activeDucks.remove(duck);
+                        this.duckRemoveQueue.push(duck);
                     }
                 }
             });

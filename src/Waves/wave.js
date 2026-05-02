@@ -14,6 +14,9 @@ class Wave {
             classType: Phaser.GameObjects.Sprite,
             active: true,
             maxSize: -1,
+            removeCallback: (duck) => {
+                duck.destroy();
+            }
         });
     }
     start() {

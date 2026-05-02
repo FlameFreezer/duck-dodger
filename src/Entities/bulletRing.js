@@ -10,9 +10,11 @@ class BulletRing {
         this.bullets = scene.add.group({
             classType: Phaser.GameObjects.Sprite,
             active: true,
-            maxSize: maxRingSize
+            maxSize: maxRingSize,
+            removeCallback: (bullet) => {
+                bullet.destroy();
+            }
         });
-        this.radialSpeed = 700;
         this.angularSpeed = angularSpeed;
         let initialDir = {
             x: 0,
@@ -41,6 +43,15 @@ class BulletRing {
             bullet.y = this.y + newPos.y;
             //Use radial vector for bullet's velocity
             bullet.velocity = vecScale(vecNormalize(newPos), bullet.speed);
+        }
+    }
+    destroy() {
+        let removeQueue = [];
+        for(let bullet of this.bullets.getChildren()) {
+            removeQueue.push(bullet);
+        }
+        for(let bullet of removeQueue) {
+            this.bullets.remove(bullet);
         }
     }
 }
