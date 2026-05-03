@@ -1,7 +1,7 @@
 class EnemyBullet extends Phaser.GameObjects.Sprite {
     constructor(scene, x, y, sprite, dir) {
         super(scene, x, y, "ducks", sprite);
-        this.speed = 400;
+        this.speed = 300;
         this.dir = dir;
         if(sprite == "duck_yellow.png") {
             this.color = yellow;

@@ -184,9 +184,9 @@ class Gallery extends Phaser.Scene {
         for(let ring of this.duckBulletRings) {
             for(let bullet of ring.bullets.getChildren()) {
                 if(bullet.collisionCheck(this.player)) {
-                    this.player.lives -= 1;
+                    this.player.hp -= 1;
                     this.duckBulletRemoveQueue.push(bullet);        
-                    if(this.player.lives == 0) {
+                    if(this.player.hp == 0) {
                         this.gameOver();
                     }
                 }
@@ -194,9 +194,9 @@ class Gallery extends Phaser.Scene {
         }
         for(let bullet of this.duckBullets.getChildren()) {
             if(bullet.collisionCheck(this.player)) {
-                this.player.lives -= 1;
+                this.player.hp -= 1;
                 this.duckBulletRemoveQueue.push(bullet);        
-                if(this.player.lives == 0) {
+                if(this.player.hp == 0) {
                     this.gameOver();
                 }
             }
@@ -215,7 +215,7 @@ class Gallery extends Phaser.Scene {
         }
     }
     gameOver() {
-        this.player.lives = 3;
+        this.player.hp = 5;
         this.scene.start("title");
     }
 }

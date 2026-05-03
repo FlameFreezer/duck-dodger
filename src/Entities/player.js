@@ -11,7 +11,7 @@ class Player extends Phaser.GameObjects.Sprite {
         this.timeSinceShoot = this.shootDelay;
         this.shootOffset = json.shootOffset;
         this.activeColor = yellow;
-        this.lives = 3;
+        this.hp = 5;
         //Offsets are optional
         if(this.shootOffset.x === undefined) this.shootOffset.x = 0;
         if(this.shootOffset.y === undefined) this.shootOffset.y = 0;

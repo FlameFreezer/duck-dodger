@@ -32,7 +32,7 @@ class Duck extends Phaser.GameObjects.PathFollower {
                             self.bulletPattern.spawnNumber = (self.bulletPattern.spawnNumber + 1) % self.bulletPattern.angularVelocities.length;
                             //Destroy bullet ring after some time
                             self.scene.time.addEvent({
-                                delay: 2000,
+                                delay: 5000,
                                 callback: (bulletRing) => {
                                     bulletRing.destroy();
                                 },
