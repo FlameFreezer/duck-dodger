@@ -39,6 +39,7 @@ class Gallery extends Phaser.Scene {
         this.load.atlasXML("player", "enemies.png", "enemies.xml");
         //Load in duck sprites
         this.load.atlasXML("ducks", "spritesheet_objects.png", "spritesheet_objects.xml");
+        this.load.atlasXML("hearts", "spritesheet-tiles-default.png", "spritesheet-tiles-default.xml");
         //Load player data
         this.load.setPath("./config");
         this.load.json("playerData", "player.json");
@@ -58,6 +59,8 @@ class Gallery extends Phaser.Scene {
             type: '3f',
             value: colorToVector(yellow)
         };
+        this.heart = this.add.sprite(canvasW - canvasW / 8 - 32, canvasH / 16 + 38, "hearts", "hud_heart");
+        this.heart.setScale(0.85);
         this.bgShader.initUniforms();
         this.player = new Player(this, this.cache.json.get("playerData"));
         this.score = 0;
@@ -69,6 +72,9 @@ class Gallery extends Phaser.Scene {
             .setOrigin(0.5)
             .setBlendMode(Phaser.BlendModes.ADD);
         this.ui.waveNumber = this.add.bitmapText(canvasW / 2, canvasH / 2, "daydream_3", "Wave 0", 18)
+            .setOrigin(0.5)
+            .setBlendMode(Phaser.BlendModes.ADD);
+        this.ui.hp = this.add.bitmapText(canvasW - canvasW / 8 + 12, canvasH / 16 + 40, "daydream_3", "x0", 18)
             .setOrigin(0.5)
             .setBlendMode(Phaser.BlendModes.ADD);
         
@@ -89,10 +95,13 @@ class Gallery extends Phaser.Scene {
         this.keys.w = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
         this.keys.space = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         this.keys.shift = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
+        this.keys.enter = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
+
         this.currentState = states.WAVE_TRANSITION;
         this.transitionTime = 0;
         this.entranceTime = 0;
         this.waveNumber = 0;
+        this.lastHpMilestone = 0;
         this.bulletRemoveQueue = [];
         this.duckRemoveQueue = [];
         this.duckBulletRings = [];
@@ -148,7 +157,8 @@ class Gallery extends Phaser.Scene {
     }
     update(time, delta) {
         this.player.update(delta);
-        this.ui.score.setText(`Score: ${this.score}`);
+        this.ui.score.setText(`Score ${this.score}`);
+        this.ui.hp.setText(`x${this.player.hp}`);
         let bullets = this.bullets.getChildren();
         let ducks = this.currentWave.activeDucks.getChildren();
         for(let bullet of bullets) {
@@ -180,10 +190,18 @@ class Gallery extends Phaser.Scene {
         }
         this.flushRemoveQueues();
     }
+    addScore(score) {
+        this.score += score;
+        if(this.score - this.lastHpMilestone >= 500) {
+            this.player.hp += 1;
+            this.lastHpMilestone = this.score - (this.score - this.lastHpMilestone - 500);
+        }
+    }
     doWaveTransition() {
         this.currentState = states.WAVE_TRANSITION;
         this.ui.waveComplete.visible = true;
-        this.score += 100;
+        this.addScore(100);
+        this.lastHpMilestone
         this.time.addEvent({
             delay: waveTransitionTime / 2,
             callback: (self) => {
@@ -230,7 +248,7 @@ class Gallery extends Phaser.Scene {
                         duck.onHitFlashTimer += delta;
                     }
                     if(duck.hp == 0) {
-                        this.score += duck.points;
+                        this.addScore(duck.points);
                         this.duckRemoveQueue.push(duck);
                     }
                 }
@@ -273,16 +291,13 @@ class Gallery extends Phaser.Scene {
         }
     }
     updateGameOver(delta) {
-        if(Phaser.Input.Keyboard.JustDown(this.keys.space)) {
-            this.scene.start("title");
-        }
     }
     gameOver() {
         this.currentState = states.GAME_OVER;
         this.ui.gameOver = this.add.bitmapText(canvasW / 2, canvasH / 2, "daydream_3", "Game Over!\n", 18)
             .setOrigin(0.5)
             .setBlendMode(Phaser.BlendModes.ADD);
-        this.ui.returnToTile = this.add.bitmapText(canvasW / 2, canvasH / 2 + 20, "daydream_3", "Press Space to go back to the Title Screen", 12)
+        this.ui.returnToTile = this.add.bitmapText(canvasW / 2, canvasH / 2 + 20, "daydream_3", "Press Enter to go back to the Title Screen", 12)
             .setOrigin(0.5)
             .setBlendMode(Phaser.BlendModes.ADD);
         this.player.stop("swim");
@@ -290,5 +305,9 @@ class Gallery extends Phaser.Scene {
         this.player.deadSprite.x = this.player.x;
         this.player.deadSprite.y = this.player.y;
         this.player.visible = false;
+        this.keys.enter.on("down", (event) => {
+            this.scene.start("title");
+        });
+
     }
 }

@@ -11,7 +11,7 @@
     "slowSpeed" : 200,
     "scale" : 0.5,
     "angle" : 90,
-    "shootDelay" : 100,
+    "shootDelay" : 200,
     "shootOffset" : {
         "y" : -10
     }

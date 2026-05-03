@@ -6,11 +6,15 @@ class Wave {
         this.spawns = [];
         this.duckData = json.duckData;
         this.isOver = false;
-        for(let i = 0; i < json.rubberDuckyPositions.length / 2; i++) {
-            this.spawns.push(new Spawn("RubberDucky", json.rubberDuckyPositions[i * 2], json.rubberDuckyPositions[i * 2 + 1]));
+        if(json.rubberDuckyPositions) {
+            for(let i = 0; i < json.rubberDuckyPositions.length / 2; i++) {
+                this.spawns.push(new Spawn("RubberDucky", json.rubberDuckyPositions[i * 2], json.rubberDuckyPositions[i * 2 + 1]));
+            }
         }
-        for(let i = 0; i < json.mallardPositions.length / 2; i++) {
-            this.spawns.push(new Spawn("Mallard", json.mallardPositions[i * 2], json.mallardPositions[i * 2 + 1]));
+        if(json.mallardPositions) {
+            for(let i = 0; i < json.mallardPositions.length / 2; i++) {
+                this.spawns.push(new Spawn("Mallard", json.mallardPositions[i * 2], json.mallardPositions[i * 2 + 1]));
+            }
         }
         this.activeDucks = scene.add.group({
             classType: Phaser.GameObjects.Sprite,
