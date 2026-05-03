@@ -43,9 +43,10 @@ class Wave {
             bread.waveEndTimer = this.scene.time.delayedCall(
                 5000,
                 (scene, bread) => {
-
-                    scene.duckRemoveQueue.push(bread);
-                    bread.active = false;
+                    if(bread.hp > 0) {
+                        scene.duckRemoveQueue.push(bread);
+                        bread.active = false;
+                    }
                 },
                 [this.scene, bread]
             );

@@ -182,7 +182,7 @@ class Gallery extends Phaser.Scene {
         }
         this.bulletRemoveQueue = [];
         for(let duck of this.duckRemoveQueue) {
-            this.currentWave.activeDucks.remove(duck);
+            duck.wave = this.currentWave;
             duck.destroy();
         }
         this.duckRemoveQueue = [];

@@ -1,5 +1,8 @@
 const onHitFlashTime = 100;
 const entranceSpeed = 350;
+const deathAnimationShrinkTime = 550;
+const deathAnimationGrowTime = 250;
+const maxExpansion =  1.45;
 function getRandomDuckSprite() {
     let x = Math.floor(Math.random() * 100);
     if(x > 75) return "duck_back.png";
@@ -30,6 +33,8 @@ class Duck extends Phaser.GameObjects.PathFollower {
             this.width = this.breadSprite.width;
             this.height = this.breadSprite.height;
         }
+        this.deathShrinkAmountX = this.scaleX * maxExpansion;
+        this.deathShrinkAmountY = this.scaleY * maxExpansion;
         if(json.bulletPattern.type == 1) {
             this.bulletPattern = {
                 shootDelay: json.bulletPattern.shootDelay,
@@ -136,37 +141,86 @@ class Duck extends Phaser.GameObjects.PathFollower {
         //Flip ducks around if on the right side of the screen
         if(x >= canvasW / 2) this.scaleX *= -1;
         if(this.type == "bread") {
-            this.spriteOnHit = scene.add.image(0, 0, json.spriteOnHit);
+            this.spriteOnHit = scene.add.image(this.x, this.y, json.spriteOnHit);
         }
         else {
-            this.spriteOnHit = scene.add.sprite(0, 0, "ducks", json.spriteOnHit);
+            this.spriteOnHit = scene.add.sprite(this.x, this.y, "ducks", json.spriteOnHit);
         }
         this.spriteOnHit.visible = false;
+        this.spriteOnHit.scaleX = this.scaleX;
+        this.spriteOnHit.scaleY = this.scaleY;
         this.innerDestroy = this.destroy;
         this.destroy = this.outerDestroy;
         this.alpha = 0.55;
         this.active = false;
         scene.add.existing(this);
     }
+    deathAnimationGrow(delta) {
+        this.scaleX += Math.sign(this.scaleX) * (this.deathShrinkAmountX - this.startScaleX) / deathAnimationGrowTime * delta;
+        this.scaleY += Math.sign(this.scaleY) * (this.deathShrinkAmountY - this.startScaleY) / deathAnimationGrowTime * delta;
+        if(this.breadSprite) {
+            this.updateBread();
+        }
+    }
+    deathAnimationShrink(delta) {
+        this.scaleX -= Math.sign(this.scaleX) * this.deathShrinkAmountX / (deathAnimationShrinkTime) * delta;
+        this.scaleY -= Math.sign(this.scaleY) * this.deathShrinkAmountY / (deathAnimationShrinkTime) * delta;
+        if(this.breadSprite) {
+            this.updateBread();
+        }
+    }
     outerDestroy(destroyedByScene = false) {
+        this.active = false;
         this.spriteOnHit.destroy(destroyedByScene);
         if(this.bulletPattern) {
             this.bulletPattern.shootTimer.remove(destroyedByScene);
             this.bulletPattern.patternTimer.remove(destroyedByScene);
         }
-        this.innerDestroy(destroyedByScene);
-        if(this.breadSprite) {
-            this.breadSprite.destroy(destroyedByScene);
-        }
         if(this.waveEndTimer) {
             this.waveEndTimer.remove();
         }
+        if(this.hp == 0) {
+            if(this.breadSprite) {
+                //Since updateBread adds 90 to angle, this will keep it at 0
+                this.angle = -90;
+            }
+            this.update = this.deathAnimationGrow;
+            this.stopFollow();
+            this.startScaleX = Math.abs(this.scaleX);
+            this.startScaleY = Math.abs(this.scaleY);
+            this.scene.time.delayedCall(deathAnimationGrowTime,
+                (self, destroyedByScene) => {
+                    self.update = self.deathAnimationShrink;
+                    self.scene.time.delayedCall(
+                        deathAnimationShrinkTime,
+                        (self, destroyedByScene) => {
+                            self.wave.activeDucks.remove(self);
+                            if(self.breadSprite) {
+                                self.breadSprite.destroy(destroyedByScene);
+                            }
+                            self.innerDestroy(destroyedByScene);
+                        },
+                        [self, destroyedByScene]
+                    );
+                },
+                [this, destroyedByScene]
+            );
+        }
+        else {
+            if(this.breadSprite) {
+                this.breadSprite.destroy(destroyedByScene);
+            }
+            this.innerDestroy(destroyedByScene);
+        }
+
     }
     updateBread() {
         this.breadSprite.x = this.x;
         this.breadSprite.y = this.y;
         this.breadSprite.angle = this.angle + 90;
         this.breadSprite.alpha = this.alpha;
+        this.breadSprite.scaleX = this.scaleX;
+        this.breadSprite.scaleY = this.scaleY;
     }
     enter(delta) {
         this.y += entranceSpeed * delta / 1000;
