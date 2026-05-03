@@ -1,3 +1,4 @@
+const playerHitFameTime = 200;
 class Player extends Phaser.GameObjects.Sprite {
     constructor(scene, json) {
         super(scene, json.spawnPoint.x, json.spawnPoint.y, "player");
@@ -13,10 +14,17 @@ class Player extends Phaser.GameObjects.Sprite {
         this.activeColor = yellow;
         this.hp = 5;
         this.wasHitThisFrame = false;
-        this.deadSprite = this.scene.add.sprite(0, 0, "player", "fishPink_dead.png");
+
+        this.deadSprite = this.scene.add.sprite(this.x, this.y, "player", "fishPink_dead.png");
         this.deadSprite.visible = false;
         this.deadSprite.setScale(json.scale);
         this.deadSprite.angle = this.angle;
+
+        this.hitSprite = this.scene.add.sprite(this.x, this.y, "player", "fishPink_hit.png");
+        this.hitSprite.visible = false;
+        this.hitSprite.setScale(json.scale);
+        this.hitSprite.angle = this.angle;
+
         //Offsets are optional
         if(this.shootOffset.x === undefined) this.shootOffset.x = 0;
         if(this.shootOffset.y === undefined) this.shootOffset.y = 0;
@@ -81,5 +89,7 @@ class Player extends Phaser.GameObjects.Sprite {
         if(this.x - this.width * this.scaleX / 2 < 0) {
             this.x = this.width * this.scaleX / 2;
         }
+        this.hitSprite.x = this.x;
+        this.hitSprite.y = this.y;
     }
 }

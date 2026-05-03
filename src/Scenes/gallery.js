@@ -1,6 +1,6 @@
 const canvasW = 600;
 const canvasH = 800;
-const uiDepth = 10;
+const healthUpInterval = 500;
 const yellow = {
     r: 255, g: 213, b: 0
 };
@@ -8,11 +8,10 @@ const green = {
     r: 5, g: 179, b: 20
 };
 const states = Object.freeze({
-    WAVE_ENTRANCE: 0,
-    WAVE_ACTIVE: 1,
-    WAVE_TRANSITION: 2,
-    GAME_OVER: 3,
-    GAME_INITIAL: 4
+    WAVE_ACTIVE: 0,
+    WAVE_TRANSITION: 1,
+    GAME_OVER: 2,
+    GAME_INITIAL: 3
 });
 function colorToVector(color) {
     return {
@@ -53,10 +52,15 @@ class Gallery extends Phaser.Scene {
         this.load.bitmapFont("daydream_3", "daydream_3_0.png", "daydream_3.fnt");
         //Load sounds
         this.load.setPath("./assets/Audio");
-        this.load.audio("duckHit", "impactSoft_medium_000.ogg");
+        this.load.audio("duckHit", "footstep_wood_001.ogg");
         this.load.audio("bulletRing", "phaserUp6.ogg");
         this.load.audio("duckBullet", "tone1.ogg");
         this.load.audio("duckDeath", "highUp.ogg");
+        this.load.audio("healthUp", "jingles_HIT03.ogg");
+        this.load.audio("nextWave", "jingles_HIT04.ogg");
+        this.load.audio("gameOver", "jingles_HIT11.ogg");
+        this.load.audio("bread", "jingles_HIT15.ogg");
+        this.load.audio("playerHit", "footstep_snow_000.ogg");
     }
     create() {
         //Shader wants to be half-size for some reason. Hope that isn't platform specific
@@ -117,11 +121,27 @@ class Gallery extends Phaser.Scene {
             maxSize: -1
         });
         this.duckBulletRemoveQueue = [];
+
         this.duckHitSfx = this.sound.add("duckHit", {
             volume: 0.5
         });
         this.duckDeathSfx = this.sound.add("duckDeath", {
             volume: 0.5
+        });
+        this.healthUpSfx = this.sound.add("healthUp", {
+            volume: 0.5
+        });
+        this.nextWaveSfx = this.sound.add("nextWave", {
+            volume: 0.5
+        });
+        this.gameOverSfx = this.sound.add("gameOver", {
+            volume: 0.5
+        });
+        this.breadSfx = this.sound.add("bread", {
+            volume: 0.5
+        });
+        this.playerHitSfx = this.sound.add("playerHit", {
+            volume : 0.15
         });
         this.nextWave();
     }
@@ -149,6 +169,7 @@ class Gallery extends Phaser.Scene {
         this.waveNumber += 1;
         this.ui.waveNumber.visible = true;
         this.ui.waveNumber.setText(`Wave ${this.waveNumber}`);
+        this.nextWaveSfx.play();
     }
     flushRemoveQueues() {
         for(let bullet of this.bulletRemoveQueue) {
@@ -193,9 +214,6 @@ class Gallery extends Phaser.Scene {
                 this.updateActive(delta);
                 this.updateGameOver(delta);
                 break;
-            case states.WAVE_ENTRANCE:
-                this.updateEntrance(delta);
-                break;
             case states.WAVE_TRANSITION:
                 this.updateTransition();
                 break;
@@ -204,16 +222,16 @@ class Gallery extends Phaser.Scene {
     }
     addScore(score) {
         this.score += score;
-        if(this.score - this.lastHpMilestone >= 500) {
+        if(this.score - this.lastHpMilestone >= healthUpInterval) {
             this.player.hp += 1;
-            this.lastHpMilestone = this.score - (this.score - this.lastHpMilestone - 500);
+            this.lastHpMilestone = this.score - (this.score - this.lastHpMilestone - healthUpInterval);
+            this.healthUpSfx.play();
         }
     }
     doWaveTransition() {
         this.currentState = states.WAVE_TRANSITION;
         this.ui.waveComplete.visible = true;
         this.addScore(100);
-        this.lastHpMilestone
         this.time.addEvent({
             delay: waveTransitionTime / 2,
             callback: (self) => {
@@ -226,21 +244,11 @@ class Gallery extends Phaser.Scene {
     }
     doWaveEntrance() {
         this.currentWave.start();
-        this.currentState = states.WAVE_ENTRANCE;
+        this.currentState = states.WAVE_ACTIVE;
         this.ui.waveComplete.visible = false;
         this.ui.waveNumber.visible = false;
-        this.time.addEvent({
-            delay: waveEntranceTime,
-            callback: (self) => {
-                self.currentState = states.WAVE_ACTIVE;
-            },
-            args: [this]
-        });
     }
     updateTransition() {
-    }
-    updateEntrance(delta) {
-        this.currentWave.update(delta);
     }
     updateActive(delta) {
         this.currentWave.update(delta);
@@ -271,25 +279,11 @@ class Gallery extends Phaser.Scene {
         //Check collisions of enemy bullets with player
         for(let ring of this.duckBulletRings) {
             for(let bullet of ring.bullets.getChildren()) {
-                if(bullet.collisionCheck(this.player) && !this.player.wasHitThisFrame) {
-                    this.player.hp -= 1;
-                    this.player.wasHitThisFrame = true;
-                    this.duckBulletRemoveQueue.push(bullet);        
-                    if(this.player.hp == 0) {
-                        this.gameOver();
-                    }
-                }
+                this.doPlayerCollision(bullet);
             }
         }
         for(let bullet of this.duckBullets.getChildren()) {
-            if(bullet.collisionCheck(this.player) && !this.player.wasHitThisFrame) {
-                this.player.hp -= 1;
-                this.player.wasHitThisFrame = true;
-                this.duckBulletRemoveQueue.push(bullet);        
-                if(this.player.hp == 0) {
-                    this.gameOver();
-                }
-            }
+            this.doPlayerCollision(bullet);
             if(bullet.x + bullet.width * bullet.scaleX / 2 <= 0) {
                 this.duckBulletRemoveQueue.push(bullet);
             };
@@ -304,9 +298,32 @@ class Gallery extends Phaser.Scene {
             }
         }
     }
+    doPlayerCollision(bullet) {
+        if(bullet.collisionCheck(this.player) && !this.player.wasHitThisFrame) {
+            this.player.hp -= 1;
+            this.playerHitSfx.play();
+            this.player.wasHitThisFrame = true;
+            this.duckBulletRemoveQueue.push(bullet);        
+            this.player.hitSprite.visible = true;
+            this.player.visible = false;
+            this.player.hitTimer = this.time.delayedCall(
+                playerHitFameTime,
+                (player) => {
+                    player.visible = true;
+                    player.hitSprite.visible = false;
+                },
+                [this.player]
+            );
+            if(this.player.hp == 0) {
+                this.gameOver();
+            }
+        }
+    }
     updateGameOver(delta) {
     }
     gameOver() {
+        this.player.hitTimer.remove();
+        this.gameOverSfx.play();
         this.currentState = states.GAME_OVER;
         this.ui.gameOver = this.add.bitmapText(canvasW / 2, canvasH / 2, "daydream_3", "Game Over!\n", 18)
             .setOrigin(0.5)
@@ -319,6 +336,7 @@ class Gallery extends Phaser.Scene {
         this.player.deadSprite.x = this.player.x;
         this.player.deadSprite.y = this.player.y;
         this.player.visible = false;
+        this.player.hitSprite.visible = false;
         this.keys.enter.on("down", (event) => {
             this.scene.start("title");
         });

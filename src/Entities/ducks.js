@@ -1,4 +1,5 @@
 const onHitFlashTime = 100;
+const entranceSpeed = 350;
 function getRandomDuckSprite() {
     let x = Math.floor(Math.random() * 100);
     if(x > 75) return "duck_back.png";
@@ -80,7 +81,7 @@ class Duck extends Phaser.GameObjects.PathFollower {
                                 y: self.scene.player.y - self.y
                             };
                             if(self.scene.currentState != states.GAME_OVER) {
-                                self.scene.sound.add("duckBullet", {volume: 0.25}).play();
+                                self.scene.sound.add("duckBullet", {volume: 0.15}).play();
                             }
                             dir = vecNormalize(dir);
                             let bullet = new EnemyBullet(self.scene, self.x, self.y, getRandomDuckSprite(), dir);
@@ -110,7 +111,6 @@ class Duck extends Phaser.GameObjects.PathFollower {
             }
         };
         this.targetY = y;
-        this.entranceSpeed = this.targetY;
         this.update = this.enter;
         if(json.yoyo === undefined) {
             this.yoyo = true;
@@ -127,6 +127,8 @@ class Duck extends Phaser.GameObjects.PathFollower {
         this.onHitFlashTimer = 0;
         this.innerDestroy = this.destroy;
         this.destroy = this.outerDestroy;
+        this.alpha = 0.55;
+        this.active = false;
         scene.add.existing(this);
     }
     outerDestroy(destroyedByScene = false) {
@@ -136,10 +138,12 @@ class Duck extends Phaser.GameObjects.PathFollower {
         this.innerDestroy(destroyedByScene);
     }
     enter(delta) {
-        this.y += this.entranceSpeed * delta / waveEntranceTime;
+        this.y += entranceSpeed * delta / 1000;
         if(this.y >= this.targetY) {
             this.y = this.targetY;
             this.update = this.loop;
+            this.alpha = 1.0;
+            this.active = true;
             this.startLoop();
         }
     }

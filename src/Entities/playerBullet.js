@@ -14,6 +14,7 @@ class PlayerBullet extends Phaser.GameObjects.Sprite {
         return true;
     }
     collisionCheck(other) {
+        if(!other.active) return false;
         let scaleX = Math.abs(this.scaleX);
         let scaleY = Math.abs(this.scaleY);
         let otherScaleX = Math.abs(other.scaleX);
