@@ -1,3 +1,4 @@
+const waveEntranceTime = 1000;
 class Wave {
     constructor(scene, json) {
         this.scene = scene;

@@ -164,7 +164,7 @@ class Gallery extends Phaser.Scene {
     updateEntrance(delta) {
         this.currentWave.update(delta);
         this.entranceTime += delta;
-        if(this.entranceTime > 1000) {
+        if(this.entranceTime > waveEntranceTime) {
             this.entranceTime = 0;
             this.currentState = states.WAVE_ACTIVE;
         }

@@ -20,7 +20,7 @@ class BulletRing {
         for(let i = 0; i < maxRingSize; i++) {
             let angle = 2 * Math.PI * i / maxRingSize;
             let dir = vecRotate(initialDir, angle);
-            let bullet = new EnemyBullet(scene, this.x, this.y, duckSprites[Math.floor(Math.random() * duckSprites.length)], dir);
+            let bullet = new EnemyBullet(scene, this.x, this.y, getRandomDuckSprite(), dir);
             this.bullets.add(bullet);
         }
     }

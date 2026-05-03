@@ -1,4 +1,10 @@
 const onHitFlashTime = 100;
+function getRandomDuckSprite() {
+    let x = Math.floor(Math.random() * 100);
+    if(x > 75) return "duck_back.png";
+    if(x > 38) return "duck_brown.png";
+    return "duck_yellow.png";
+}
 class Duck extends Phaser.GameObjects.PathFollower {
     constructor(scene, json, x, y) {
         //May specify no path
@@ -74,14 +80,14 @@ class Duck extends Phaser.GameObjects.PathFollower {
                                 y: self.scene.player.y - self.y
                             };
                             dir = vecNormalize(dir);
-                            let bullet = new EnemyBullet(self.scene, self.x, self.y, duckSprites[Math.floor(Math.random() * duckSprites.length)], dir);
+                            let bullet = new EnemyBullet(self.scene, self.x, self.y, getRandomDuckSprite(), dir);
                             self.scene.duckBullets.add(bullet);
                             self.bulletPattern.shotCount += 1;
                             //On the third shot, fire two extra shots
                             if(self.bulletPattern.shotCount == 3) {
                                 let angleDelta = Math.PI / 6;
-                                let b2 = new EnemyBullet(self.scene, self.x, self.y, duckSprites[Math.floor(Math.random() * duckSprites.length)], vecRotate(dir, -angleDelta));
-                                let b3 = new EnemyBullet(self.scene, self.x, self.y, duckSprites[Math.floor(Math.random() * duckSprites.length)], vecRotate(dir, angleDelta));
+                                let b2 = new EnemyBullet(self.scene, self.x, self.y, getRandomDuckSprite(), vecRotate(dir, -angleDelta));
+                                let b3 = new EnemyBullet(self.scene, self.x, self.y, getRandomDuckSprite(), vecRotate(dir, angleDelta));
                                 self.scene.duckBullets.add(b2);
                                 self.scene.duckBullets.add(b3);
                                 self.bulletPattern.shotCount = 0;
@@ -127,7 +133,7 @@ class Duck extends Phaser.GameObjects.PathFollower {
         this.innerDestroy(destroyedByScene);
     }
     enter(delta) {
-        this.y += this.entranceSpeed * delta / 1000;
+        this.y += this.entranceSpeed * delta / waveEntranceTime;
         if(this.y >= this.targetY) {
             this.y = this.targetY;
             this.update = this.loop;
