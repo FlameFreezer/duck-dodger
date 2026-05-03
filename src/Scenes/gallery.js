@@ -73,6 +73,13 @@ class Gallery extends Phaser.Scene {
             type: '3f',
             value: colorToVector(yellow)
         };
+        this.bgShader.uniforms.canvasDim = {
+            type: '2f',
+            value: {
+                x: canvasW,
+                y: canvasH
+            }
+        };
         this.heart = this.add.sprite(canvasW - canvasW / 8 - 32, canvasH / 16 + 38, "hearts", "hud_heart");
         this.heart.setScale(0.85);
         this.bgShader.initUniforms();
