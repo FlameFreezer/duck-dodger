@@ -57,6 +57,15 @@ class Gallery extends Phaser.Scene {
         };
         this.bgShader.initUniforms();
         this.player = new Player(this, this.cache.json.get("playerData"));
+        this.score = 0;
+        this.ui = {};
+        this.ui.score = this.add.bitmapText(canvasW / 2, 50, "daydream_3", "Score: 0", 18)
+            .setOrigin(0.5)
+            .setBlendMode(Phaser.BlendModes.ADD);
+        this.ui.waveComplete = this.add.bitmapText(canvasW / 2, canvasH / 2, "daydream_3", "Wave Complete!", 18)
+            .setOrigin(0.5)
+            .setBlendMode(Phaser.BlendModes.ADD);
+        this.ui.waveComplete.visible = false;
         this.waves = [];
         this.bullets = this.add.group({
             classType: Phaser.GameObjects.Sprite,
@@ -106,6 +115,7 @@ class Gallery extends Phaser.Scene {
     }
     update(time, delta) {
         this.player.update(delta);
+        this.ui.score.setText(`Score: ${this.score}`);
         let bullets = this.bullets.getChildren();
         let ducks = this.currentWave.activeDucks.getChildren();
         for(let bullet of bullets) {
@@ -148,6 +158,7 @@ class Gallery extends Phaser.Scene {
             this.currentWave.start();
             this.transitionTime = 0;
             this.currentState = states.WAVE_ENTRANCE;
+            this.ui.waveComplete.visible = false;
         }
     }
     updateEntrance(delta) {
@@ -161,8 +172,9 @@ class Gallery extends Phaser.Scene {
     updateActive(delta) {
         this.currentWave.update(delta);
         if(this.currentWave.isOver) {
-            console.log("wave complete!");
             this.currentState = states.WAVE_TRANSITION;
+            this.ui.waveComplete.visible = true;
+            this.score += 100;
         }
         //Update bullets
         let bullets = this.bullets.getChildren();
@@ -176,6 +188,7 @@ class Gallery extends Phaser.Scene {
                         duck.onHitFlashTimer += delta;
                     }
                     if(duck.hp == 0) {
+                        this.score += duck.points;
                         this.duckRemoveQueue.push(duck);
                     }
                 }
