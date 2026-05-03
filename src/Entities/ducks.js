@@ -158,6 +158,9 @@ class Duck extends Phaser.GameObjects.PathFollower {
         if(this.breadSprite) {
             this.breadSprite.destroy(destroyedByScene);
         }
+        if(this.waveEndTimer) {
+            this.waveEndTimer.remove();
+        }
     }
     updateBread() {
         this.breadSprite.x = this.x;

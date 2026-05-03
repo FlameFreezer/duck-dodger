@@ -62,7 +62,7 @@
             0, 0
         ],
         "yoyo" : false,
-        "duration" : 4000,
+        "duration" : 7000,
         "rotateToPath" : true,
         "bulletPattern" : {
             "type" : -1

@@ -281,7 +281,7 @@ class Gallery extends Phaser.Scene {
                                 duck.breadSprite.visible = true;
                             }
                             else {
-                            duck.visible = true;
+                                duck.visible = true;
                             }
                         },
                         [duck]
