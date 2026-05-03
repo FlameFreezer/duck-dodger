@@ -2,7 +2,9 @@ const onHitFlashTime = 100;
 const entranceSpeed = 350;
 const deathAnimationShrinkTime = 550;
 const deathAnimationGrowTime = 250;
-const maxExpansion =  1.45;
+const maxExpansion = 1.45;
+const breadExitTime = 500;
+const minBreadExitSpeed = 100;
 function getRandomDuckSprite() {
     let x = Math.floor(Math.random() * 100);
     if(x > 75) return "duck_back.png";
@@ -26,7 +28,7 @@ class Duck extends Phaser.GameObjects.PathFollower {
         }
         else this.rotateToPath = false;
         //Init as bread
-        if(json.sprite == "bread") {
+        if(json.type == "bread") {
             this.breadSprite = scene.add.image(x, 0, json.sprite);
             this.visible = false;
             this.breadSprite.setScale(json.scale);
@@ -155,6 +157,10 @@ class Duck extends Phaser.GameObjects.PathFollower {
         this.active = false;
         scene.add.existing(this);
     }
+    breadExit(delta) {
+        this.y -= Math.max(this.startY, minBreadExitSpeed) / breadExitTime * delta;
+        this.updateBread();
+    }
     deathAnimationGrow(delta) {
         this.scaleX += Math.sign(this.scaleX) * (this.deathShrinkAmountX - this.startScaleX) / deathAnimationGrowTime * delta;
         this.scaleY += Math.sign(this.scaleY) * (this.deathShrinkAmountY - this.startScaleY) / deathAnimationGrowTime * delta;
@@ -170,7 +176,6 @@ class Duck extends Phaser.GameObjects.PathFollower {
         }
     }
     outerDestroy(destroyedByScene = false) {
-        this.active = false;
         this.spriteOnHit.destroy(destroyedByScene);
         if(this.bulletPattern) {
             this.bulletPattern.shootTimer.remove(destroyedByScene);
@@ -180,6 +185,7 @@ class Duck extends Phaser.GameObjects.PathFollower {
             this.waveEndTimer.remove();
         }
         if(this.hp == 0) {
+            this.active = false;
             if(this.breadSprite) {
                 //Since updateBread adds 90 to angle, this will keep it at 0
                 this.angle = -90;
@@ -188,7 +194,8 @@ class Duck extends Phaser.GameObjects.PathFollower {
             this.stopFollow();
             this.startScaleX = Math.abs(this.scaleX);
             this.startScaleY = Math.abs(this.scaleY);
-            this.scene.time.delayedCall(deathAnimationGrowTime,
+            this.scene.time.delayedCall(
+                deathAnimationGrowTime,
                 (self, destroyedByScene) => {
                     self.update = self.deathAnimationShrink;
                     self.scene.time.delayedCall(
@@ -202,6 +209,23 @@ class Duck extends Phaser.GameObjects.PathFollower {
                         },
                         [self, destroyedByScene]
                     );
+                },
+                [this, destroyedByScene]
+            );
+        }
+        //Wave ended and we are bread
+        else if(!this.active) {
+            this.startY = this.y;
+            this.alpha = 0.55;
+            this.update = this.breadExit;
+            this.stopFollow();
+            this.angle = -90;
+            this.scene.time.delayedCall(
+                breadExitTime,
+                (self, destroyedByScene) => {
+                    self.wave.activeDucks.remove(self);
+                    self.breadSprite.destroy(destroyedByScene);
+                    self.innerDestroy(destroyedByScene);
                 },
                 [this, destroyedByScene]
             );

@@ -39,9 +39,10 @@ class Wave {
         }
         else if(this.activeDucks.getLength() == 1 && this.activeDucks.getChildren()[0].type == "bread") {
             let bread = this.activeDucks.getChildren()[0];
+            if(bread.waveEndTimer) return;
             //End wave if player takes too long to kill bread
             bread.waveEndTimer = this.scene.time.delayedCall(
-                5000,
+                4000,
                 (scene, bread) => {
                     if(bread.hp > 0) {
                         scene.duckRemoveQueue.push(bread);

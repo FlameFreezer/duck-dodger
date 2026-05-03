@@ -181,11 +181,13 @@ class Gallery extends Phaser.Scene {
             bullet.destroy();
         }
         this.bulletRemoveQueue = [];
+
         for(let duck of this.duckRemoveQueue) {
             duck.wave = this.currentWave;
             duck.destroy();
         }
         this.duckRemoveQueue = [];
+
         for(let bullet of this.duckBulletRemoveQueue) {
             this.duckBullets.remove(bullet);
             bullet.destroy();
