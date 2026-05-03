@@ -23,6 +23,9 @@ class BulletRing {
             let bullet = new EnemyBullet(scene, this.x, this.y, getRandomDuckSprite(), dir);
             this.bullets.add(bullet);
         }
+        if(this.scene.currentState != states.GAME_OVER) {
+            this.scene.sound.add("bulletRing", {volume: 0.25}).play();
+        }
     }
     update(delta) {
         let bullets = this.bullets.getChildren();

@@ -49,8 +49,14 @@ class Gallery extends Phaser.Scene {
         this.load.setPath("./src/Shaders/");
         this.load.glsl("background", "backgroundEffect.glsl");
         //Load font
-        this.load.setPath("assets/daydream_3");
+        this.load.setPath("./assets/daydream_3");
         this.load.bitmapFont("daydream_3", "daydream_3_0.png", "daydream_3.fnt");
+        //Load sounds
+        this.load.setPath("./assets/Audio");
+        this.load.audio("duckHit", "impactSoft_medium_000.ogg");
+        this.load.audio("bulletRing", "phaserUp6.ogg");
+        this.load.audio("duckBullet", "tone1.ogg");
+        this.load.audio("duckDeath", "highUp.ogg");
     }
     create() {
         //Shader wants to be half-size for some reason. Hope that isn't platform specific
@@ -111,6 +117,12 @@ class Gallery extends Phaser.Scene {
             maxSize: -1
         });
         this.duckBulletRemoveQueue = [];
+        this.duckHitSfx = this.sound.add("duckHit", {
+            volume: 0.5
+        });
+        this.duckDeathSfx = this.sound.add("duckDeath", {
+            volume: 0.5
+        });
         this.nextWave();
     }
     nextWave() {
@@ -242,6 +254,7 @@ class Gallery extends Phaser.Scene {
         for(let bullet of bullets) {
             ducks.forEach((duck) => {
                 if(bullet.collisionCheck(duck)) {
+                    this.duckHitSfx.play();
                     this.bulletRemoveQueue.push(bullet);
                     duck.hp -= 1;
                     if(duck.onHitFlashTimer == 0) {
@@ -250,6 +263,7 @@ class Gallery extends Phaser.Scene {
                     if(duck.hp == 0) {
                         this.addScore(duck.points);
                         this.duckRemoveQueue.push(duck);
+                        this.duckDeathSfx.play();
                     }
                 }
             });

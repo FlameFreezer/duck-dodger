@@ -79,6 +79,9 @@ class Duck extends Phaser.GameObjects.PathFollower {
                                 x: self.scene.player.x - self.x,
                                 y: self.scene.player.y - self.y
                             };
+                            if(self.scene.currentState != states.GAME_OVER) {
+                                self.scene.sound.add("duckBullet", {volume: 0.25}).play();
+                            }
                             dir = vecNormalize(dir);
                             let bullet = new EnemyBullet(self.scene, self.x, self.y, getRandomDuckSprite(), dir);
                             self.scene.duckBullets.add(bullet);
