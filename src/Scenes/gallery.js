@@ -1,5 +1,6 @@
 const canvasW = 600;
 const canvasH = 800;
+const uiDepth = 10;
 const yellow = {
     r: 255, g: 213, b: 0
 };
@@ -9,7 +10,9 @@ const green = {
 const states = Object.freeze({
     WAVE_ENTRANCE: 0,
     WAVE_ACTIVE: 1,
-    WAVE_TRANSITION: 2
+    WAVE_TRANSITION: 2,
+    GAME_OVER: 3,
+    GAME_INITIAL: 4
 });
 function colorToVector(color) {
     return {
@@ -59,13 +62,18 @@ class Gallery extends Phaser.Scene {
         this.player = new Player(this, this.cache.json.get("playerData"));
         this.score = 0;
         this.ui = {};
-        this.ui.score = this.add.bitmapText(canvasW / 2, 50, "daydream_3", "Score: 0", 18)
+        this.ui.score = this.add.bitmapText(canvasW - canvasW / 8, canvasH / 16, "daydream_3", "Score: 0", 18)
             .setOrigin(0.5)
             .setBlendMode(Phaser.BlendModes.ADD);
         this.ui.waveComplete = this.add.bitmapText(canvasW / 2, canvasH / 2, "daydream_3", "Wave Complete!", 18)
             .setOrigin(0.5)
             .setBlendMode(Phaser.BlendModes.ADD);
+        this.ui.waveNumber = this.add.bitmapText(canvasW / 2, canvasH / 2, "daydream_3", "Wave 0", 18)
+            .setOrigin(0.5)
+            .setBlendMode(Phaser.BlendModes.ADD);
+        
         this.ui.waveComplete.visible = false;
+        this.ui.waveNumber.visible = false;
         this.waves = [];
         this.bullets = this.add.group({
             classType: Phaser.GameObjects.Sprite,
@@ -81,11 +89,10 @@ class Gallery extends Phaser.Scene {
         this.keys.w = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
         this.keys.space = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         this.keys.shift = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
-        this.currentState = states.WAVE_ENTRANCE;
-        this.currentWave = this.waves.shift();
+        this.currentState = states.WAVE_TRANSITION;
         this.transitionTime = 0;
         this.entranceTime = 0;
-        this.currentWave.start();
+        this.waveNumber = 0;
         this.bulletRemoveQueue = [];
         this.duckRemoveQueue = [];
         this.duckBulletRings = [];
@@ -95,6 +102,32 @@ class Gallery extends Phaser.Scene {
             maxSize: -1
         });
         this.duckBulletRemoveQueue = [];
+        this.nextWave();
+    }
+    nextWave() {
+        this.time.addEvent({
+            delay: waveTransitionTime / 2,
+            callback: (self) => {
+                self.doWaveEntrance();
+            },
+            args: [this]
+        });
+        let nextWave = this.waves.shift();
+        //If we have a new wave to start, start it
+        if(nextWave !== undefined) {
+            this.currentWave = nextWave;
+        }
+        //Otherwise, restart the last wave
+        else if(this.currentWave !== undefined) {
+            this.currentWave.isOver = false;
+        }
+        else {
+            throw "Error: no waves were defined on disk";
+        }
+        this.ui.waveComplete.visible = false;
+        this.waveNumber += 1;
+        this.ui.waveNumber.visible = true;
+        this.ui.waveNumber.setText(`Wave ${this.waveNumber}`);
     }
     flushRemoveQueues() {
         for(let bullet of this.bulletRemoveQueue) {
@@ -134,47 +167,56 @@ class Gallery extends Phaser.Scene {
             case states.WAVE_ACTIVE:
                 this.updateActive(delta);
                 break;
+            case states.GAME_OVER:
+                this.updateActive(delta);
+                this.updateGameOver(delta);
+                break;
             case states.WAVE_ENTRANCE:
                 this.updateEntrance(delta);
                 break;
             case states.WAVE_TRANSITION:
-                this.updateTransition(delta);
+                this.updateTransition();
                 break;
         }
         this.flushRemoveQueues();
     }
-    updateTransition(delta) {
-        this.transitionTime += delta;
-        if(this.transitionTime > 2000) {
-            let nextWave = this.waves.shift();
-            //If we have a new wave to start, start it
-            if(nextWave !== undefined) {
-                this.currentWave = nextWave;
-            }
-            //Otherwise, restart the last wave
-            else {
-                this.currentWave.isOver = false;
-            }
-            this.currentWave.start();
-            this.transitionTime = 0;
-            this.currentState = states.WAVE_ENTRANCE;
-            this.ui.waveComplete.visible = false;
-        }
+    doWaveTransition() {
+        this.currentState = states.WAVE_TRANSITION;
+        this.ui.waveComplete.visible = true;
+        this.score += 100;
+        this.time.addEvent({
+            delay: waveTransitionTime / 2,
+            callback: (self) => {
+                self.ui.waveComplete.visible = false;
+                self.ui.waveNumber.visible = true;
+                this.nextWave();
+            },
+            args: [this]
+        });
+    }
+    doWaveEntrance() {
+        this.currentWave.start();
+        this.currentState = states.WAVE_ENTRANCE;
+        this.ui.waveComplete.visible = false;
+        this.ui.waveNumber.visible = false;
+        this.time.addEvent({
+            delay: waveEntranceTime,
+            callback: (self) => {
+                self.currentState = states.WAVE_ACTIVE;
+            },
+            args: [this]
+        });
+    }
+    updateTransition() {
     }
     updateEntrance(delta) {
         this.currentWave.update(delta);
-        this.entranceTime += delta;
-        if(this.entranceTime > waveEntranceTime) {
-            this.entranceTime = 0;
-            this.currentState = states.WAVE_ACTIVE;
-        }
     }
     updateActive(delta) {
         this.currentWave.update(delta);
         if(this.currentWave.isOver) {
-            this.currentState = states.WAVE_TRANSITION;
-            this.ui.waveComplete.visible = true;
-            this.score += 100;
+            this.doWaveTransition();
+            return;
         }
         //Update bullets
         let bullets = this.bullets.getChildren();
@@ -194,10 +236,12 @@ class Gallery extends Phaser.Scene {
                 }
             });
         }
+        //Check collisions of enemy bullets with player
         for(let ring of this.duckBulletRings) {
             for(let bullet of ring.bullets.getChildren()) {
-                if(bullet.collisionCheck(this.player)) {
+                if(bullet.collisionCheck(this.player) && !this.player.wasHitThisFrame) {
                     this.player.hp -= 1;
+                    this.player.wasHitThisFrame = true;
                     this.duckBulletRemoveQueue.push(bullet);        
                     if(this.player.hp == 0) {
                         this.gameOver();
@@ -206,8 +250,9 @@ class Gallery extends Phaser.Scene {
             }
         }
         for(let bullet of this.duckBullets.getChildren()) {
-            if(bullet.collisionCheck(this.player)) {
+            if(bullet.collisionCheck(this.player) && !this.player.wasHitThisFrame) {
                 this.player.hp -= 1;
+                this.player.wasHitThisFrame = true;
                 this.duckBulletRemoveQueue.push(bullet);        
                 if(this.player.hp == 0) {
                     this.gameOver();
@@ -227,8 +272,23 @@ class Gallery extends Phaser.Scene {
             }
         }
     }
+    updateGameOver(delta) {
+        if(Phaser.Input.Keyboard.JustDown(this.keys.space)) {
+            this.scene.start("title");
+        }
+    }
     gameOver() {
-        this.player.hp = 5;
-        this.scene.start("title");
+        this.currentState = states.GAME_OVER;
+        this.ui.gameOver = this.add.bitmapText(canvasW / 2, canvasH / 2, "daydream_3", "Game Over!\n", 18)
+            .setOrigin(0.5)
+            .setBlendMode(Phaser.BlendModes.ADD);
+        this.ui.returnToTile = this.add.bitmapText(canvasW / 2, canvasH / 2 + 20, "daydream_3", "Press Space to go back to the Title Screen", 12)
+            .setOrigin(0.5)
+            .setBlendMode(Phaser.BlendModes.ADD);
+        this.player.stop("swim");
+        this.player.deadSprite.visible = true;
+        this.player.deadSprite.x = this.player.x;
+        this.player.deadSprite.y = this.player.y;
+        this.player.visible = false;
     }
 }

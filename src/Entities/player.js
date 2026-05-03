@@ -12,6 +12,11 @@ class Player extends Phaser.GameObjects.Sprite {
         this.shootOffset = json.shootOffset;
         this.activeColor = yellow;
         this.hp = 5;
+        this.wasHitThisFrame = false;
+        this.deadSprite = this.scene.add.sprite(0, 0, "player", "fishPink_dead.png");
+        this.deadSprite.visible = false;
+        this.deadSprite.setScale(json.scale);
+        this.deadSprite.angle = this.angle;
         //Offsets are optional
         if(this.shootOffset.x === undefined) this.shootOffset.x = 0;
         if(this.shootOffset.y === undefined) this.shootOffset.y = 0;
@@ -34,6 +39,8 @@ class Player extends Phaser.GameObjects.Sprite {
         this.timeSinceShoot = 0;
     }
     update(delta) {
+        if(this.hp <= 0) return;
+        this.wasHitThisFrame = false;
         let scene = this.scene;
         //Use slow speed if holding shift
         if(scene.keys.shift.isDown) {
