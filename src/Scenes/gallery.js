@@ -59,7 +59,7 @@ class Gallery extends Phaser.Scene {
         this.player = new Player(this, this.cache.json.get("playerData"));
         this.waves = [];
         this.bullets = this.add.group({
-            classType: Phaser.Physics.Arcade.Sprite,
+            classType: Phaser.GameObjects.Sprite,
             active: true,
             maxSize: -1
         });
@@ -80,7 +80,12 @@ class Gallery extends Phaser.Scene {
         this.bulletRemoveQueue = [];
         this.duckRemoveQueue = [];
         this.duckBulletRings = [];
-        this.duckBullets = [];
+        this.duckBullets = this.add.group({
+            classType: Phaser.GameObjects.Sprite,
+            active: true,
+            maxSize: -1
+        });
+        this.duckBulletRemoveQueue = [];
     }
     flushRemoveQueues() {
         for(let bullet of this.bulletRemoveQueue) {
@@ -93,6 +98,11 @@ class Gallery extends Phaser.Scene {
             duck.destroy();
         }
         this.duckRemoveQueue = [];
+        for(let bullet of this.duckBulletRemoveQueue) {
+            this.duckBullets.remove(bullet);
+            bullet.destroy();
+        }
+        this.duckBulletRemoveQueue = [];
     }
     update(time, delta) {
         this.player.update(delta);
@@ -101,12 +111,13 @@ class Gallery extends Phaser.Scene {
         for(let bullet of bullets) {
             if(!bullet.update(delta)) {
                 this.bullets.remove(bullet);
+                bullet.destroy();
             }
         }
         for(let bulletRing of this.duckBulletRings) {
             bulletRing.update(delta);
         }
-        for(let bullet of this.duckBullets) {
+        for(let bullet of this.duckBullets.getChildren()) {
             bullet.update(delta);
         }
         switch(this.currentState) {
@@ -170,42 +181,41 @@ class Gallery extends Phaser.Scene {
                 }
             });
         }
-        for(let bullet of this.duckBullets) {
-            if(bullet.collisionCheck(this.player)) {
-                this.gameOver();
-            }
-        }
         for(let ring of this.duckBulletRings) {
             for(let bullet of ring.bullets.getChildren()) {
                 if(bullet.collisionCheck(this.player)) {
-                    this.gameOver();
+                    this.player.lives -= 1;
+                    this.duckBulletRemoveQueue.push(bullet);        
+                    if(this.player.lives == 0) {
+                        this.gameOver();
+                    }
                 }
             }
         }
-        let duckBulletRemoveQueue = [];
-        for(let bullet of this.duckBullets) {
+        for(let bullet of this.duckBullets.getChildren()) {
+            if(bullet.collisionCheck(this.player)) {
+                this.player.lives -= 1;
+                this.duckBulletRemoveQueue.push(bullet);        
+                if(this.player.lives == 0) {
+                    this.gameOver();
+                }
+            }
             if(bullet.x + bullet.width * bullet.scaleX / 2 <= 0) {
-                bullet.destroy();
-                duckBulletRemoveQueue.push(bullet);
+                this.duckBulletRemoveQueue.push(bullet);
             };
             if(bullet.x - bullet.width * bullet.scaleX / 2 >= canvasW) {
-                bullet.destroy();
-                duckBulletRemoveQueue.push(bullet);
+                this.duckBulletRemoveQueue.push(bullet);
             }
             if(bullet.y + bullet.height * bullet.scaleY / 2 <= 0) {
-                bullet.destroy();
-                duckBulletRemoveQueue.push(bullet);
+                this.duckBulletRemoveQueue.push(bullet);
             }
             if(bullet.y - bullet.height * bullet.scaleY / 2 >= canvasH) {
-                bullet.destroy();
-                duckBulletRemoveQueue.push(bullet);
+                this.duckBulletRemoveQueue.push(bullet);
             }
         }
-        this.duckBullets = this.duckBullets.filter((bullet) => {
-            if(!(bullet in duckBulletRemoveQueue)) return bullet;
-        });
     }
     gameOver() {
+        this.player.lives = 3;
         this.scene.start("title");
     }
 }

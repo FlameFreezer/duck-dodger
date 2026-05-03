@@ -75,15 +75,15 @@ class Duck extends Phaser.GameObjects.PathFollower {
                             };
                             dir = vecNormalize(dir);
                             let bullet = new EnemyBullet(self.scene, self.x, self.y, duckSprites[Math.floor(Math.random() * duckSprites.length)], dir);
-                            self.scene.duckBullets.push(bullet);
+                            self.scene.duckBullets.add(bullet);
                             self.bulletPattern.shotCount += 1;
                             //On the third shot, fire two extra shots
                             if(self.bulletPattern.shotCount == 3) {
                                 let angleDelta = Math.PI / 6;
                                 let b2 = new EnemyBullet(self.scene, self.x, self.y, duckSprites[Math.floor(Math.random() * duckSprites.length)], vecRotate(dir, -angleDelta));
                                 let b3 = new EnemyBullet(self.scene, self.x, self.y, duckSprites[Math.floor(Math.random() * duckSprites.length)], vecRotate(dir, angleDelta));
-                                self.scene.duckBullets.push(b2);
-                                self.scene.duckBullets.push(b3);
+                                self.scene.duckBullets.add(b2);
+                                self.scene.duckBullets.add(b3);
                                 self.bulletPattern.shotCount = 0;
                             }
                         },
