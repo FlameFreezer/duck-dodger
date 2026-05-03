@@ -214,7 +214,7 @@ class Duck extends Phaser.GameObjects.PathFollower {
             );
         }
         //Wave ended and we are bread
-        else if(!this.active) {
+        else if(!this.active && !destroyedByScene) {
             this.startY = this.y;
             this.alpha = 0.55;
             this.update = this.breadExit;
