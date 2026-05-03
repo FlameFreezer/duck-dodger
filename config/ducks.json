@@ -19,7 +19,7 @@
     },
     "Mallard" : {
         "sprite" : "duck_brown.png",
-        "spriteOnHit" : "duck_outline_yellow.png",
+        "spriteOnHit" : "duck_outline_brown.png",
         "hp" : 10,
         "points" : 15,
         "scale" : 0.45,
@@ -37,6 +37,35 @@
             "shootDelay" : 500,
             "patternDelay" : 2000,
             "angularVelocities" : [0, -1, -1, 1]
+        }
+    },
+    "Bread" : {
+        "sprite" : "bread",
+        "spriteOnHit" : "breadHit",
+        "type" : "bread",
+        "hp" :  15,
+        "points" : 100,
+        "scale" : 0.10,
+        "path" : [
+            0, 0,
+            74, -66,
+            189, -66,
+            262, 2,
+            196, 78,
+            78, 87,
+            0, 0,
+            -76, -60,
+            -169, -56,
+            -248, 18,
+            -161, 89,
+            -72, 97,
+            0, 0
+        ],
+        "yoyo" : false,
+        "duration" : 4000,
+        "rotateToPath" : true,
+        "bulletPattern" : {
+            "type" : -1
         }
     }
 }

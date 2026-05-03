@@ -59,8 +59,12 @@ class Gallery extends Phaser.Scene {
         this.load.audio("healthUp", "jingles_HIT03.ogg");
         this.load.audio("nextWave", "jingles_HIT04.ogg");
         this.load.audio("gameOver", "jingles_HIT11.ogg");
-        this.load.audio("bread", "jingles_HIT15.ogg");
+        this.load.audio("breadGot", "jingles_HIT15.ogg");
         this.load.audio("playerHit", "footstep_snow_000.ogg");
+        //Load images
+        this.load.setPath("./assets/Images");
+        this.load.image("bread", "bread.png");
+        this.load.image("breadHit", "breadHit.png");
     }
     create() {
         //Shader wants to be half-size for some reason. Hope that isn't platform specific
@@ -137,7 +141,7 @@ class Gallery extends Phaser.Scene {
         this.gameOverSfx = this.sound.add("gameOver", {
             volume: 0.5
         });
-        this.breadSfx = this.sound.add("bread", {
+        this.breadSfx = this.sound.add("breadGot", {
             volume: 0.5
         });
         this.playerHitSfx = this.sound.add("playerHit", {
@@ -265,13 +269,32 @@ class Gallery extends Phaser.Scene {
                     this.duckHitSfx.play();
                     this.bulletRemoveQueue.push(bullet);
                     duck.hp -= 1;
-                    if(duck.onHitFlashTimer == 0) {
-                        duck.onHitFlashTimer += delta;
+                    duck.visible = false;
+                    duck.spriteOnHit.visible = true;
+                    if(duck.type == "bread") {
+                        duck.breadSprite.visible = false;
                     }
+                    duck.onHitFlashTimer = this.time.delayedCall(onHitFlashTime,
+                        (duck) => {
+                            duck.spriteOnHit.visible = false;
+                            if(duck.type == "bread") {
+                                duck.breadSprite.visible = true;
+                            }
+                            else {
+                            duck.visible = true;
+                            }
+                        },
+                        [duck]
+                    );
                     if(duck.hp == 0) {
                         this.addScore(duck.points);
                         this.duckRemoveQueue.push(duck);
-                        this.duckDeathSfx.play();
+                        if(duck.type == "bread") {
+                            this.breadSfx.play();
+                        }
+                        else {
+                            this.duckDeathSfx.play();
+                        }
                     }
                 }
             });

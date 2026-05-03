@@ -3,11 +3,17 @@
         "rubberDuckyPositions" : [
             125, 400,
             385, 350
+        ],
+        "breadPosition" : [
+            300, 150
         ]
     },
     {
         "mallardPositions" : [
             300, 300
+        ],
+        "breadPosition" : [
+            300, 150
         ]
     },
     {

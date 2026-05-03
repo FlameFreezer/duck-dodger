@@ -15,6 +15,9 @@ class Wave {
                 this.spawns.push(new Spawn("Mallard", json.mallardPositions[i * 2], json.mallardPositions[i * 2 + 1]));
             }
         }
+        if(json.breadPosition) {
+            this.spawns.push(new Spawn("Bread", json.breadPosition[0], json.breadPosition[1]));
+        }
         this.activeDucks = scene.add.group({
             classType: Phaser.GameObjects.Sprite,
             active: true,

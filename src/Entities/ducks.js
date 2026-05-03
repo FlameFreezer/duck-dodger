@@ -17,6 +17,19 @@ class Duck extends Phaser.GameObjects.PathFollower {
         this.hp = json.hp;
         this.points = json.points;
         this.setScale(json.scale);
+        this.type = json.type;
+        if(json.rotateToPath !== undefined) {
+            this.rotateToPath = json.rotateToPath;
+        }
+        else this.rotateToPath = false;
+        //Init as bread
+        if(json.sprite == "bread") {
+            this.breadSprite = scene.add.image(x, 0, json.sprite);
+            this.visible = false;
+            this.breadSprite.setScale(json.scale);
+            this.width = this.breadSprite.width;
+            this.height = this.breadSprite.height;
+        }
         if(json.bulletPattern.type == 1) {
             this.bulletPattern = {
                 shootDelay: json.bulletPattern.shootDelay,
@@ -108,8 +121,8 @@ class Duck extends Phaser.GameObjects.PathFollower {
                         [self]
                     );
                 }
-            }
-        };
+            };
+        }
         this.targetY = y;
         this.update = this.enter;
         if(json.yoyo === undefined) {
@@ -122,9 +135,13 @@ class Duck extends Phaser.GameObjects.PathFollower {
         else this.duration = json.duration;
         //Flip ducks around if on the right side of the screen
         if(x >= canvasW / 2) this.scaleX *= -1;
-        this.spriteOnHit = scene.add.sprite(0, 0, "ducks", json.spriteOnHit);
+        if(this.type == "bread") {
+            this.spriteOnHit = scene.add.image(0, 0, json.spriteOnHit);
+        }
+        else {
+            this.spriteOnHit = scene.add.sprite(0, 0, "ducks", json.spriteOnHit);
+        }
         this.spriteOnHit.visible = false;
-        this.onHitFlashTimer = 0;
         this.innerDestroy = this.destroy;
         this.destroy = this.outerDestroy;
         this.alpha = 0.55;
@@ -133,9 +150,20 @@ class Duck extends Phaser.GameObjects.PathFollower {
     }
     outerDestroy(destroyedByScene = false) {
         this.spriteOnHit.destroy(destroyedByScene);
-        this.bulletPattern.shootTimer.remove(destroyedByScene);
-        this.bulletPattern.patternTimer.remove(destroyedByScene);
+        if(this.bulletPattern) {
+            this.bulletPattern.shootTimer.remove(destroyedByScene);
+            this.bulletPattern.patternTimer.remove(destroyedByScene);
+        }
         this.innerDestroy(destroyedByScene);
+        if(this.breadSprite) {
+            this.breadSprite.destroy(destroyedByScene);
+        }
+    }
+    updateBread() {
+        this.breadSprite.x = this.x;
+        this.breadSprite.y = this.y;
+        this.breadSprite.angle = this.angle + 90;
+        this.breadSprite.alpha = this.alpha;
     }
     enter(delta) {
         this.y += entranceSpeed * delta / 1000;
@@ -146,9 +174,12 @@ class Duck extends Phaser.GameObjects.PathFollower {
             this.active = true;
             this.startLoop();
         }
+        if(this.breadSprite) {
+            this.updateBread();
+        }
     }
     loop(delta) {
-        if(this.bulletPattern.recharged) {
+        if(this.bulletPattern && this.bulletPattern.recharged) {
             this.bulletPattern.do(this);
         }
         if(this.x >= canvasW / 2) {
@@ -157,20 +188,15 @@ class Duck extends Phaser.GameObjects.PathFollower {
         else if(this.x < canvasW / 2) {
             if(this.scaleX < 0) this.scaleX *= -1;
         }
-        if(this.onHitFlashTimer != 0) {
-            this.onHitFlashTimer += delta;
-            this.spriteOnHit.visible = true;
-            this.visible = true;
-        }
-        if(this.onHitFlashTimer >= onHitFlashTime) {
-            this.onHitFlashTimer = 0;
-            this.spriteOnHit.visible = false;
-            this.visible = true;
-        }
         this.spriteOnHit.x = this.x;
         this.spriteOnHit.y = this.y;
         this.spriteOnHit.scaleX = this.scaleX;
         this.spriteOnHit.scaleY = this.scaleY;
+        this.spriteOnHit.angle = this.angle;
+        if(this.breadSprite) {
+            this.updateBread();
+            this.spriteOnHit.angle += 90;
+        }
     }
     startLoop() {
         this.startFollow({
@@ -181,7 +207,7 @@ class Duck extends Phaser.GameObjects.PathFollower {
             ease: 'Sine.easeInOut',
             repeat: -1,
             yoyo: this.yoyo,
-            rotateToPath: false
+            rotateToPath: this.rotateToPath
         });
     }
 }
