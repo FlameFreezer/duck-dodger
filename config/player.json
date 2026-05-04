@@ -14,5 +14,6 @@
     "shootDelay" : 200,
     "shootOffset" : {
         "y" : -10
-    }
+    },
+    "hp" : 5
 }

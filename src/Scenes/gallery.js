@@ -164,7 +164,7 @@ class Gallery extends Phaser.Scene {
             volume: 0.5
         });
         this.playerHitSfx = this.sound.add("playerHit", {
-            volume : 0.15
+            volume : 0.5
         });
         this.bgMusic = this.sound.add("bgMusic", {
             volume: 0.25,
@@ -235,7 +235,6 @@ class Gallery extends Phaser.Scene {
                                                 delete self.inputPrompts.space;
 
                                                 self.nextWave();
-
                                             },
                                             [self]
                                         ));
@@ -390,7 +389,7 @@ class Gallery extends Phaser.Scene {
     }
     updateActive(delta) {
         this.currentWave.update(delta);
-        if(this.currentWave.isOver && !this.currentState == states.GAME_OVER) {
+        if(this.currentWave.isOver && this.currentState != states.GAME_OVER) {
             this.doWaveTransition();
             return;
         }
@@ -435,10 +434,10 @@ class Gallery extends Phaser.Scene {
         }
     }
     doPlayerCollision(bullet) {
-        if(bullet.collisionCheck(this.player) && !this.player.wasHitThisFrame) {
+        if(bullet.collisionCheck(this.player) && !this.player.isInvulnerable) {
             this.player.hp -= 1;
             this.playerHitSfx.play();
-            this.player.wasHitThisFrame = true;
+            this.player.isInvulnerable = true;
             this.duckBulletRemoveQueue.push(bullet);        
             this.player.hitSprite.visible = true;
             this.player.visible = false;
@@ -447,6 +446,7 @@ class Gallery extends Phaser.Scene {
                 (player) => {
                     player.visible = true;
                     player.hitSprite.visible = false;
+                    player.isInvulnerable = false;
                 },
                 [this.player]
             );

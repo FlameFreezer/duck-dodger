@@ -1,4 +1,4 @@
-const playerHitFameTime = 200;
+const playerHitFameTime = 400;
 class Player extends Phaser.GameObjects.Sprite {
     constructor(scene, json) {
         super(scene, json.spawnPoint.x, json.spawnPoint.y, "player");
@@ -12,8 +12,8 @@ class Player extends Phaser.GameObjects.Sprite {
         this.timeSinceShoot = this.shootDelay;
         this.shootOffset = json.shootOffset;
         this.activeColor = yellow;
-        this.hp = 1;
-        this.wasHitThisFrame = false;
+        this.hp = json.hp;
+        this.isInvulnerable = false;
 
         this.deadSprite = this.scene.add.sprite(this.x, this.y, "player", "fishPink_dead.png");
         this.deadSprite.visible = false;
@@ -48,7 +48,6 @@ class Player extends Phaser.GameObjects.Sprite {
     }
     update(delta) {
         if(this.hp <= 0) return;
-        this.wasHitThisFrame = false;
         let scene = this.scene;
         //Use slow speed if holding shift
         if(scene.keys.shift.isDown) {
