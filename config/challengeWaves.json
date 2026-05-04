@@ -1,0 +1,34 @@
+[
+    {
+        "mallardPositions" : [
+            250, 450,
+            450, 250
+        ],
+        "breadPosition" : [
+            300, 150
+        ]
+    },
+    {
+        "rubberDuckyPositions" : [
+            200, 300,
+            400, 250
+        ],
+        "mallardPositions" : [
+            300, 350
+        ],
+        "breadPosition" : [
+            300, 150
+        ]
+    },
+    {
+        "rubberDuckyPositions" : [
+            250, 550,
+            350, 550,
+            450, 550,
+            300, 450
+        ],
+        "breadPosition" : [
+            300, 150
+        ]
+    }
+]

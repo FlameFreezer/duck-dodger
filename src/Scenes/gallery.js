@@ -1,6 +1,6 @@
 const canvasW = 600;
 const canvasH = 800;
-const healthUpInterval = 500;
+const healthUpInterval = 700;
 const yellow = {
     r: 255, g: 213, b: 0
 };
@@ -45,6 +45,7 @@ class Gallery extends Phaser.Scene {
         this.load.json("playerData", "player.json");
         this.load.json("duckData", "ducks.json");
         this.load.json("waveData", "waves.json");
+        this.load.json("challengeWaveData", "challengeWaves.json");
         //Load shader
         this.load.setPath("./src/Shaders/");
         this.load.glsl("background", "backgroundEffect.glsl");
@@ -62,6 +63,7 @@ class Gallery extends Phaser.Scene {
         this.load.audio("gameOver", "jingles_HIT11.ogg");
         this.load.audio("breadGot", "jingles_HIT15.ogg");
         this.load.audio("playerHit", "footstep_snow_000.ogg");
+        this.load.audio("bgMusic", "Dagored - Lifestyle Groove (freetouse.com).mp3");
         //Load images
         this.load.setPath("./assets/Images");
         this.load.image("bread", "bread.png");
@@ -107,6 +109,7 @@ class Gallery extends Phaser.Scene {
         this.ui.waveComplete.visible = false;
         this.ui.waveNumber.visible = false;
         this.waves = [];
+        this.challengeWaves = [];
         this.bullets = this.add.group({
             classType: Phaser.GameObjects.Sprite,
             active: true,
@@ -115,6 +118,10 @@ class Gallery extends Phaser.Scene {
         for(let waveData of this.cache.json.get("waveData")) {
             waveData.duckData = this.cache.json.get("duckData");
             this.waves.push(new Wave(this, waveData));
+        }
+        for(let challengeWaveData of this.cache.json.get("challengeWaveData")) {
+            challengeWaveData.duckData = this.cache.json.get("duckData");
+            this.challengeWaves.push(new Wave(this, challengeWaveData));
         }
         this.keys.a = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
         this.keys.d = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
@@ -159,6 +166,11 @@ class Gallery extends Phaser.Scene {
         this.playerHitSfx = this.sound.add("playerHit", {
             volume : 0.15
         });
+        this.bgMusic = this.sound.add("bgMusic", {
+            volume: 0.25,
+            loop: true
+        });
+        this.bgMusic.play();
         this.startTutorial();
     }
     startTutorial() {
@@ -260,12 +272,10 @@ class Gallery extends Phaser.Scene {
         if(nextWave !== undefined) {
             this.currentWave = nextWave;
         }
-        //Otherwise, restart the last wave
-        else if(this.currentWave !== undefined) {
-            this.currentWave.isOver = false;
-        }
+        //Otherwise, pick a random wave from the challenge waves
         else {
-            throw "Error: no waves were defined on disk";
+            this.currentWave = this.challengeWaves[Math.floor(Math.random() * this.challengeWaves.length)];
+            this.currentWave.isOver = false;
         }
         this.ui.waveComplete.visible = false;
         this.waveNumber += 1;
@@ -466,6 +476,6 @@ class Gallery extends Phaser.Scene {
         this.keys.enter.on("down", (event) => {
             this.scene.start("title");
         });
-
+        this.bgMusic.stop();
     }
 }

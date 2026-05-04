@@ -1,6 +1,11 @@
 [
     {
         "rubberDuckyPositions" : [
+            300, 250
+        ]
+    },
+    {
+        "rubberDuckyPositions" : [
             125, 400,
             385, 350
         ],
@@ -11,16 +16,23 @@
     {
         "mallardPositions" : [
             300, 300
+        ]
+    },
+    {
+        "rubberDuckyPositions" : [
+            125, 400,
+            385, 350
         ],
         "breadPosition" : [
             300, 150
         ]
     },
     {
-        "rubberDuckyPositions" : [
+        "rubberDuckyPositions": [
             150, 150,
-            300, 450,
-            340, 250
+            150, 450,
+            450, 150,
+            450, 450
         ]
     },
     {
@@ -29,6 +41,27 @@
         ],
         "mallardPositions" : [
             425, 250
+        ],
+        "breadPosition" : [
+            300, 150
+        ]
+    },
+    {
+        "mallardPositions" : [
+            250, 450,
+            450, 250
+        ]
+    },
+    {
+        "rubberDuckyPositions" : [
+            200, 300,
+            400, 250
+        ],
+        "mallardPositions" : [
+            300, 350
+        ],
+        "breadPosition" : [
+            300, 150
         ]
     }
 ]
