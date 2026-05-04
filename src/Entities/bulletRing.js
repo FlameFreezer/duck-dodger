@@ -1,4 +1,4 @@
-const maxRingSize = 15;
+const maxRingSize = 10;
 const duckSprites = [
     "duck_yellow.png", "duck_brown.png", "duck_back.png"
 ];

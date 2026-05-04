@@ -25,9 +25,10 @@ void main() {
     vec4 fragCoord = vec4(gl_FragCoord.x * ratio.x, gl_FragCoord.y * ratio.y, gl_FragCoord.zw);
 
     //at t=0, peak at middle of screen, valleys at end
-    float xFactor = PI * fragCoord.x / resolution.x;
-    float maxAmplitude = pow2(sin(0.75 * time)) * (MAX_AMPLITUDE - MIN_AMPLITUDE) + MIN_AMPLITUDE;
-    float minAmplitude = pow2(cos(0.75 * time)) * (MAX_AMPLITUDE - MIN_AMPLITUDE) + MIN_AMPLITUDE;
+    float sign = 2.0 * sin(0.5 * time);
+    float xFactor = PI * fragCoord.x / resolution.x + sign;
+    float maxAmplitude = pow4(sin(0.75 * time)) * (MAX_AMPLITUDE - MIN_AMPLITUDE) + MIN_AMPLITUDE;
+    float minAmplitude = pow4(cos(0.75 * time)) * (MAX_AMPLITUDE - MIN_AMPLITUDE) + MIN_AMPLITUDE;
     float amplitudeX = pow2(sin(xFactor)) * (maxAmplitude - minAmplitude) + minAmplitude;
 
     float slope = -0.75 / amplitudeX;

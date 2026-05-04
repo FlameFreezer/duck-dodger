@@ -12,7 +12,7 @@ class Player extends Phaser.GameObjects.Sprite {
         this.timeSinceShoot = this.shootDelay;
         this.shootOffset = json.shootOffset;
         this.activeColor = yellow;
-        this.hp = 5;
+        this.hp = 1;
         this.wasHitThisFrame = false;
 
         this.deadSprite = this.scene.add.sprite(this.x, this.y, "player", "fishPink_dead.png");

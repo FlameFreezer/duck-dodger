@@ -370,7 +370,7 @@ class Gallery extends Phaser.Scene {
         this.currentState = states.WAVE_TRANSITION;
         this.ui.waveComplete.visible = true;
         this.addScore(100);
-        this.time.addEvent({
+        this.waveTransitionTimer = this.time.addEvent({
             delay: waveTransitionTime / 2,
             callback: (self) => {
                 self.ui.waveComplete.visible = false;
@@ -390,7 +390,7 @@ class Gallery extends Phaser.Scene {
     }
     updateActive(delta) {
         this.currentWave.update(delta);
-        if(this.currentWave.isOver) {
+        if(this.currentWave.isOver && !this.currentState == states.GAME_OVER) {
             this.doWaveTransition();
             return;
         }
@@ -459,6 +459,7 @@ class Gallery extends Phaser.Scene {
     }
     gameOver() {
         this.player.hitTimer.remove();
+        if(this.waveTransitionTimer) this.waveTransitionTimer.remove();
         this.gameOverSfx.play();
         this.currentState = states.GAME_OVER;
         this.ui.gameOver = this.add.bitmapText(canvasW / 2, canvasH / 2, "daydream_3", "Game Over!\n", 18)
