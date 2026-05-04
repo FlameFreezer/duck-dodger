@@ -38,6 +38,7 @@ class Gallery extends Phaser.Scene {
         this.load.atlasXML("player", "enemies.png", "enemies.xml");
         //Load in duck sprites
         this.load.atlasXML("ducks", "spritesheet_objects.png", "spritesheet_objects.xml");
+        //Load heart
         this.load.atlasXML("hearts", "spritesheet-tiles-default.png", "spritesheet-tiles-default.xml");
         //Load player data
         this.load.setPath("./config");
@@ -65,6 +66,10 @@ class Gallery extends Phaser.Scene {
         this.load.setPath("./assets/Images");
         this.load.image("bread", "bread.png");
         this.load.image("breadHit", "breadHit.png");
+        this.load.image("a", "keyboard_a.png");
+        this.load.image("d", "keyboard_d.png");
+        this.load.image("w", "keyboard_w.png");
+        this.load.image("space", "keyboard_space.png");
     }
     create() {
         //Shader wants to be half-size for some reason. Hope that isn't platform specific
@@ -118,7 +123,7 @@ class Gallery extends Phaser.Scene {
         this.keys.shift = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
         this.keys.enter = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
 
-        this.currentState = states.WAVE_TRANSITION;
+        this.currentState = states.GAME_INITIAL;
         this.transitionTime = 0;
         this.entranceTime = 0;
         this.waveNumber = 0;
@@ -154,7 +159,66 @@ class Gallery extends Phaser.Scene {
         this.playerHitSfx = this.sound.add("playerHit", {
             volume : 0.15
         });
-        this.nextWave();
+        this.startTutorial();
+    }
+    startTutorial() {
+        this.inputPrompts = {};
+        this.inputPrompts.d = {};
+        this.inputPrompts.d.image = this.add.image(this.player.x + 35, this.player.y, "d").setScale(0.5);
+        this.inputPrompts.d.offsetX = 35;
+        this.inputPrompts.d.offsetY = 0;
+        this.inputPrompts.a = {};
+        this.inputPrompts.a.image = this.add.sprite(this.player.x - 35, this.player.y, "a").setScale(0.5);
+        this.inputPrompts.a.offsetX = -35;
+        this.inputPrompts.a.offsetY = 0;
+        this.time.delayedCall(
+            3000,
+            (self) => {
+                self.inputPrompts.a.image.destroy();
+                self.inputPrompts.d.image.destroy();
+                delete self.inputPrompts.a;
+                delete self.inputPrompts.d;
+
+                self.inputPrompts.w = {};
+                self.inputPrompts.w.image = this.add.image(this.player.x, this.player.y - 35, "w").setScale(0.5);
+                self.inputPrompts.w.offsetX = 0;
+                self.inputPrompts.w.offsetY = -35;
+
+                self.time.delayedCall(
+                    500,
+                    (self) => {
+                        let bullet = new EnemyBullet(self, 0, this.player.y, "duck_brown.png", {x: 1, y: 0});
+                        self.duckBullets.add(bullet);
+                        self.time.delayedCall(
+                            2000,
+                            (self) => {
+                                let bullet = new EnemyBullet(self, 0, this.player.y, "duck_yellow.png", {x: 1, y: 0});
+                                self.duckBullets.add(bullet);
+                                self.time.delayedCall(
+                                    2000,
+                                    (self) => {
+                                        self.inputPrompts.w.image.destroy();
+                                        delete self.inputPrompts.w;
+                                        self.nextWave();
+                                    },
+                                    [self]
+                                );
+                            },
+                            [self]
+                        );
+                    },
+                    [self]
+                );
+            },
+            [this]
+        );
+    }
+    updateTutorial(delta) {
+        for(let image in this.inputPrompts) {
+            let img = this.inputPrompts[image];
+            img.image.x = this.player.x + img.offsetX;
+            img.image.y = this.player.y + img.offsetY;
+        }
     }
     nextWave() {
         this.time.addEvent({
@@ -206,7 +270,6 @@ class Gallery extends Phaser.Scene {
         this.ui.score.setText(`Score ${this.score}`);
         this.ui.hp.setText(`x${this.player.hp}`);
         let bullets = this.bullets.getChildren();
-        let ducks = this.currentWave.activeDucks.getChildren();
         for(let bullet of bullets) {
             if(!bullet.update(delta)) {
                 this.bullets.remove(bullet);
@@ -230,7 +293,32 @@ class Gallery extends Phaser.Scene {
             case states.WAVE_TRANSITION:
                 this.updateTransition();
                 break;
+            case states.GAME_INITIAL:
+                this.updateTutorial(delta);
+                break;
         }
+        //Check collisions of enemy bullets with player
+        for(let ring of this.duckBulletRings) {
+            for(let bullet of ring.bullets.getChildren()) {
+                this.doPlayerCollision(bullet);
+            }
+        }
+        for(let bullet of this.duckBullets.getChildren()) {
+            this.doPlayerCollision(bullet);
+            if(bullet.x + bullet.width * bullet.scaleX / 2 <= 0) {
+                this.duckBulletRemoveQueue.push(bullet);
+            };
+            if(bullet.x - bullet.width * bullet.scaleX / 2 >= canvasW) {
+                this.duckBulletRemoveQueue.push(bullet);
+            }
+            if(bullet.y + bullet.height * bullet.scaleY / 2 <= 0) {
+                this.duckBulletRemoveQueue.push(bullet);
+            }
+            if(bullet.y - bullet.height * bullet.scaleY / 2 >= canvasH) {
+                this.duckBulletRemoveQueue.push(bullet);
+            }
+        }
+
         this.flushRemoveQueues();
     }
     addScore(score) {
@@ -307,27 +395,6 @@ class Gallery extends Phaser.Scene {
                     }
                 }
             });
-        }
-        //Check collisions of enemy bullets with player
-        for(let ring of this.duckBulletRings) {
-            for(let bullet of ring.bullets.getChildren()) {
-                this.doPlayerCollision(bullet);
-            }
-        }
-        for(let bullet of this.duckBullets.getChildren()) {
-            this.doPlayerCollision(bullet);
-            if(bullet.x + bullet.width * bullet.scaleX / 2 <= 0) {
-                this.duckBulletRemoveQueue.push(bullet);
-            };
-            if(bullet.x - bullet.width * bullet.scaleX / 2 >= canvasW) {
-                this.duckBulletRemoveQueue.push(bullet);
-            }
-            if(bullet.y + bullet.height * bullet.scaleY / 2 <= 0) {
-                this.duckBulletRemoveQueue.push(bullet);
-            }
-            if(bullet.y - bullet.height * bullet.scaleY / 2 >= canvasH) {
-                this.duckBulletRemoveQueue.push(bullet);
-            }
         }
     }
     doPlayerCollision(bullet) {
