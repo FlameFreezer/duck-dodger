@@ -1,6 +1,8 @@
 const canvasW = 600;
 const canvasH = 800;
-const healthUpInterval = 700;
+const healthUpInterval = 600;
+const heartGrowMaximum = 1.2;
+const heartGrowTime = 200;
 const yellow = {
     r: 255, g: 213, b: 0
 };
@@ -87,9 +89,12 @@ class Gallery extends Phaser.Scene {
                 y: canvasH
             }
         };
+        this.bgShader.initUniforms();
+
         this.heart = this.add.sprite(canvasW - canvasW / 8 - 32, canvasH / 16 + 38, "hearts", "hud_heart");
         this.heart.setScale(0.85);
-        this.bgShader.initUniforms();
+        this.heart.maxSize = this.heart.scaleX * heartGrowMaximum;
+
         this.player = new Player(this, this.cache.json.get("playerData"));
         this.score = 0;
         this.ui = {};
@@ -360,6 +365,7 @@ class Gallery extends Phaser.Scene {
                 this.duckBulletRemoveQueue.push(bullet);
             }
         }
+        this.updateHeart(delta);
 
         this.flushRemoveQueues();
     }
@@ -369,6 +375,32 @@ class Gallery extends Phaser.Scene {
             this.player.hp += 1;
             this.lastHpMilestone = this.score - (this.score - this.lastHpMilestone - healthUpInterval);
             this.healthUpSfx.play();
+            this.heart.doGrow = true;
+            this.time.delayedCall(
+                heartGrowTime,
+                (self) => {
+                    self.heart.doShrink = true;
+                    self.heart.doGrow = false;
+                    self.time.delayedCall(
+                        heartGrowTime,
+                        (self) => {
+                            self.heart.doShrink = false;
+                        },
+                        [self]
+                    );
+                },
+                [this]
+            );
+        }
+    }
+    updateHeart(delta) {
+        if(this.heart.doGrow) {
+            this.heart.scaleX += (this.heart.maxSize - 0.85) * delta / heartGrowTime;
+            this.heart.scaleY += (this.heart.maxSize - 0.85) * delta / heartGrowTime;
+        } 
+        else if(this.heart.doShrink) {
+            this.heart.scaleX -= (this.heart.maxSize - 0.85) * delta / heartGrowTime;
+            this.heart.scaleY -= (this.heart.maxSize - 0.85) * delta / heartGrowTime;
         }
     }
     doWaveTransition() {
