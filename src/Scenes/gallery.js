@@ -374,7 +374,9 @@ class Gallery extends Phaser.Scene {
         if(this.score - this.lastHpMilestone >= healthUpInterval) {
             this.player.hp += 1;
             this.lastHpMilestone = this.score - (this.score - this.lastHpMilestone - healthUpInterval);
-            this.healthUpSfx.play();
+            if(!this.breadSfx.isPlaying) {
+                this.healthUpSfx.play();
+            }
             this.heart.doGrow = true;
             this.time.delayedCall(
                 heartGrowTime,
