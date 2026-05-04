@@ -162,6 +162,15 @@ class Gallery extends Phaser.Scene {
         this.startTutorial();
     }
     startTutorial() {
+        this.keys.enter.on("down", (event) => {
+            for(let timer of this.tutorialTimers) {
+                timer.remove();
+            }
+            for(let input in this.inputPrompts) {
+                this.inputPrompts[input].image.destroy();
+            }
+            this.nextWave();
+        });
         this.inputPrompts = {};
         this.inputPrompts.d = {};
         this.inputPrompts.d.image = this.add.image(this.player.x + 35, this.player.y, "d").setScale(0.5);
@@ -171,7 +180,8 @@ class Gallery extends Phaser.Scene {
         this.inputPrompts.a.image = this.add.sprite(this.player.x - 35, this.player.y, "a").setScale(0.5);
         this.inputPrompts.a.offsetX = -35;
         this.inputPrompts.a.offsetY = 0;
-        this.time.delayedCall(
+        this.tutorialTimers = [];
+        this.tutorialTimers.push(this.time.delayedCall(
             3000,
             (self) => {
                 self.inputPrompts.a.image.destroy();
@@ -184,17 +194,17 @@ class Gallery extends Phaser.Scene {
                 self.inputPrompts.w.offsetX = 0;
                 self.inputPrompts.w.offsetY = -35;
 
-                self.time.delayedCall(
+                self.tutorialTimers.push(self.time.delayedCall(
                     500,
                     (self) => {
                         let bullet = new EnemyBullet(self, 0, this.player.y, "duck_brown.png", {x: 1, y: 0});
                         self.duckBullets.add(bullet);
-                        self.time.delayedCall(
+                        self.tutorialTimers.push(self.time.delayedCall(
                             2000,
                             (self) => {
                                 let bullet = new EnemyBullet(self, 0, this.player.y, "duck_yellow.png", {x: 1, y: 0});
                                 self.duckBullets.add(bullet);
-                                self.time.delayedCall(
+                                self.tutorialTimers.push(self.time.delayedCall(
                                     2000,
                                     (self) => {
                                         self.inputPrompts.w.image.destroy();
@@ -202,16 +212,16 @@ class Gallery extends Phaser.Scene {
                                         self.nextWave();
                                     },
                                     [self]
-                                );
+                                ));
                             },
                             [self]
-                        );
+                        ));
                     },
                     [self]
-                );
+                ));
             },
             [this]
-        );
+        ));
     }
     updateTutorial(delta) {
         for(let image in this.inputPrompts) {

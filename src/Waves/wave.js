@@ -1,4 +1,5 @@
 const waveTransitionTime = 4000;
+const breadLagTime = 5000;
 class Wave {
     constructor(scene, json) {
         this.scene = scene;
@@ -42,7 +43,7 @@ class Wave {
             if(bread.waveEndTimer) return;
             //End wave if player takes too long to kill bread
             bread.waveEndTimer = this.scene.time.delayedCall(
-                4000,
+                breadLagTime,
                 (scene, bread) => {
                     if(bread.hp > 0) {
                         scene.duckRemoveQueue.push(bread);
