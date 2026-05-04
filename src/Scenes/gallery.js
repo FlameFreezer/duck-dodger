@@ -105,9 +105,13 @@ class Gallery extends Phaser.Scene {
         this.ui.hp = this.add.bitmapText(canvasW - canvasW / 8 + 12, canvasH / 16 + 40, "daydream_3", "x0", 18)
             .setOrigin(0.5)
             .setBlendMode(Phaser.BlendModes.ADD);
+        this.ui.colorTutorial = this.add.bitmapText(canvasW / 2, canvasH / 2, "daydream_3", "Change color to phase through projectiles", 18)
+            .setOrigin(0.5)
+            .setBlendMode(Phaser.BlendModes.ADD);
         
         this.ui.waveComplete.visible = false;
         this.ui.waveNumber.visible = false;
+        this.ui.colorTutorial.visible = false;
         this.waves = [];
         this.challengeWaves = [];
         this.bullets = this.add.group({
@@ -181,6 +185,7 @@ class Gallery extends Phaser.Scene {
             for(let input in this.inputPrompts) {
                 this.inputPrompts[input].image.destroy();
             }
+            this.ui.colorTutorial.visible = false;
             this.nextWave();
         });
         this.inputPrompts = {};
@@ -205,6 +210,7 @@ class Gallery extends Phaser.Scene {
                 self.inputPrompts.w.image = this.add.image(this.player.x, this.player.y - 35, "w").setScale(0.5);
                 self.inputPrompts.w.offsetX = 0;
                 self.inputPrompts.w.offsetY = -35;
+                self.ui.colorTutorial.visible = true;
 
                 self.tutorialTimers.push(self.time.delayedCall(
                     500,
@@ -214,12 +220,12 @@ class Gallery extends Phaser.Scene {
                         self.tutorialTimers.push(self.time.delayedCall(
                             2000,
                             (self) => {
-
                                 let bullet = new EnemyBullet(self, 0, this.player.y, "duck_yellow.png", {x: 1, y: 0});
                                 self.duckBullets.add(bullet);
                                 self.tutorialTimers.push(self.time.delayedCall(
                                     2000,
                                     (self) => {
+                                        self.ui.colorTutorial.visible = false;
                                         self.inputPrompts.w.image.destroy();
                                         delete self.inputPrompts.w;
 

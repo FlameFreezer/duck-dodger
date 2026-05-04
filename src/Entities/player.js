@@ -3,9 +3,7 @@ class Player extends Phaser.GameObjects.Sprite {
     constructor(scene, json) {
         super(scene, json.spawnPoint.x, json.spawnPoint.y, "player");
         this.scene = scene;
-        this.fastSpeed = json.fastSpeed;
-        this.slowSpeed = json.slowSpeed;
-        this.speed = this.fastSpeed;
+        this.speed = json.speed;
         this.setScale(json.scale);
         this.angle = json.angle;
         this.shootDelay = json.shootDelay;
@@ -49,13 +47,6 @@ class Player extends Phaser.GameObjects.Sprite {
     update(delta) {
         if(this.hp <= 0) return;
         let scene = this.scene;
-        //Use slow speed if holding shift
-        if(scene.keys.shift.isDown) {
-            this.speed = this.slowSpeed; 
-        }
-        else {
-            this.speed = this.fastSpeed;
-        }
 
         //Move left
         if(scene.keys.a.isDown) {
