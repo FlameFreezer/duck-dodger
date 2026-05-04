@@ -202,6 +202,7 @@ class Gallery extends Phaser.Scene {
                         self.tutorialTimers.push(self.time.delayedCall(
                             2000,
                             (self) => {
+
                                 let bullet = new EnemyBullet(self, 0, this.player.y, "duck_yellow.png", {x: 1, y: 0});
                                 self.duckBullets.add(bullet);
                                 self.tutorialTimers.push(self.time.delayedCall(
@@ -209,7 +210,23 @@ class Gallery extends Phaser.Scene {
                                     (self) => {
                                         self.inputPrompts.w.image.destroy();
                                         delete self.inputPrompts.w;
-                                        self.nextWave();
+
+                                        self.inputPrompts.space = {};
+                                        self.inputPrompts.space.image = this.add.image(this.player.x, this.player.y + 35, "space").setScale(0.75);
+                                        self.inputPrompts.space.offsetX = 0;
+                                        self.inputPrompts.space.offsetY = 35;
+
+                                        self.tutorialTimers.push(self.time.delayedCall(
+                                            1500,
+                                            (self) => {
+                                                self.inputPrompts.space.image.destroy();
+                                                delete self.inputPrompts.space;
+
+                                                self.nextWave();
+
+                                            },
+                                            [self]
+                                        ));
                                     },
                                     [self]
                                 ));
