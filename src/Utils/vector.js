@@ -33,3 +33,11 @@ function vecSubtract(v1, v2) {
     }
     return result;
 }
+
+function vecLerp(v1, v2, t) {
+    let result = {};
+    for(let component in v1) {
+        result[component] = v1[component] * (1 - t) + v2[component] * t;
+    }
+    return result;
+}

@@ -1,4 +1,5 @@
 const playerHitFameTime = 400;
+const colorChangeTime = 100;
 class Player extends Phaser.GameObjects.Sprite {
     constructor(scene, json) {
         super(scene, json.spawnPoint.x, json.spawnPoint.y, "player");
@@ -10,8 +11,11 @@ class Player extends Phaser.GameObjects.Sprite {
         this.timeSinceShoot = this.shootDelay;
         this.shootOffset = json.shootOffset;
         this.activeColor = yellow;
+        this.displayColor = yellow;
         this.hp = json.hp;
         this.isInvulnerable = false;
+        this.colorChangeTime = 0;
+        this.didChangeColor = false;
 
         this.deadSprite = this.scene.add.sprite(this.x, this.y, "player", "fishPink_dead.png");
         this.deadSprite.visible = false;
@@ -48,6 +52,25 @@ class Player extends Phaser.GameObjects.Sprite {
         if(this.hp <= 0) return;
         let scene = this.scene;
 
+        //Transition color smoothly
+        if(this.didChangeColor) {
+            if(this.activeColor == green) {
+                this.colorChangeTime += delta;
+                if(this.colorChangeTime > colorChangeTime) {
+                    this.colorChangeTime = colorChangeTime;
+                    this.didChangeColor = false;
+                }
+            }
+            else if(this.activeColor == yellow) {
+                this.colorChangeTime -= delta;
+                if(this.colorChangeTime < 0) {
+                    this.colorChangeTime = 0;
+                    this.didChangeColor = false;
+                }
+            }
+            this.displayColor = vecLerp(yellow, green, this.colorChangeTime / colorChangeTime);
+        }
+
         //Move left
         if(scene.keys.a.isDown) {
             this.x -= this.speed * (delta / 1000);
@@ -62,8 +85,9 @@ class Player extends Phaser.GameObjects.Sprite {
                 this.activeColor = green;
             }
             else this.activeColor = yellow;
+            this.didChangeColor = true;
         }
-        scene.bgShader.setUniform("baseColor.value", colorToVector(this.activeColor));
+        scene.bgShader.setUniform("baseColor.value", colorToVector(this.displayColor));
         //Accumulate shoot delay
         this.timeSinceShoot += delta;
         //Shoot
