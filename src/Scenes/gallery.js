@@ -556,6 +556,7 @@ class Gallery extends Phaser.Scene {
         this.ui.returnToTile = this.add.bitmapText(canvasW / 2, canvasH / 2 + 20, "daydream_3", "Press Enter to go back to the Title Screen", 12)
             .setOrigin(0.5)
             .setBlendMode(Phaser.BlendModes.ADD);
+        this.ui.waveComplete.visible = false;
         this.player.stop("swim");
         this.player.deadSprite.visible = true;
         this.player.deadSprite.x = this.player.x;

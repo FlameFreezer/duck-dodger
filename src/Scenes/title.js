@@ -19,6 +19,10 @@ class Title extends Phaser.Scene {
             .setOrigin(0.5)
             .setBlendMode(Phaser.BlendModes.ADD);
 
+        this.titleTxt = this.add.bitmapText(canvasW / 2, canvasH / 8, "daydream_3", "DUCK DODGER", 64)
+            .setOrigin(0.5)
+            .setBlendMode(Phaser.BlendModes.ADD);
+
         //Text flashing: outer event shows text, inner event hides text
         this.textFlashTimer = this.time.addEvent({
             delay: 1500,
