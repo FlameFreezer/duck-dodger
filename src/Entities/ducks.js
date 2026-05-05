@@ -29,7 +29,7 @@ class Duck extends Phaser.GameObjects.PathFollower {
         else this.rotateToPath = false;
         //Init as bread
         if(json.type == "bread") {
-            this.breadSprite = scene.add.image(x, 0, json.sprite);
+            this.breadSprite = scene.add.image(this.x, this.y, json.sprite);
             this.visible = false;
             this.breadSprite.setScale(json.scale);
             this.width = this.breadSprite.width;
