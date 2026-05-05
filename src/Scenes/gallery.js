@@ -3,6 +3,7 @@ const canvasH = 800;
 const healthUpInterval = 500;
 const heartGrowMaximum = 1.2;
 const heartGrowTime = 200;
+const bubbleRate = 1500;
 const yellow = {
     r: 255, g: 213, b: 0
 };
@@ -74,6 +75,7 @@ class Gallery extends Phaser.Scene {
         this.load.image("d", "keyboard_d.png");
         this.load.image("w", "keyboard_w.png");
         this.load.image("space", "keyboard_space.png");
+        this.load.image("bubble", "bubble.png");
     }
     create() {
         //Shader wants to be half-size for some reason. Hope that isn't platform specific
@@ -156,6 +158,32 @@ class Gallery extends Phaser.Scene {
             maxSize: -1
         });
         this.duckBulletRemoveQueue = [];
+        this.bubbles = this.add.group({
+            classType: Phaser.GameObjects.Image,
+            active: true,
+            maxSize: -1
+        });
+        this.bubbleRemoveQueue = [];
+        const bubbleSizes = [0.35, 0.45, 0.75];
+        this.bubbleTimer = this.time.addEvent({
+            delay: bubbleRate,
+            loop: true,
+            callback: (self) => {
+                let bubble = self.add.image(Math.random() * canvasW, -50, "bubble");
+                bubble.setScale(bubbleSizes[Math.floor(Math.random() * bubbleSizes.length)]);
+                bubble.alpha = 0.55;
+                self.children.sendToBack(bubble);
+                self.bubbles.add(bubble);
+            },
+            args: [this]
+        });
+        for(let i = 0; i < canvasH / 200; i++) {
+            let bubble = this.add.image(Math.random() * canvasW, i * 200, "bubble");
+            bubble.setScale(bubbleSizes[Math.floor(Math.random() * bubbleSizes.length)]);
+            bubble.alpha = 0.55;
+            this.children.sendToBack(bubble);
+            this.bubbles.add(bubble);
+        }
 
         this.duckHitSfx = this.sound.add("duckHit", {
             volume: 0.5
@@ -314,6 +342,11 @@ class Gallery extends Phaser.Scene {
             bullet.destroy();
         }
         this.duckBulletRemoveQueue = [];
+
+        for(let bubble of this.bubbleRemoveQueue) {
+            this.bubbles.remove(bubble);
+            bubble.destroy();
+        }
     }
     update(time, delta) {
         this.player.update(delta);
@@ -325,6 +358,15 @@ class Gallery extends Phaser.Scene {
             if(!bullet.update(delta)) {
                 this.bullets.remove(bullet);
                 bullet.destroy();
+            }
+        }
+        if(this.currentState != states.GAME_OVER) {
+            let bubbles = this.bubbles.getChildren();
+            for(let bubble of bubbles) {
+                bubble.y += 100 * delta / 1000;
+                if(bubble.y - bubble.height * bubble.scaleY / 2 >= canvasH) {
+                    this.bubbleRemoveQueue.push(bubble);
+                }
             }
         }
         for(let bulletRing of this.duckBulletRings) {
