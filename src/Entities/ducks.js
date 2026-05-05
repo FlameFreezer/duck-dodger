@@ -41,7 +41,6 @@ class Duck extends Phaser.GameObjects.PathFollower {
             this.bulletPattern = {
                 shootDelay: json.bulletPattern.shootDelay,
                 patternDelay: json.bulletPattern.patternDelay,
-                spawnNumber: 0,
                 recharged: true,
                 shootTimer: undefined,
                 patternTimer: undefined,
@@ -51,12 +50,11 @@ class Duck extends Phaser.GameObjects.PathFollower {
                     //Spawn bullet rings in sequence
                     self.bulletPattern.shootTimer = self.scene.time.addEvent({
                         delay: self.bulletPattern.shootDelay,
-                        repeat: self.bulletPattern.angularVelocities.length - 1,
+                        repeat: 3,
                         callback: (self) => {
-                            let angularVelocity = self.bulletPattern.angularVelocities[self.bulletPattern.spawnNumber];
+                            let angularVelocity = Math.floor(Math.random() * 3) - 1;
                             let bulletRing = new BulletRing(self.scene, self.x, self.y, angularVelocity);
                             self.scene.duckBulletRings.push(bulletRing);
-                            self.bulletPattern.spawnNumber = (self.bulletPattern.spawnNumber + 1) % self.bulletPattern.angularVelocities.length;
                             //Destroy bullet ring after some time
                             self.scene.time.addEvent({
                                 delay: 5000,
@@ -68,9 +66,10 @@ class Duck extends Phaser.GameObjects.PathFollower {
                         },
                         args: [self]
                     });
+                    let randomReload = Math.floor(Math.random() * 100) - 50; 
                     //Repeat sequence
                     self.bulletPattern.patternTimer = self.scene.time.delayedCall(
-                        self.bulletPattern.shootDelay * self.bulletPattern.angularVelocities.length + self.bulletPattern.patternDelay, 
+                        self.bulletPattern.shootDelay * 4 + self.bulletPattern.patternDelay + randomReload, 
                         (self) => {
                             //Do pattern again
                             self.bulletPattern.recharged = true;
@@ -119,9 +118,10 @@ class Duck extends Phaser.GameObjects.PathFollower {
                         },
                         args: [self]
                     });
+                    let randomReload = Math.floor(Math.random() * 100) - 50; 
                     //Restart pattern after some time
                     self.bulletPattern.patternTimer = self.scene.time.delayedCall(
-                        self.bulletPattern.shootDelay * 3 + self.bulletPattern.patternDelay,
+                        self.bulletPattern.shootDelay * 3 + self.bulletPattern.patternDelay + randomReload,
                         (self) => {
                             self.bulletPattern.recharged = true;
                         },

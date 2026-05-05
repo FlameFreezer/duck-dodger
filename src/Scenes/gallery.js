@@ -1,6 +1,6 @@
 const canvasW = 600;
 const canvasH = 800;
-const healthUpInterval = 600;
+const healthUpInterval = 500;
 const heartGrowMaximum = 1.2;
 const heartGrowTime = 200;
 const yellow = {
@@ -218,7 +218,7 @@ class Gallery extends Phaser.Scene {
                 self.ui.colorTutorial.visible = true;
 
                 self.tutorialTimers.push(self.time.delayedCall(
-                    500,
+                    750,
                     (self) => {
                         let bullet = new EnemyBullet(self, 0, this.player.y, "duck_brown.png", {x: 1, y: 0});
                         self.duckBullets.add(bullet);
@@ -463,7 +463,9 @@ class Gallery extends Phaser.Scene {
                         this.addScore(duck.points);
                         this.duckRemoveQueue.push(duck);
                         if(duck.type == "bread") {
-                            this.breadSfx.play();
+                            if(!this.healthUpSfx.isPlaying) {
+                                this.breadSfx.play();
+                            }
                         }
                         else {
                             this.duckDeathSfx.play();
