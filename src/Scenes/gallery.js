@@ -91,7 +91,7 @@ class Gallery extends Phaser.Scene {
         };
         this.bgShader.initUniforms();
 
-        this.heart = this.add.sprite(canvasW - canvasW / 8 - 32, canvasH / 16 + 38, "hearts", "hud_heart");
+        this.heart = this.add.sprite(canvasW - canvasW / 8 - 32, canvasH / 16 + 70, "hearts", "hud_heart");
         this.heart.setScale(0.85);
         this.heart.maxSize = this.heart.scaleX * heartGrowMaximum;
 
@@ -101,13 +101,16 @@ class Gallery extends Phaser.Scene {
         this.ui.score = this.add.bitmapText(canvasW - canvasW / 8, canvasH / 16, "daydream_3", "Score: 0", 18)
             .setOrigin(0.5)
             .setBlendMode(Phaser.BlendModes.ADD);
-        this.ui.waveComplete = this.add.bitmapText(canvasW / 2, canvasH / 2, "daydream_3", "Wave Complete!", 18)
+        this.ui.waveCounter = this.add.bitmapText(canvasW - canvasW / 8, canvasH / 16 + 32, "daydream_3", "Wave 0", 18)
             .setOrigin(0.5)
             .setBlendMode(Phaser.BlendModes.ADD);
-        this.ui.waveNumber = this.add.bitmapText(canvasW / 2, canvasH / 2, "daydream_3", "Wave 0", 18)
+        this.ui.waveComplete = this.add.bitmapText(canvasW / 2, canvasH / 2, "daydream_3", "Wave Complete!", 24)
             .setOrigin(0.5)
             .setBlendMode(Phaser.BlendModes.ADD);
-        this.ui.hp = this.add.bitmapText(canvasW - canvasW / 8 + 12, canvasH / 16 + 40, "daydream_3", "x0", 18)
+        this.ui.waveNumber = this.add.bitmapText(canvasW / 2, canvasH / 2, "daydream_3", "Wave 0", 24)
+            .setOrigin(0.5)
+            .setBlendMode(Phaser.BlendModes.ADD);
+        this.ui.hp = this.add.bitmapText(canvasW - canvasW / 8 + 12, canvasH / 16 + 72, "daydream_3", "x0", 18)
             .setOrigin(0.5)
             .setBlendMode(Phaser.BlendModes.ADD);
         this.ui.colorTutorial = this.add.bitmapText(canvasW / 2, canvasH / 2, "daydream_3", "Change color to phase through projectiles", 18)
@@ -316,6 +319,7 @@ class Gallery extends Phaser.Scene {
         this.player.update(delta);
         this.ui.score.setText(`Score ${this.score}`);
         this.ui.hp.setText(`x${this.player.hp}`);
+        this.ui.waveCounter.setText(`Wave ${this.waveNumber}`);
         let bullets = this.bullets.getChildren();
         for(let bullet of bullets) {
             if(!bullet.update(delta)) {
