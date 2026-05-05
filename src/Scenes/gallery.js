@@ -218,7 +218,7 @@ class Gallery extends Phaser.Scene {
                 self.ui.colorTutorial.visible = true;
 
                 self.tutorialTimers.push(self.time.delayedCall(
-                    750,
+                    1250,
                     (self) => {
                         let bullet = new EnemyBullet(self, 0, this.player.y, "duck_brown.png", {x: 1, y: 0});
                         self.duckBullets.add(bullet);

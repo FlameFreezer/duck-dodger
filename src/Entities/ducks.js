@@ -8,7 +8,7 @@ const minBreadExitSpeed = 100;
 function getRandomDuckSprite() {
     let x = Math.floor(Math.random() * 100);
     if(x > 75) return "duck_back.png";
-    if(x > 38) return "duck_brown.png";
+    if(x > 37) return "duck_brown.png";
     return "duck_yellow.png";
 }
 class Duck extends Phaser.GameObjects.PathFollower {
