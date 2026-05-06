@@ -222,7 +222,9 @@ class Gallery extends Phaser.Scene {
                 this.inputPrompts[input].image.destroy();
             }
             this.ui.colorTutorial.visible = false;
-            this.nextWave();
+            if(!this.finishedTutorial) {
+                this.nextWave();
+            }
         });
         this.inputPrompts = {};
         this.inputPrompts.d = {};
@@ -301,6 +303,7 @@ class Gallery extends Phaser.Scene {
         }
     }
     nextWave() {
+        this.finishedTutorial = true;
         this.time.addEvent({
             delay: waveTransitionTime / 2,
             callback: (self) => {
