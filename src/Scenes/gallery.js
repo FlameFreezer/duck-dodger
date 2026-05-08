@@ -157,6 +157,7 @@ class Gallery extends Phaser.Scene {
             active: true,
             maxSize: -1
         });
+        this.finishedTutorial = false;
         this.duckBulletRemoveQueue = [];
         this.bubbles = this.add.group({
             classType: Phaser.GameObjects.Image,
@@ -215,8 +216,8 @@ class Gallery extends Phaser.Scene {
     }
     startTutorial() {
         this.keys.enter.on("down", (event) => {
-            for(let timer of this.tutorialTimers) {
-                timer.remove();
+            if(this.tutorialTimeline) {
+                this.tutorialTimeline.stop();
             }
             for(let input in this.inputPrompts) {
                 this.inputPrompts[input].image.destroy();
@@ -236,66 +237,67 @@ class Gallery extends Phaser.Scene {
         this.inputPrompts.a.image = this.add.sprite(this.player.x - 35, this.player.y, "a").setScale(0.5);
         this.inputPrompts.a.offsetX = -35;
         this.inputPrompts.a.offsetY = 0;
-        this.tutorialTimers = [];
-        this.tutorialTimers.push(this.time.delayedCall(
-            3000,
-            (self) => {
-                self.inputPrompts.a.image.destroy();
-                self.inputPrompts.d.image.destroy();
-                delete self.inputPrompts.a;
-                delete self.inputPrompts.d;
+        this.tutorialTimeline = this.add.timeline([
+            {
+                at: 3000,
+                run() {
+                    this.inputPrompts.a.image.destroy();
+                    this.inputPrompts.d.image.destroy();
+                    delete this.inputPrompts.a;
+                    delete this.inputPrompts.d;
 
-                self.inputPrompts.w = {};
-                self.inputPrompts.w.image = this.add.image(this.player.x, this.player.y - 35, "w").setScale(0.5);
-                self.inputPrompts.w.offsetX = 0;
-                self.inputPrompts.w.offsetY = -35;
-                self.ui.colorTutorial.visible = true;
-
-                self.tutorialTimers.push(self.time.delayedCall(
-                    1250,
-                    (self) => {
-                        let bullet = new EnemyBullet(self, 0, this.player.y, "duck_brown.png", {x: 1, y: 0});
-                        self.duckBullets.add(bullet);
-                        self.tutorialTimers.push(self.time.delayedCall(
-                            2000,
-                            (self) => {
-                                let bullet = new EnemyBullet(self, 0, this.player.y, "duck_yellow.png", {x: 1, y: 0});
-                                self.duckBullets.add(bullet);
-                                self.tutorialTimers.push(self.time.delayedCall(
-                                    2000,
-                                    (self) => {
-                                        self.ui.colorTutorial.visible = false;
-                                        self.inputPrompts.w.image.destroy();
-                                        delete self.inputPrompts.w;
-
-                                        self.inputPrompts.space = {};
-                                        self.inputPrompts.space.image = this.add.image(this.player.x, this.player.y + 35, "space").setScale(0.75);
-                                        self.inputPrompts.space.offsetX = 0;
-                                        self.inputPrompts.space.offsetY = 35;
-
-                                        self.tutorialTimers.push(self.time.delayedCall(
-                                            1500,
-                                            (self) => {
-                                                self.inputPrompts.space.image.destroy();
-                                                delete self.inputPrompts.space;
-
-                                                this.finishedTutorial = true;
-                                                self.nextWave();
-                                            },
-                                            [self]
-                                        ));
-                                    },
-                                    [self]
-                                ));
-                            },
-                            [self]
-                        ));
-                    },
-                    [self]
-                ));
+                    this.inputPrompts.w = {};
+                    this.inputPrompts.w.image = this.add.image(this.player.x, this.player.y - 35, "w").setScale(0.5);
+                    this.inputPrompts.w.offsetX = 0;
+                    this.inputPrompts.w.offsetY = -35;
+                    this.ui.colorTutorial.visible = true;
+                },
+                target: this
             },
-            [this]
-        ));
+            {
+                at: 3000 + 1250,
+                run() {
+                    let bullet = new EnemyBullet(this, 0, this.player.y, "duck_brown.png", {x: 1, y: 0});
+                    this.duckBullets.add(bullet);
+                },
+                target: this
+            },
+            {
+                at: 3000 + 1250 + 2000,
+                run() {
+                    let bullet = new EnemyBullet(this, 0, this.player.y, "duck_yellow.png", {x: 1, y: 0});
+                    this.duckBullets.add(bullet);
+                },
+                target: this
+            },
+            {
+                at: 3000 + 1250 + 2000 + 2000,
+                run() {
+                    this.ui.colorTutorial.visible = false;
+                    this.inputPrompts.w.image.destroy();
+                    delete this.inputPrompts.w;
+
+                    this.inputPrompts.space = {};
+                    this.inputPrompts.space.image = this.add.image(this.player.x, this.player.y + 35, "space").setScale(0.75);
+                    this.inputPrompts.space.offsetX = 0;
+                    this.inputPrompts.space.offsetY = 35;
+                },
+                target: this
+            },
+            {
+                at: 3000 + 1250 + 2000 + 2000 + 1500,
+                run() {
+                    this.inputPrompts.space.image.destroy();
+                    delete this.inputPrompts.space;
+
+                    this.finishedTutorial = true;
+                    this.nextWave();
+
+                },
+                target: this
+            }
+        ]);
+        this.tutorialTimeline.play();
     }
     updateTutorial(delta) {
         for(let image in this.inputPrompts) {
