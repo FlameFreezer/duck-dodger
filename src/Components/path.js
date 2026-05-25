@@ -15,6 +15,7 @@ class Path {
 
 
 
+    // owner: parent object.
     // path: string. which path function to use.
     // width: int. width of the path in pixels.
     // height: int. height of the path in pixels.
@@ -39,6 +40,7 @@ class Path {
 
 
     // ----------INTERFACE FUNCTIONS----------
+
     // inX: int. current X position of owner.
     // inY: int. current Y position of owner.
     // inT: float. optional starting T value for path following. ranges from 0 (start)
@@ -63,6 +65,7 @@ class Path {
         this.active = false;
     }
 
+    // delta: int. time since last update() call in milliseconds.
     update(delta) {
         if (this.active) {
             let toPos = this.getCoords(delta);
@@ -73,6 +76,7 @@ class Path {
 
 
     // ----------INTERNAL FUNCTIONS----------
+    
     pathFromString(inPath) {
         switch(inPath) {
             case "arc":
