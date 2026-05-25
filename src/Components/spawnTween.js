@@ -2,6 +2,7 @@ class SpawnTween {
     // usage:
     // construct on object creation. it will immediately take control of the
     // owner's position and execute the spawn animation with the desired parameters.
+    // check SpawnTween.active (boolean) to see if the spawn tween is running.
     
     // include this code:
     //

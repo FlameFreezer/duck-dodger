@@ -14,22 +14,15 @@ class TestScene extends Phaser.Scene {
 
     create() {
         this.testDuck = this.add.sprite(200, 500, "ducks", 0);
-        this.testDuck.pathFollower = new Path(this.testDuck, "figure_infinite", 400, 300, 0, 4000);
+        this.testDuck.spawnTween = new SpawnTween(this.testDuck, 450, 100, 150, 600, 1500, 0.6);
+        this.testDuck.pathFollower = new Path(this.testDuck, "figure_infinite", 400, -300, 0, 4000);
     }
 
     update(time, delta) {
-        if (time > 3000 && time < 6000 && !this.testDuck.pathFollower.active) {
+        this.testDuck.spawnTween.update(delta);
+        if (!this.testDuck.spawnTween.active && !this.testDuck.pathFollower.active) {
             this.testDuck.pathFollower.activate(this.testDuck.x, this.testDuck.y);
         }
-
-        if (time > 9000 && time < 11000 &&  this.testDuck.pathFollower.active) {
-            this.testDuck.pathFollower.deactivate();
-        }
-
-        if (time > 12000 && !this.testDuck.pathFollower.active) {
-            this.testDuck.pathFollower.activate(this.testDuck.x, this.testDuck.y);
-        }
-
         this.testDuck.pathFollower.update(delta);
     }
 }
