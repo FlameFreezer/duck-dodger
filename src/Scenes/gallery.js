@@ -51,7 +51,7 @@ class Gallery extends Phaser.Scene {
         this.load.json("challengeWaveData", "challengeWaves.json");
         //Load shader
         this.load.setPath("./src/Shaders/");
-        this.load.glsl("background", "backgroundEffect.glsl");
+        this.load.glsl("background", "backgroundEffect.frag");
         //Load font
         this.load.setPath("./assets/daydream_3");
         this.load.bitmapFont("daydream_3", "daydream_3_0.png", "daydream_3.fnt");
