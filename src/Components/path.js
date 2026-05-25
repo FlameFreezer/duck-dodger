@@ -55,7 +55,7 @@ class Path {
             localT *= this.loopTime;
         }
         this.currTime = localT;
-        this.handlePathOffset(this.currTime);
+        this.handlePathOffset();
         this.x += inX;
         this.y += inY;
         this.active = true;
@@ -81,10 +81,10 @@ class Path {
         }
     }
 
-    handlePathOffset(inT) {
+    handlePathOffset() {
         this.x = 0;
         this.y = 0;
-        let currCoords = this.path(inT);
+        let currCoords = this.path();
         this.x = currCoords.x * -1;
         this.y = currCoords.y * -1;
     }
