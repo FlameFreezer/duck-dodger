@@ -137,6 +137,7 @@ class Gallery extends Phaser.Scene {
             challengeWaveData.duckData = this.cache.json.get("duckData");
             this.challengeWaves.push(new Wave(this, challengeWaveData));
         }
+
         this.keys.a = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
         this.keys.d = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
         this.keys.w = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
@@ -159,6 +160,8 @@ class Gallery extends Phaser.Scene {
         });
         this.finishedTutorial = false;
         this.duckBulletRemoveQueue = [];
+
+        // Bubbles
         this.bubbles = this.add.group({
             classType: Phaser.GameObjects.Image,
             active: true,
@@ -186,6 +189,7 @@ class Gallery extends Phaser.Scene {
             this.bubbles.add(bubble);
         }
 
+        //Sounds
         this.duckHitSfx = this.sound.add("duckHit", {
             volume: 0.5
         });
@@ -212,10 +216,15 @@ class Gallery extends Phaser.Scene {
             loop: true
         });
         this.bgMusic.play();
+
+        //Start tutorial
         this.startTutorial();
     }
     startTutorial() {
+        //Skip tutorial button
         this.keys.enter.on("down", (event) => {
+            if(this.finishedTutorial) return;
+
             if(this.tutorialTimeline) {
                 this.tutorialTimeline.stop();
             }
@@ -223,20 +232,25 @@ class Gallery extends Phaser.Scene {
                 this.inputPrompts[input].image.destroy();
             }
             this.ui.colorTutorial.visible = false;
-            if(!this.finishedTutorial) {
-                this.finishedTutorial = true;
-                this.nextWave();
-            }
+            this.finishedTutorial = true;
+            this.nextWave();
         });
+
         this.inputPrompts = {};
+
         this.inputPrompts.d = {};
         this.inputPrompts.d.image = this.add.image(this.player.x + 35, this.player.y, "d").setScale(0.5);
         this.inputPrompts.d.offsetX = 35;
         this.inputPrompts.d.offsetY = 0;
+
         this.inputPrompts.a = {};
         this.inputPrompts.a.image = this.add.sprite(this.player.x - 35, this.player.y, "a").setScale(0.5);
         this.inputPrompts.a.offsetX = -35;
         this.inputPrompts.a.offsetY = 0;
+
+        //Tutorial timeline
+        //in finished tutorial, we will wait for player inputs instead of having a fixed timeframe
+        //and likely move tutorial to its own scene
         this.tutorialTimeline = this.add.timeline([
             {
                 at: 3000,
@@ -423,6 +437,7 @@ class Gallery extends Phaser.Scene {
     }
     addScore(score) {
         this.score += score;
+        //Health up and begin heart grow animation
         if(this.score - this.lastHpMilestone >= healthUpInterval) {
             this.player.hp += 1;
             this.lastHpMilestone = this.score - (this.score - this.lastHpMilestone - healthUpInterval);
