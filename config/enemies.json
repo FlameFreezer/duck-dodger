@@ -13,10 +13,10 @@
             "cycleTime" : 1500
         },
         "duration" : 1500,
-        "attacks" : {
-            "t-pattern" : {
-                "patternDelay" : 1500
-            }
+        "attack" : {
+            "type" : "t-pattern",
+            "shootDelay" : 250,
+            "patternDelay" : 1500
         }
     },
     "Mallard" : {
@@ -34,12 +34,12 @@
         },
         "yoyo" : false,
         "duration" : 2500,
-        "attacks" : {
-            "ring" : {
-                "shootDelay" : 500,
-                "patternDelay" : 2000,
-                "velocities" : [0, -1, -1, 1]
-            }
+        "attack" : {
+            "type" : "ring",
+            "shootDelay" : 500,
+            "patternDelay" : 2000,
+            "bulletsPerRing" : 10,
+            "rotationDirections" : [0, -1, -1, 1]
         }
     },
     "Bread" : {
@@ -58,8 +58,6 @@
         },
         "yoyo" : false,
         "duration" : 7000,
-        "rotateToPath" : true,
-        "attacks" : {
-        }
+        "rotateToPath" : true
     }
 }
