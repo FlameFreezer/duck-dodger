@@ -18,8 +18,10 @@ class SpawnTween {
     // endX: int. X-coordinate of tween end location in pixels.
     // endY: int. Y-coordinate of tween end location in pixels.
     // duration: int. How long the tween should last in milliseconds.
-    // easeStart: float. How far into the tween the easing should kick in. Ranges from 0 (start immediately) to 1 (don't tween).
-    constructor(owner, startX, startY, endX, endY, duration, easeStart = 1) {
+    // easeStart: float. How far into the tween the easing should kick in.
+    //               Ranges from 0 (start immediately) to 1 (don't ease).
+    // completeCallback: Function to fire on tween completion.
+    constructor(owner, startX, startY, endX, endY, duration, easeStart = 1, completeCallback) {
         this.owner = owner;
         this.startX = startX;
         this.startY = startY;
@@ -29,6 +31,7 @@ class SpawnTween {
         this.easeStart = easeStart;
         this.distance = Math.sqrt(Math.pow(startX - endX, 2) + Math.pow(startY - endY, 2));
         this.currTime = 0;
+        this.completeCallback = completeCallback;
         owner.setPosition(startX, startY);
         this.active = true;
     }
@@ -43,6 +46,7 @@ class SpawnTween {
             this.currTime += delta;
             if (this.currTime >= this.duration) {
                 this.owner.setPosition(this.endX, this.endY);
+                this.completeCallback();
                 this.active = false;
             }
             else {
