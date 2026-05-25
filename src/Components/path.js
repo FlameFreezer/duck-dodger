@@ -117,8 +117,9 @@ class Path {
         let outX = this.x;
         let outY = this.y;
         let T = this.currTime / this.loopTime * Math.PI * 2;
-        outX += Math.sin(T) * this.width / 2;
-        outY += Math.sin(T) * Math.cos(T) * this.height;
+        let offsetT = Math.PI * 1.5;
+        outX += Math.sin(T + offsetT) * this.width / 2;
+        outY += Math.sin(T + offsetT) * Math.cos(T + offsetT) * this.height;
         return {x: outX, y: outY};
     }
 }

@@ -5,11 +5,17 @@
         "hp" : 7,
         "points" : 10,
         "scale" : 0.45,
-        "path" : "arc",
+        "path" : {
+            "type" : "arc",
+            "width" : 150,
+            "height" : 20,
+            "start" : 0.25,
+            "cycleTime" : 1500
+        },
         "duration" : 1500,
         "attacks" : {
-            "T-pattern": {
-                "patternDelay": 1500
+            "t-pattern" : {
+                "patternDelay" : 1500
             }
         }
     },
@@ -19,14 +25,20 @@
         "hp" : 10,
         "points" : 15,
         "scale" : 0.45,
-        "path" : "circle",
+        "path" : {
+            "type" : "circle",
+            "width" : 100,
+            "height" : 100,
+            "start" : 0.25,
+            "cycleTime" : 2500
+        },
         "yoyo" : false,
         "duration" : 2500,
         "attacks" : {
-            "ring": {
-                "shootDelay": 500,
-                "patternDelay": 2000,
-                "velocities": [0, -1, -1, 1]
+            "ring" : {
+                "shootDelay" : 500,
+                "patternDelay" : 2000,
+                "velocities" : [0, -1, -1, 1]
             }
         }
     },
@@ -37,7 +49,13 @@
         "hp" :  15,
         "points" : 100,
         "scale" : 0.10,
-        "path" : "figure_infinite",
+        "path" : {
+            "type" : "figure_infinite",
+            "width" : 500,
+            "height" : 180,
+            "start" : 0.75,
+            "cycleTime" : 7000
+        },
         "yoyo" : false,
         "duration" : 7000,
         "rotateToPath" : true,
