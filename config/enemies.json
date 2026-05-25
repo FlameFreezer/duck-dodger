@@ -15,6 +15,7 @@
         "duration" : 1500,
         "attacks" : {
             "t-pattern" : {
+                "shootDelay" : 250,
                 "patternDelay" : 1500
             }
         }

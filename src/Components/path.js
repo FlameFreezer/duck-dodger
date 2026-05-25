@@ -5,13 +5,10 @@ class Path {
 
     // include this code:
     //
-    // if (path.active) {
-    //     let pos = path.getCoords(delta);
-    //     owner.setPosition(pos.x, pos.y);
-    // }
+    // path.update(delta)
     //
-    // in the owner's Update().
-
+    // in the owner's update().
+    //
     // call activate(owner.x, owner.y) to start/resume path following.
     // call activate(owner.x, owner.y, T ∈ [0, 1)) to start path following from a certain point in the path cycle.
     // call deactivate() to stop path following.
@@ -24,7 +21,8 @@ class Path {
     // startT: float. where in the path to start. ranges from 0 (start) to 1 (end).
     // T = 0 always represents the leftmost point of a path.
     // loopTime: float. how long it takes to complete a path cycle in milliseconds.
-    constructor(path, width, height, startT, loopTime) {
+    constructor(owner, path, width, height, startT, loopTime) {
+        this.owner = owner;
         this.width = width;
         this.height = height;
         this.loopTime = loopTime;
@@ -63,6 +61,13 @@ class Path {
 
     deactivate() {
         this.active = false;
+    }
+
+    update(delta) {
+        if (this.active) {
+            let toPos = this.getCoords(delta);
+            this.owner.setPosition(toPos.x, toPos.y);
+        }
     }
 
 
