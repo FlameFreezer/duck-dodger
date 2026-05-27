@@ -17,42 +17,70 @@ class Player extends Phaser.GameObjects.Sprite {
         this.colorChangeTime = 0;
         this.didChangeColor = false;
 
-        this.deadSprite = this.scene.add.sprite(this.x, this.y, "player", "fishPink_dead.png");
-        this.deadSprite.visible = false;
-        this.deadSprite.setScale(json.scale);
-        this.deadSprite.angle = this.angle;
-
-        this.hitSprite = this.scene.add.sprite(this.x, this.y, "player", "fishPink_hit.png");
-        this.hitSprite.visible = false;
-        this.hitSprite.setScale(json.scale);
-        this.hitSprite.angle = this.angle;
-
         //Offsets are optional
         if(this.shootOffset.x === undefined) this.shootOffset.x = 0;
         if(this.shootOffset.y === undefined) this.shootOffset.y = 0;
-        let config = {
-            key: "swim",
+        let swimAnimationConfig = {
+            key: "playerSwim",
             frameRate: 4,
             repeat: -1,
             showOnStart: true,
+            hideOnComplete: true,
             frames: []
         };
         for(let frame of json.frames) {
-            config.frames.push({key: "player", frame: frame});
+            swimAnimationConfig.frames.push({key: "player", frame: frame});
         } 
-        this.anims.create(config);        
+        this.anims.create(swimAnimationConfig);        
+        this.anims.create({
+            key: "playerDead",
+            frameRate: 1,
+            repeat: -1,
+            showOnStart: true,
+            frames: [{key: "player", frame: "fishPink_dead.png"}]
+        });
+        this.anims.create({
+            key: "playerHit",
+            frameRate: 1 * 1000 / playerHitFameTime,
+            repeat: 0,
+            showOnStart: true,
+            hideOnComplete: true,
+            frames: [{key: "player", frame: "fishPink_hit.png"}]
+        });
         scene.add.existing(this);
-        this.play("swim");
+        this.play("playerSwim");
     }
     shootBullet() {
         this.scene.bullets.add(new PlayerBullet(this.scene, this.x + this.shootOffset.x, this.y + this.shootOffset.y));
         this.timeSinceShoot = 0;
     }
-    update(delta) {
-        if(this.hp <= 0) return;
-        let scene = this.scene;
+    onHit() {
+        this.hp -= 1;
+        this.isInvulnerable = true;
+        this.stop("playerSwim");
+        this.play("playerHit");
+        this.hitTimer = this.scene.time.delayedCall(
+            playerHitFameTime,
+            (self) => {
+                self.isInvulnerable = false;
+                self.play("playerSwim");
+            },
+            [this]
+        );
+    }
+    onDeath() {
+        this.hitTimer.remove();
+        this.stop("playerSwim");
+        this.play("playerDead");
 
-        //Transition color smoothly
+        this.update = (delta) => {
+            this.updateColorTransition(delta);
+        };
+    }
+    addHP(amount) {
+        this.hp += amount;
+    }
+    updateColorTransition(delta) {
         if(this.didChangeColor) {
             if(this.activeColor == green) {
                 this.colorChangeTime += delta;
@@ -70,6 +98,12 @@ class Player extends Phaser.GameObjects.Sprite {
             }
             this.displayColor = vecLerp(yellow, green, this.colorChangeTime / colorChangeTime);
         }
+        this.scene.bgShader.setUniform("baseColor.value", colorToVector(this.displayColor));
+    }
+    update(delta) {
+        let scene = this.scene;
+
+        this.updateColorTransition(delta);
 
         //Move left
         if(scene.keys.a.isDown) {
@@ -87,7 +121,7 @@ class Player extends Phaser.GameObjects.Sprite {
             else this.activeColor = yellow;
             this.didChangeColor = true;
         }
-        scene.bgShader.setUniform("baseColor.value", colorToVector(this.displayColor));
+
         //Accumulate shoot delay
         this.timeSinceShoot += delta;
         //Shoot
@@ -96,6 +130,7 @@ class Player extends Phaser.GameObjects.Sprite {
                 this.shootBullet();
             }
         }
+
         //Keep fish within bounds
         if(this.x + this.width * this.scaleX / 2 > canvasW) {
             this.x = canvasW - this.width * this.scaleX / 2;
@@ -103,7 +138,5 @@ class Player extends Phaser.GameObjects.Sprite {
         if(this.x - this.width * this.scaleX / 2 < 0) {
             this.x = this.width * this.scaleX / 2;
         }
-        this.hitSprite.x = this.x;
-        this.hitSprite.y = this.y;
     }
 }

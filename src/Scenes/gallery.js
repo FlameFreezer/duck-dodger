@@ -439,7 +439,7 @@ class Gallery extends Phaser.Scene {
         this.score += score;
         //Health up and begin heart grow animation
         if(this.score - this.lastHpMilestone >= healthUpInterval) {
-            this.player.hp += 1;
+            this.player.addHP(1);
             this.lastHpMilestone = this.score - (this.score - this.lastHpMilestone - healthUpInterval);
             if(!this.breadSfx.isPlaying) {
                 this.healthUpSfx.play();
@@ -544,30 +544,19 @@ class Gallery extends Phaser.Scene {
     }
     doPlayerCollision(bullet) {
         if(bullet.collisionCheck(this.player) && !this.player.isInvulnerable) {
-            this.player.hp -= 1;
             this.playerHitSfx.play();
-            this.player.isInvulnerable = true;
             this.duckBulletRemoveQueue.push(bullet);        
-            this.player.hitSprite.visible = true;
-            this.player.visible = false;
-            this.player.hitTimer = this.time.delayedCall(
-                playerHitFameTime,
-                (player) => {
-                    player.visible = true;
-                    player.hitSprite.visible = false;
-                    player.isInvulnerable = false;
-                },
-                [this.player]
-            );
+            this.player.onHit();
             if(this.player.hp == 0) {
                 this.gameOver();
             }
+            this.score -= 5;
         }
     }
     updateGameOver(delta) {
     }
     gameOver() {
-        this.player.hitTimer.remove();
+        this.player.onDeath();
         if(this.waveTransitionTimer) this.waveTransitionTimer.remove();
         this.gameOverSfx.play();
         this.currentState = states.GAME_OVER;
@@ -577,13 +566,6 @@ class Gallery extends Phaser.Scene {
         this.ui.returnToTile = this.add.bitmapText(canvasW / 2, canvasH / 2 + 20, "daydream_3", "Press Enter to go back to the Title Screen", 12)
             .setOrigin(0.5)
             .setBlendMode(Phaser.BlendModes.ADD);
-        this.ui.waveComplete.visible = false;
-        this.player.stop("swim");
-        this.player.deadSprite.visible = true;
-        this.player.deadSprite.x = this.player.x;
-        this.player.deadSprite.y = this.player.y;
-        this.player.visible = false;
-        this.player.hitSprite.visible = false;
         this.keys.enter.on("down", (event) => {
             this.scene.start("title");
         });
