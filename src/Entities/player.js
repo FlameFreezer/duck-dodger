@@ -8,7 +8,6 @@ class Player extends Phaser.GameObjects.Sprite {
         this.setScale(json.scale);
         this.angle = json.angle;
         this.shootDelay = json.shootDelay;
-        this.timeSinceShoot = this.shootDelay;
         this.shootOffset = json.shootOffset;
         this.activeColor = yellow;
         this.displayColor = yellow;
@@ -16,6 +15,7 @@ class Player extends Phaser.GameObjects.Sprite {
         this.isInvulnerable = false;
         this.colorChangeTime = 0;
         this.didChangeColor = false;
+        this.canShoot = true;
 
         //Offsets are optional
         if(this.shootOffset.x === undefined) this.shootOffset.x = 0;
@@ -52,7 +52,14 @@ class Player extends Phaser.GameObjects.Sprite {
     }
     shootBullet() {
         this.scene.bullets.add(new PlayerBullet(this.scene, this.x + this.shootOffset.x, this.y + this.shootOffset.y));
-        this.timeSinceShoot = 0;
+        this.canShoot = false;
+        this.scene.time.delayedCall(
+            this.shootDelay,
+            (self) => {
+                self.canShoot = true;
+            },
+            [this]
+        );
     }
     onHit() {
         this.hp -= 1;
@@ -122,13 +129,9 @@ class Player extends Phaser.GameObjects.Sprite {
             this.didChangeColor = true;
         }
 
-        //Accumulate shoot delay
-        this.timeSinceShoot += delta;
         //Shoot
-        if(scene.keys.space.isDown) {
-            if(this.timeSinceShoot >= this.shootDelay) {
-                this.shootBullet();
-            }
+        if(scene.keys.space.isDown && this.canShoot) {
+            this.shootBullet();
         }
 
         //Keep fish within bounds

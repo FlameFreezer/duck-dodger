@@ -31,6 +31,7 @@ void main() {
     float minAmplitude = pow4(cos(0.75 * time)) * (MAX_AMPLITUDE - MIN_AMPLITUDE) + MIN_AMPLITUDE;
     float amplitudeX = pow2(sin(xFactor)) * (maxAmplitude - minAmplitude) + minAmplitude;
 
+    //Decrease alpha linearly from bottom of screen to the peak of the sine wave
     float slope = -0.75 / amplitudeX;
     float alpha = slope * (fragCoord.y / resolution.y) + 0.75;
     gl_FragColor = vec4(colorNorm * alpha, alpha);
