@@ -59,7 +59,7 @@ class Attack {
 
     update(delta) {
         if (!this.spawned) {
-            this.spawnPattern(this.dir, delta);
+            this.spawnPattern(delta);
         }
 
         this.updatePattern(delta);
@@ -69,7 +69,7 @@ class Attack {
         }
     }
 
-    spawnTPattern(dir, delta) {
+    spawnTPattern(delta) {
         if (this.bullets.length == 0) {
             this.bullets.push(new DuckBullet(this.scene, this.x, this.y, this.scene.colors.GRAY, this.damagePlayer));
             this.delay = this.bullets[0].hitbox.radius * 4 / T_PATTERN_MOVE_SPEED * 1000;
@@ -97,7 +97,7 @@ class Attack {
         }
     }
 
-    spawnRingPattern(dir, delta) {
+    spawnRingPattern(delta) {
 
     }
 
@@ -105,7 +105,7 @@ class Attack {
 
     }
 
-    spawnWallPattern(dir, delta) {
+    spawnWallPattern(delta) {
 
     }
 
