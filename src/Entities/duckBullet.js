@@ -47,8 +47,8 @@ class DuckBullet extends Phaser.GameObjects.Sprite {
         }
     }
     
-    doCollisionCheck() { // needs to be tested with the refactored Player object
-        if (this.color == this.player.activeColor && Phaser.Geom.Intersects.CircleToCircle(this.hitbox, player.hitbox)) {
+    doCollisionCheck() {
+        if (this.color != this.player.activeColor && Phaser.Geom.Intersects.CircleToCircle(this.hitbox, this.player.hitbox)) {
             this.hurtPlayerCallback();
             this.kill();
             return true;
