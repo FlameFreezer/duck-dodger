@@ -1,5 +1,5 @@
 class duckBullet extends Phaser.GameObjects.Sprite {
-    constructor(scene, x, y, color, hurtPlayerCallback = null, debug = false) {
+    constructor(scene, x, y, color, hurtPlayerCallback = null) {
         switch(color) {
             case scene.colors.YELLOW:
                 super(scene, x, y, "ducks", "duck_yellow.png");
@@ -15,8 +15,7 @@ class duckBullet extends Phaser.GameObjects.Sprite {
 
         this.hitbox = new Phaser.Geom.Circle(this.x, this.y, this.displayHeight / 2);
         
-        this.debug = debug;
-        if (debug) this.debugGraphics = scene.add.graphics();
+        if (DEBUG) this.debugGraphics = scene.add.graphics();
 
         if (scene.player) this.player = scene.player;
         if (hurtPlayerCallback) this.hurtPlayerCallback = hurtPlayerCallback;
@@ -29,7 +28,7 @@ class duckBullet extends Phaser.GameObjects.Sprite {
         this.x = x;
         this.y = y;
         this.hitbox.setPosition(this.x, this.y);
-        if (this.debug) {
+        if (DEBUG) {
             this.debugGraphics.clear();
             this.debugGraphics.lineStyle(1, 0xffffff, 1);
             this.debugGraphics.strokeCircleShape(this.hitbox);
@@ -46,7 +45,7 @@ class duckBullet extends Phaser.GameObjects.Sprite {
     }
 
     kill() {
-        if (this.debug) {
+        if (DEBUG) {
             this.debugGraphics.clear();
             this.debugGraphics.destroy();
         }

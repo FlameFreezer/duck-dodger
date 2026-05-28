@@ -17,6 +17,11 @@ class Player extends Phaser.GameObjects.Sprite {
         this.didChangeColor = false;
         this.canShoot = true;
 
+        this.hitbox = new Phaser.Geom.Circle(this.x, this.y, this.displayWidth / 2 - 2);
+        if(DEBUG) {
+            this.debugGraphics = scene.add.graphics();
+        }
+
         //Offsets are optional
         if(this.shootOffset.x === undefined) this.shootOffset.x = 0;
         if(this.shootOffset.y === undefined) this.shootOffset.y = 0;
@@ -141,5 +146,13 @@ class Player extends Phaser.GameObjects.Sprite {
         if(this.x - this.width * this.scaleX / 2 < 0) {
             this.x = this.width * this.scaleX / 2;
         }
+
+        this.hitbox.setPosition(this.x, this.y);
+        if(DEBUG) {
+            this.debugGraphics.clear();
+            this.debugGraphics.lineStyle(1, 0xffffff, 1);
+            this.debugGraphics.strokeCircleShape(this.hitbox);
+        }
+
     }
 }
