@@ -140,6 +140,7 @@ class Player extends Phaser.GameObjects.Sprite {
         this.scene.bgShader.setUniform("baseColor.value", colorToVector(this.displayColor));
     }
     handleInputs(delta) {
+        let scene = this.scene;
         //Move left
         if(scene.keys.a.isDown) {
             this.x -= this.speed * (delta / 1000);
