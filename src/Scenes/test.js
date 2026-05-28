@@ -19,7 +19,7 @@ class TestScene extends Phaser.Scene {
         this.testDuck.spawnTween = new SpawnTween(this.testDuck, 450, 100, 150, 600, 1500, 0.6, () => {this.testDuck.pathFollower.activate(this.testDuck.x, this.testDuck.y);});
         */
 
-        this.testBullet = new duckBullet(this, 100, 50, this.colors.YELLOW, () => {}, true);
+        this.testBullet = new DuckBullet(this, 100, 50, this.colors.YELLOW, () => {}, true);
         this.bulletY = 50;
     }
 
