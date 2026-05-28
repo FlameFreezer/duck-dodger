@@ -12,7 +12,6 @@ class SpawnTween {
 
 
 
-    // owner: parent object.
     // startX: int. X-coordinate of tween start location in pixels.
     // startY: int. Y-coordinate of tween start location in pixels.
     // endX: int. X-coordinate of tween end location in pixels.
@@ -21,8 +20,7 @@ class SpawnTween {
     // easeStart: float. How far into the tween the easing should kick in.
     //               Ranges from 0 (start immediately) to 1 (don't ease).
     // completeCallback: Function to fire on tween completion.
-    constructor(owner, startX, startY, endX, endY, duration, easeStart = 1, completeCallback) {
-        this.owner = owner;
+    constructor(startX, startY, endX, endY, duration, easeStart = 1, completeCallback) {
         this.startX = startX;
         this.startY = startY;
         this.endX = endX;
@@ -39,6 +37,14 @@ class SpawnTween {
 
 
     // ----------INTERFACE FUNCTIONS----------
+
+    // owner: Object. The owner of this component.
+    // return: This component.
+    registerTo(owner) {
+        this.owner = owner;
+        return this;
+    }
+
 
     // delta: int. time since last update() call in milliseconds.
     update(delta) {

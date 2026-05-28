@@ -15,15 +15,13 @@ class Path {
 
 
 
-    // owner: parent object.
     // path: string. which path function to use.
     // width: int. width of the path in pixels.
     // height: int. height of the path in pixels.
     // startT: float. where in the path to start. ranges from 0 (start) to 1 (end).
     // T = 0 always represents the leftmost point of a path.
     // loopTime: float. how long it takes to complete a path cycle in milliseconds.
-    constructor(owner, path, width, height, startT, loopTime) {
-        this.owner = owner;
+    constructor(path, width, height, startT, loopTime) {
         this.width = width;
         this.height = height;
         this.loopTime = loopTime;
@@ -40,6 +38,13 @@ class Path {
 
 
     // ----------INTERFACE FUNCTIONS----------
+
+    // owner: Object. The owner of this component.
+    // return: This component.
+    registerTo(owner) {
+        this.owner = owner;
+        return this;
+    }
 
     // inX: int. current X position of owner.
     // inY: int. current Y position of owner.

@@ -8,6 +8,14 @@ class Attacker {
         this.initPattern(config);
     }
 
+    // owner: Object. The owner of this component.
+    // return: This component.
+    registerTo(owner) {
+        this.owner = owner;
+        return this;
+    }
+
+
     shoot() {
         //Make the bullets as part of the pattern
         this.makeBullets();
