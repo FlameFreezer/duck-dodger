@@ -8,11 +8,9 @@ function getDuckSpriteFromType(type) {
             throw "Goose hasn't been defined yet!";
     }
 }
-class Duck extends Phaser.GameObjects.Sprite {
+class Duck2 extends Phaser.GameObjects.Sprite {
     // scene: Phaser.Scene  The scene where this duck will live.
     // config: Object with all of the following fields:
-    //      spawnX: int             The x coordinate of the spawn position of the duck.
-    //      spawnY: int             The y coordinate of the spawn position of the duck.
     //      sprite: string          The spritesheet frame the duck should use for display. 
     //      pathFollower: Path      An unregistered Path component.
     //      spawnTween: SpawnTween  An unregistered SpawnTween component.
@@ -20,8 +18,10 @@ class Duck extends Phaser.GameObjects.Sprite {
     //      hp: int                 The amount of HP the duck will have.
     //      points: int             The amount of points the duck will reward on death.
     constructor(scene, config) {
-        super(scene, config.spawnX, config.spawnY, "ducks", config.sprite);
+        super(scene, 0, 0, "ducks", config.sprite);
         scene.add.existing(this);
+
+        this.setScale(0.25);
 
         //Initialize components
         this.pathFollower = config.pathFollower.registerTo(this);
@@ -30,6 +30,10 @@ class Duck extends Phaser.GameObjects.Sprite {
 
         this.hp = config.hp;
         this.points = config.points;
+
+        this.spawnTween.completeCallback = () => {
+            this.pathFollower.activate(this.x, this.y);
+        }
     }
     // ------ INTERFACE METHODS ------
 

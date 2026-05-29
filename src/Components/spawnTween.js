@@ -30,8 +30,7 @@ class SpawnTween {
         this.distance = Math.sqrt(Math.pow(startX - endX, 2) + Math.pow(startY - endY, 2));
         this.currTime = 0;
         this.completeCallback = completeCallback;
-        owner.setPosition(startX, startY);
-        this.active = true;
+        this.active = false;
     }
 
 
@@ -42,6 +41,8 @@ class SpawnTween {
     // return: This component.
     registerTo(owner) {
         this.owner = owner;
+        owner.setPosition(this.startX, this.startY);
+        this.active = true;
         return this;
     }
 
