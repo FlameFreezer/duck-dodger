@@ -1,10 +1,15 @@
 class Attacker {
     constructor(scene, config) {
         this.scene = scene;
+
         this.shootDelay = config.shootDelay;
         this.patternDelay = config.patternDelay;
         this.timer = null;
+
         this.shotIndex = 0;
+
+        this.active = false;
+
         this.initPattern(config);
     }
 
@@ -41,10 +46,12 @@ class Attacker {
     }
 
     activate() {
+        this.active = true;
         this.shoot();
     }
 
     deactivate() {
+        this.active = false;
         this.timer.remove();
         this.timer = null;
     }

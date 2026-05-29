@@ -1,41 +1,57 @@
 class Attack {
-    constructor(scene, owner, player, pattern, patternGap) {
+    constructor(scene, owner, player, pattern) { // TODO: update constructor parameters and add registerTo function
         this.scene = scene;
+        this.owner = owner;
 
-        this.player = player;
-
-        this.spawnPattern = patternFromString(pattern).spawn;
-        this.updatePattern = patternFromString(pattern).update;
-
-        this.dir = {x: player.x - owner.x, y: player.y - owner.y};
-        this.dir = vecNormalize(this.dir);
+        this.damagePlayer = player.onHit;
 
         this.x = owner.x;
         this.y = owner.y;
 
+        this.targetX = player.x;
+        this.targetY = player.y;
+
+        this.color = Number(player.activeColor != Colors.GREEN); // opposite color of player
+
         this.spawned = false;
-        this.delay = patternGap;
-        this.currTime = patternGap;
+        this.delay = 0;
+        this.spawnClock = 0;
 
         this.bullets = [];
-        this.spawnPattern();
+
+        this.spawnPattern = 0;
+        this.updatePattern = 0;
+        this.dir = 0;
+
+        this.setPatternFromString(pattern);
+
+        let spawnOffset = vecScale(this.dir, this.owner.hitbox.radius);
+        this.x += spawnOffset.x;
+        this.y += spawnOffset.y;
     }
 
-    patternFromString(pattern) {
-        let to_ret = {spawn: 0, update: 0};
+    setPatternFromString(pattern) {
         switch(pattern) {
             case "t-pattern":
-                to_ret.spawn = this.spawnTPattern;
-                to_ret.update = this.updateTPattern;
-                return to_ret;
+                this.spawnPattern = this.spawnTPattern;
+                this.updatePattern = this.updateTPattern;
+                this.dir = {x: this.targetX - this.x, y: this.targetY - this.y};
+                this.dir = vecNormalize(this.dir);
+                this.doKill = () => {};
+                break;
             case "ring":
-                to_ret.spawn = this.spawnRingPattern;
-                to_ret.update = this.updateRingPattern;
-                return to_ret;
+                this.spawnPattern = this.spawnRingPattern;
+                this.updatePattern = this.updateRingPattern;
+                this.dir = {x: 0, y: 1};
+                this.doKill = () => {};
+                break;
             case "wall":
-                to_ret.spawn = this.spawnWallPattern;
-                to_ret.update = this.updateWallPattern;
-                return to_ret;
+                this.spawnPattern = this.spawnWallPattern;
+                this.updatePattern = this.updateWallPattern;
+                this.dir = {x: this.targetX - this.x, y: this.targetY - this.y};
+                this.dir = vecNormalize(this.dir);
+                this.doKill = () => {};
+                break;
             default: // this should never happen
                 return;
         }
@@ -43,38 +59,66 @@ class Attack {
 
     update(delta) {
         if (!this.spawned) {
-            this.spawnPattern(this.dir, delta);
+            this.spawnPattern(delta);
         }
+
         this.updatePattern(delta);
+
+        if (this.doKill()) {
+            this.kill();
+        }
     }
 
-    spawnTPattern(dir, delta) {
-        if (this.currTime >= this.delay) {
-            this.bullets.push(new DuckBullet(this.scene, this.x, this.y, this.scene.colors.GRAY, this.player.onHit, true));
+    spawnTPattern(delta) {
+        if (this.bullets.length == 0) {
+            this.bullets.push(new DuckBullet(this.scene, this.x, this.y, Colors.GRAY, this.damagePlayer));
+            this.delay = this.bullets[0].hitbox.radius * 4 / T_PATTERN_MOVE_SPEED * 1000;
+            this.spawnClock = 0;
+        }
+        else if (this.spawnClock >= this.delay) {
+            this.bullets.push(new DuckBullet(this.scene, this.x, this.y, Colors.GRAY, this.damagePlayer, true));
             if (this.bullets.length > 2) {
-                this.bullets.push(new DuckBullet(this.scene, this.x, this.y, this.player.activeColor != this.scene.colors.GREEN, this.player.onHit, true));
+                let leftTOffset = vecRotate(vecScale(this.dir, this.bullets[0].hitbox.radius * 4), Math.PI / 2);
+                let rightTOffset = vecRotate(vecScale(this.dir, this.bullets[0].hitbox.radius * 4), Math.PI / -2);
+                this.bullets.push(new DuckBullet(this.scene, this.x + leftTOffset.x, this.y + leftTOffset.y, this.color, this.damagePlayer));
+                this.bullets.push(new DuckBullet(this.scene, this.x + rightTOffset.x, this.y + rightTOffset.y, this.color, this.damagePlayer));
                 this.spawned = true;
             }
+            this.spawnClock = this.spawnClock % this.delay;
         }
-
+        this.spawnClock += delta;
     }
 
     updateTPattern(delta) {
-        let vec = vecScale(this.dir, 400 * (delta / 1000));
+        let vec = vecScale(this.dir, T_PATTERN_MOVE_SPEED * (delta / 1000));
         for (let bullet of this.bullets) {
             bullet.modifyPosition(vec);
+            if (bullet.doCollisionCheck()) {
+                this.bullets.splice(this.bullets.indexOf(bullet), 1);
+                bullet.destroy();
+            }
         }
     }
 
-    spawnRingPattern(dir, delta) {
+    spawnRingPattern(delta) {
 
     }
 
     updateRingPattern(delta) {
-
+        for (let ring of this.rings) {
+            ring.x += this.dir.x * RING_PATTERN_MOVE_SPEED * (delta / 1000);
+            ring.y += this.dir.y * RING_PATTERN_MOVE_SPEED * (delta / 1000);
+            ring.radius += RING_PATTERN_GROWTH_RATE * (delta / 1000);
+            for (let bullet of ring.bullets) {
+                if (bullet.doCollisionCheck()) {
+                    ring.bullets.splice(ring.bullets.indexOf(bullet), 1);
+                    bullet.destroy();
+                }
+            }
+        }
     }
 
-    spawnWallPattern(dir, delta) {
+    spawnWallPattern(delta) {
 
     }
 
@@ -85,6 +129,10 @@ class Attack {
 
 
     kill() {
-
+        for (let bullet of this.bullets) {
+            bullet.kill();
+        }
+        this.spawnPattern = null;
+        this.updatePattern = null;
     }
 }
