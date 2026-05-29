@@ -1,10 +1,10 @@
 class DuckBullet extends Phaser.GameObjects.Sprite {
     constructor(scene, x, y, color, hurtPlayerCallback = null) {
         switch(color) {
-            case scene.colors.YELLOW:
+            case Colors.YELLOW:
                 super(scene, x, y, "ducks", "duck_yellow.png");
                 break;
-            case scene.colors.GREEN:
+            case Colors.GREEN:
                 super(scene, x, y, "ducks", "duck_brown.png");
                 break;
             default:
@@ -61,6 +61,6 @@ class DuckBullet extends Phaser.GameObjects.Sprite {
             this.debugGraphics.clear();
             this.debugGraphics.destroy();
         }
-        this.destroy();
+        this.hitbox = null;
     }
 }

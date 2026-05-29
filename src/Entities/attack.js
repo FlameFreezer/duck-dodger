@@ -11,7 +11,7 @@ class Attack {
         this.targetX = player.x;
         this.targetY = player.y;
 
-        this.color = Number(player.activeColor != scene.colors.GREEN); // opposite color of player
+        this.color = Number(player.activeColor != Colors.GREEN); // opposite color of player
 
         this.spawned = false;
         this.delay = 0;
@@ -71,12 +71,12 @@ class Attack {
 
     spawnTPattern(delta) {
         if (this.bullets.length == 0) {
-            this.bullets.push(new DuckBullet(this.scene, this.x, this.y, this.scene.colors.GRAY, this.damagePlayer));
+            this.bullets.push(new DuckBullet(this.scene, this.x, this.y, Colors.GRAY, this.damagePlayer));
             this.delay = this.bullets[0].hitbox.radius * 4 / T_PATTERN_MOVE_SPEED * 1000;
             this.spawnClock = 0;
         }
         else if (this.spawnClock >= this.delay) {
-            this.bullets.push(new DuckBullet(this.scene, this.x, this.y, this.scene.colors.GRAY, this.damagePlayer, true));
+            this.bullets.push(new DuckBullet(this.scene, this.x, this.y, Colors.GRAY, this.damagePlayer, true));
             if (this.bullets.length > 2) {
                 let leftTOffset = vecRotate(vecScale(this.dir, this.bullets[0].hitbox.radius * 4), Math.PI / 2);
                 let rightTOffset = vecRotate(vecScale(this.dir, this.bullets[0].hitbox.radius * 4), Math.PI / -2);
@@ -93,7 +93,10 @@ class Attack {
         let vec = vecScale(this.dir, T_PATTERN_MOVE_SPEED * (delta / 1000));
         for (let bullet of this.bullets) {
             bullet.modifyPosition(vec);
-            bullet.doCollisionCheck();
+            if (bullet.doCollisionCheck()) {
+                this.bullets.splice(this.bullets.indexOf(bullet), 1);
+                bullet.destroy();
+            }
         }
     }
 
@@ -102,7 +105,17 @@ class Attack {
     }
 
     updateRingPattern(delta) {
-
+        for (let ring of this.rings) {
+            ring.x += this.dir.x * RING_PATTERN_MOVE_SPEED * (delta / 1000);
+            ring.y += this.dir.y * RING_PATTERN_MOVE_SPEED * (delta / 1000);
+            ring.radius += RING_PATTERN_GROWTH_RATE * (delta / 1000);
+            for (let bullet of ring.bullets) {
+                if (bullet.doCollisionCheck()) {
+                    ring.bullets.splice(ring.bullets.indexOf(bullet), 1);
+                    bullet.destroy();
+                }
+            }
+        }
     }
 
     spawnWallPattern(delta) {

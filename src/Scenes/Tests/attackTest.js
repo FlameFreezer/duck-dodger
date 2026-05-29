@@ -4,7 +4,6 @@ class AttackTest extends Phaser.Scene {
     }
 
     preload() {
-        this.colors = {YELLOW: 0, GREEN: 1, GRAY: 2};
         //Load sprites
         this.load.setPath("./assets/spritesheets/");
         //Load in player sprite
@@ -16,7 +15,7 @@ class AttackTest extends Phaser.Scene {
     create() {
         this.playerPos = {x: 300, y: 700};
         this.atkOwnerPos = {x: 100, y: 200};
-        this.player = {x: this.playerPos.x, y: this.playerPos.y, activeColor: this.colors.GREEN, onHit: () => {console.log("player was hit!");}, hitbox: new Phaser.Geom.Circle(this.playerPos.x, this.playerPos.y, 10)};
+        this.player = {x: this.playerPos.x, y: this.playerPos.y, activeColor: Colors.GREEN, onHit: () => {console.log("player was hit!");}, hitbox: new Phaser.Geom.Circle(this.playerPos.x, this.playerPos.y, 50)};
         this.atkOwner = {x: this.atkOwnerPos.x, y: this.atkOwnerPos.y, hitbox: new Phaser.Geom.Circle(this.atkOwnerPos.x, this.atkOwnerPos.y, 10)};
         this.hitboxGraphics = this.add.graphics();
         this.hitboxGraphics.lineStyle(1, 0xffffff, 1);
