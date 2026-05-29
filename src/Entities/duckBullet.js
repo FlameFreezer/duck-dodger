@@ -29,7 +29,7 @@ class DuckBullet extends Phaser.GameObjects.Sprite {
         this.x = vec.x;
         this.y = vec.y;
         this.hitbox.setPosition(this.x, this.y);
-        if (this.debug) {
+        if (DEBUG) {
             this.debugGraphics.clear();
             this.debugGraphics.lineStyle(1, 0xffffff, 1);
             this.debugGraphics.strokeCircleShape(this.hitbox);
