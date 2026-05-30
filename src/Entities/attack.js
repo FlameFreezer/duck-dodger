@@ -11,6 +11,7 @@ class Attack {
         this.targetX = player.x;
         this.targetY = player.y;
 
+        // TODO: replace this with a different way of defining attack color.
         this.color = Number(player.activeColor != Colors.GREEN); // opposite color of player
 
         this.spawned = false;
@@ -74,14 +75,14 @@ class Attack {
     spawnTPattern(delta) {
         if (this.bullets.length == 0) {
             this.bullets.push(new DuckBullet(this.scene, this.x, this.y, Colors.GRAY, this.damagePlayer));
-            this.delay = (this.bullets[0].hitbox.radius * 4 / T_PATTERN_MOVE_SPEED) * 1000;
+            this.delay = (this.bullets[0].hitbox.radius * T_PATTERN_BULLET_GAP / T_PATTERN_MOVE_SPEED) * 1000;
             this.spawnClock = 0;
         }
         else if (this.spawnClock >= this.delay) {
             this.bullets.push(new DuckBullet(this.scene, this.x, this.y, Colors.GRAY, this.damagePlayer, true));
             if (this.bullets.length > 2) {
-                let leftTOffset = vecRotate(vecScale(this.dir, this.bullets[0].hitbox.radius * 4), Math.PI / 2);
-                let rightTOffset = vecRotate(vecScale(this.dir, this.bullets[0].hitbox.radius * 4), Math.PI / -2);
+                let leftTOffset = vecRotate(vecScale(this.dir, this.bullets[0].hitbox.radius * T_PATTERN_BULLET_GAP), Math.PI / 2);
+                let rightTOffset = vecRotate(vecScale(this.dir, this.bullets[0].hitbox.radius * T_PATTERN_BULLET_GAP), Math.PI / -2);
                 this.bullets.push(new DuckBullet(this.scene, this.x + leftTOffset.x, this.y + leftTOffset.y, this.color, this.damagePlayer));
                 this.bullets.push(new DuckBullet(this.scene, this.x + rightTOffset.x, this.y + rightTOffset.y, this.color, this.damagePlayer));
                 this.spawned = true;
@@ -140,7 +141,7 @@ class Attack {
     spawnRingPattern(delta) {
         if (this.rings.length == 0) {
             this.rings.push(this.createBulletRing());
-            this.delay = this.rings[0].bullets[0].hitbox.radius * 8 / (RING_PATTERN_MOVE_SPEED + RING_PATTERN_GROWTH_RATE) * 1000;
+            this.delay = this.rings[0].bullets[0].hitbox.radius * RING_PATTERN_RING_GAP / (RING_PATTERN_MOVE_SPEED + RING_PATTERN_GROWTH_RATE) * 1000;
             this.spawnClock = 0;
         }
         else if (this.spawnClock >= this.delay) {
