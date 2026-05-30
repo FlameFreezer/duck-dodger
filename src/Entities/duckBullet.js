@@ -25,7 +25,7 @@ class DuckBullet extends Phaser.GameObjects.Sprite {
         return this;
     }
 
-    moveTo(vec) {
+    setPos(vec) {
         this.x = vec.x;
         this.y = vec.y;
         this.hitbox.setPosition(this.x, this.y);
@@ -36,7 +36,7 @@ class DuckBullet extends Phaser.GameObjects.Sprite {
         }
     }
 
-    modifyPosition(vec) {
+    modifyPos(vec) {
         this.x += vec.x;
         this.y += vec.y;
         this.hitbox.setPosition(this.x, this.y);
@@ -50,13 +50,12 @@ class DuckBullet extends Phaser.GameObjects.Sprite {
     doCollisionCheck() {
         if (this.color != this.player.activeColor && Phaser.Geom.Intersects.CircleToCircle(this.hitbox, this.player.hitbox)) {
             this.hurtPlayerCallback();
-            this.kill();
             return true;
         }
         return false;
     }
 
-    kill() {
+    destroyChildren() {
         if (DEBUG) {
             this.debugGraphics.clear();
             this.debugGraphics.destroy();

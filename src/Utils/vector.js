@@ -26,6 +26,14 @@ function vecNormalize(vec) {
     return vecScale(vec, 1 / length);
 }
 
+function vecAdd(v1, v2) {
+    let result = {};
+    for (let component in v1) {
+        result[component] = v1[component] + v2[component];
+    }
+    return result;
+}
+
 function vecSubtract(v1, v2) {
     let result = {};
     for(let component in v1) {

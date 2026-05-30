@@ -21,13 +21,13 @@ class BulletTest extends Phaser.Scene {
 
     update(time, delta) {
         this.bulletY += delta * 0.2;
-        if (this.testBullet) this.testBullet.moveTo({x: this.testBullet.x, y: this.bulletY});
+        if (this.testBullet) this.testBullet.setPos({x: this.testBullet.x, y: this.bulletY});
         if (this.testBullet && this.bulletY > 700) {
             this.testBullet.kill();
             this.testBullet = null;
         }
 
-        if (this.testBullet2) this.testBullet2.modifyPosition({x: 0, y: delta * 0.2});
+        if (this.testBullet2) this.testBullet2.modifyPos({x: 0, y: delta * 0.2});
         if (this.testBullet2 && this.testBullet2.y > 700) {
             this.testBullet2.kill();
             this.testBullet2 = null;
