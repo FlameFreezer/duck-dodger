@@ -359,9 +359,6 @@ class Attack {
         if (DEBUG) console.log("killing " + this.patternName + " attack");
         this.spawnPattern = null;
         this.updatePattern = null;
-        //Remove self from the parent's attack array. I'm assuming here that the oldest active
-        // attack is always the one to be unloaded
-        this.owner.attacks.shift();
         this.killed = true;
     }
 }

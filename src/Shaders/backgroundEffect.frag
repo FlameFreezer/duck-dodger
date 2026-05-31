@@ -7,7 +7,7 @@ uniform vec2 canvasDim;
 
 #define PI 3.14159
 #define MAX_AMPLITUDE 0.55
-#define MIN_AMPLITUDE 0.15
+#define MIN_AMPLITUDE 0.05
 
 float pow4(float x) {
     return x * x * x * x;
@@ -27,9 +27,10 @@ void main() {
     //at t=0, peak at middle of screen, valleys at end
     float sign = 2.0 * sin(0.5 * time);
     float xFactor = PI * fragCoord.x / resolution.x + sign;
-    float maxAmplitude = pow4(sin(0.75 * time)) * (MAX_AMPLITUDE - MIN_AMPLITUDE) + MIN_AMPLITUDE;
-    float minAmplitude = pow4(cos(0.75 * time)) * (MAX_AMPLITUDE - MIN_AMPLITUDE) + MIN_AMPLITUDE;
-    float amplitudeX = pow2(sin(xFactor)) * (maxAmplitude - minAmplitude) + minAmplitude;
+    float timeAdjusted = time * 0.55;
+    float maxAmplitude = (pow2(sin(timeAdjusted)) + 2.0 * pow2(sin(3.0 * timeAdjusted))) / 3.0 * (MAX_AMPLITUDE - MIN_AMPLITUDE) + MIN_AMPLITUDE;
+    float minAmplitude = (pow2(cos(timeAdjusted)) + 2.0 * pow2(cos(3.0 * timeAdjusted))) / 3.0 * (MAX_AMPLITUDE - MIN_AMPLITUDE) + MIN_AMPLITUDE;
+    float amplitudeX = pow2(sin(1.2 * xFactor)) * (maxAmplitude - minAmplitude) + minAmplitude;
 
     //Decrease alpha linearly from bottom of screen to the peak of the sine wave
     float slope = -0.75 / amplitudeX;

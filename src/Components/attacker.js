@@ -11,6 +11,7 @@ class Attacker {
 
         this.pattern = config.pattern;
         this.attacks = [];
+        this.deleteList = [];
     }
 
     // owner: Object. The owner of this component.
@@ -19,9 +20,23 @@ class Attacker {
         this.owner = owner;
         return this;
     }
+
+    flushDeleteList() {
+        this.attacks = this.attacks.filter((attack) => {
+            if(!attack in this.deleteList) {
+                return attack;
+            }
+        });
+        this.deleteList = [];
+
+    }
+
     update(delta) {
         for(let attack of this.attacks) {
             attack.update(delta);
+            if(attack.killed) {
+                this.deleteList.push(attack);
+            }
         }
         if(this.patternTimer >= this.patternDelay) {
             this.attacks.push(new Attack(this.scene, this, null, this.pattern));
@@ -30,7 +45,9 @@ class Attacker {
         else {
             this.patternTimer += delta;
         }
+        this.flushDeleteList();
     }
+
 
     activate() {
         this.active = true;
