@@ -10,6 +10,7 @@ class Player extends Phaser.GameObjects.Sprite {
         this.setScale(json.scale);
         this.angle = json.angle;
         this.shootDelay = PLAYER_FIRE_RATE;
+        this.baseShootDelay = PLAYER_FIRE_RATE;
         this.shootOffset = json.shootOffset;
         this.activeColor = yellow;
         this.displayColor = yellow;
@@ -20,6 +21,12 @@ class Player extends Phaser.GameObjects.Sprite {
         this.canShoot = true;
         this.bullets = [];
         this.bulletKillList = [];
+
+        this.upgrades = {
+            homing: 0,
+            projectiles: 0,
+            fireRate: 0
+        };
 
         this.hitbox = new Phaser.Geom.Circle(this.x, this.y, this.displayWidth / 2 - 2);
         if(DEBUG) {
@@ -97,7 +104,7 @@ class Player extends Phaser.GameObjects.Sprite {
     }
     updateBullets(delta) {
         for(let bullet of this.bullets) {
-            bullet.update(delta);
+            bullet.update(delta, this.upgrades.homing);
             if(bullet.killed) {
                 this.bulletKillList.push(bullet);
             }
@@ -113,7 +120,15 @@ class Player extends Phaser.GameObjects.Sprite {
         this.bulletKillList = [];
     }
     shootBullet() {
-        this.bullets.push(new PlayerBullet(this.scene, this.x + this.shootOffset.x, this.y + this.shootOffset.y));
+        //Define a width which we will iterate through to shoot the bullets in a row
+        let shootRegionWidth = this.upgrades.projectiles * PLAYER_BULLET_SPACING;
+        //Repeat for each projectile we want to make (+1 so we can shoot at level 0)
+        for(let i = 0; i < this.upgrades.projectiles + 1; i++) {
+            //Get an offset within the region. Start negative so we begin at the left side
+            let regionOffset = -shootRegionWidth / 2 + i * PLAYER_BULLET_SPACING;
+            //Shoot a bullet
+            this.bullets.push(new PlayerBullet(this.scene, this.x + this.shootOffset.x + regionOffset, this.y + this.shootOffset.y));
+        }
         this.canShoot = false;
         this.scene.time.delayedCall(
             this.shootDelay,
@@ -148,6 +163,15 @@ class Player extends Phaser.GameObjects.Sprite {
     }
     addHP(amount) {
         this.hp += amount;
+    }
+    upgradeFireRate() {
+        this.upgrades.fireRate++;
+        this.shootDelay = this.baseShootDelay - PLAYER_FIRE_RATE_PER_LEVEL * this.upgrades.fireRate;
+        //Cap fire rate
+        this.shootDelay = Math.max(this.shootDelay, PLAYER_MAX_FIRE_RATE);
+    }
+    upgradeProjectiles() {
+        this.upgrades.projectiles++;
     }
     updateColorTransition(delta) {
         if(this.didChangeColor) {
