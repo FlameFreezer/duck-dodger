@@ -17,7 +17,7 @@ let config = {
     backgroundColor: '#0c404c',
     width: canvasW,
     height: canvasH,
-    scene: [Title, Gallery]
+    scene: [PlayerTest]
 }
 
 const game = new Phaser.Game(config);

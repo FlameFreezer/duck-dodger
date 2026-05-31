@@ -23,7 +23,7 @@ class Attacker {
 
     flushDeleteList() {
         this.attacks = this.attacks.filter((attack) => {
-            if(!attack in this.deleteList) {
+            if(!this.deleteList.includes(attack)) {
                 return attack;
             }
         });

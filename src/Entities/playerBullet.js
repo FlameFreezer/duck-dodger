@@ -1,17 +1,22 @@
 class PlayerBullet extends Phaser.GameObjects.Sprite {
     constructor(scene, x, y) {
         super(scene, x, y, "player", "worm.png");
+        scene.add.existing(this);
+
         this.speed = 900;
         this.setScale(0.25);
         this.angle = 90;
-        scene.add.existing(this);
+        this.killed = false;
     }
     update(delta) {
         this.y -= this.speed * delta / 1000;
-        if(this.y + this.width * this.scaleX / 2 <= 0) {
-            return false;
+        if(this.y + this.displayHeight / 2 <= 0) {
+            this.killed = true;
         }
-        return true;
+        console.log("update!");
+    }
+    kill() {
+        this.destroy();
     }
     collisionCheck(other) {
         if(!other.active) return false;

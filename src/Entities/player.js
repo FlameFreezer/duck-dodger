@@ -3,6 +3,8 @@ const COLOR_CHANGE_TIME = 100;
 class Player extends Phaser.GameObjects.Sprite {
     constructor(scene, json) {
         super(scene, json.spawnPoint.x, json.spawnPoint.y, "player");
+        scene.add.existing(this);
+
         this.scene = scene;
         this.speed = json.speed;
         this.setScale(json.scale);
@@ -16,6 +18,8 @@ class Player extends Phaser.GameObjects.Sprite {
         this.colorChangeTime = 0;
         this.didChangeColor = false;
         this.canShoot = true;
+        this.bullets = [];
+        this.bulletKillList = [];
 
         this.hitbox = new Phaser.Geom.Circle(this.x, this.y, this.displayWidth / 2 - 2);
         if(DEBUG) {
@@ -52,11 +56,17 @@ class Player extends Phaser.GameObjects.Sprite {
             hideOnComplete: true,
             frames: [{key: "player", frame: "fishPink_hit.png"}]
         });
-        scene.add.existing(this);
         this.play("playerSwim");
     }
     update(delta) {
         let scene = this.scene;
+
+        for(let bullet of this.bullets) {
+            bullet.update(delta);
+            if(bullet.killed) {
+                this.bulletKillList.push(bullet);
+            }
+        }
 
         //Move, shoot, change color
         this.handleInputs(delta);
@@ -81,9 +91,16 @@ class Player extends Phaser.GameObjects.Sprite {
             this.debugGraphics.strokeCircleShape(this.hitbox);
         }
 
+        for(let bullet of this.bulletKillList) {
+            bullet.kill();
+        }
+        this.bullets = this.bullets.filter((bullet) => {
+            if(!this.bulletKillList.includes(bullet)) return bullet;
+        });
+        this.bulletKillList = [];
     }
     shootBullet() {
-        this.scene.bullets.add(new PlayerBullet(this.scene, this.x + this.shootOffset.x, this.y + this.shootOffset.y));
+        this.bullets.push(new PlayerBullet(this.scene, this.x + this.shootOffset.x, this.y + this.shootOffset.y));
         this.canShoot = false;
         this.scene.time.delayedCall(
             this.shootDelay,
