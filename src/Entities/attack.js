@@ -1,5 +1,5 @@
 class Attack {
-    constructor(scene, owner, player, pattern) { // TODO: update constructor parameters and add registerTo function
+    constructor(scene, owner, player, pattern) {
         this.scene = scene;
         this.owner = owner;
 
@@ -11,7 +11,7 @@ class Attack {
         this.targetX = player.x;
         this.targetY = player.y;
 
-        // TODO: replace this with a different way of defining attack color.
+        // TODO: replace this with a different way of defining attack color, pending a design decision.
         this.color = Number(player.activeColor != Colors.GREEN); // opposite color of player
 
         this.spawned = false;
@@ -23,10 +23,6 @@ class Attack {
 
         this.setPatternFromString(pattern);
         if (DEBUG) this.patternName = pattern;
-
-        let spawnOffset = vecScale(this.dir, this.owner.hitbox.radius);
-        this.x += spawnOffset.x;
-        this.y += spawnOffset.y;
     }
 
     setPatternFromString(pattern) {
@@ -34,31 +30,52 @@ class Attack {
             case "t-pattern":
                 this.spawnPattern = this.spawnTPattern;
                 this.updatePattern = this.updateTPattern;
+
                 this.dir = {x: this.targetX - this.x, y: this.targetY - this.y};
                 this.dir = vecNormalize(this.dir);
+
+                let spawnOffset = vecScale(this.dir, this.owner.hitbox.radius);
+                this.x += spawnOffset.x;
+                this.y += spawnOffset.y;
+
                 this.doKill = () => {return this.spawned && this.bullets.length == 0;};
+
                 this.bullets = [];
+
                 break;
             case "ring":
                 this.spawnPattern = this.spawnRingPattern;
                 this.updatePattern = this.updateRingPattern;
+
                 this.dir = {x: 0, y: 1};
+
                 this.doKill = () => {return this.spawned && this.rings.length == 0;};
+
                 this.rings = [];
+
                 break;
             case "wall":
                 this.spawnPattern = this.spawnWallPattern;
                 this.updatePattern = this.updateWallPattern;
+
                 this.dir = {x: this.targetX - this.x, y: this.targetY - this.y};
                 this.dir = vecNormalize(this.dir);
-                this.doKill = () => {};
+
+                this.lifeClock = 0;
+                this.doKill = () => {return this.lifeClock >= WALL_PATTERN_LIFETIME};
+
                 this.walls = [];
+                this.wallGeoms = [];
+
                 break;
             default: // this should never happen
                 return;
         }
     }
 
+
+
+    // this should be called by the parent Attacker object every frame.
     update(delta) {
         if (!this.spawned) {
             this.spawnPattern(delta);
@@ -69,9 +86,11 @@ class Attack {
                 this.kill();
             }
         }
-
     }
 
+
+
+    // ------ T PATTERN INTERNALS ------
     spawnTPattern(delta) {
         if (this.bullets.length == 0) {
             this.bullets.push(new DuckBullet(this.scene, this.x, this.y, Colors.GRAY, this.damagePlayer));
@@ -114,6 +133,9 @@ class Attack {
         }
     }
 
+
+
+    // ------ BULLET RING INTERNALS ------
     createBulletRing() {
         let ring = {};
         ring.x = this.x;
@@ -210,12 +232,120 @@ class Attack {
         }
     }
 
-    spawnWallPattern(delta) {
 
+
+    // ------ WALL PATTERN INTERNALS ------
+    spawnWallPattern(delta) {
+        // runs on the first frame. initializes warning graphics and geoms.
+        if (this.walls.length == 0 && this.wallGeoms.length == 0) {
+            this.wallWarningGraphics = this.scene.add.graphics();
+            this.spawnClock = 0;
+            this.delay = WALL_PATTERN_WARNING_TIME;
+            for (let i = 0; i < WALL_PATTERN_WALLS; i++) {
+                let wallDir = vecRotate(this.dir, i / WALL_PATTERN_WALLS * Math.PI * 2);
+                wallDir = vecScale(wallDir, 10);
+
+                let wallVec = {x: this.x, y: this.y};
+                while(wallVec.x > 0 && wallVec.x < this.scene.sys.scale.width &&
+                      wallVec.y > 0 && wallVec.y < this.scene.sys.scale.height) {
+                          wallVec = vecAdd(wallVec, wallDir);
+                }
+                
+                this.wallGeoms.push(new Phaser.Geom.Line(this.x, this.y, wallVec.x, wallVec.y));
+            }
+        }
+        // runs for the rest of the warning cycle. controls warning graphics, then preps to spawn walls.
+        else if (this.walls.length == 0) {
+            this.wallWarningGraphics.clear();
+            this.wallWarningGraphics.lineStyle(Math.cos(this.spawnClock / (this.delay / 3) * Math.PI * 2) * -1 + 1, Phaser.Display.Color.HSVToRGB(0, 0.75 * (this.spawnClock >= (this.delay * 2 / 3)), 1).color, 1);
+            for (let line of this.wallGeoms) {
+                this.wallWarningGraphics.strokeLineShape(line);
+            }
+            if (this.spawnClock > this.delay) {
+                this.wallWarningGraphics.clear();
+                this.wallWarningGraphics.destroy();
+                for (let i = 0; i < WALL_PATTERN_WALLS; i++) {
+                    this.walls.push([]);
+                }
+            }
+        }
+        // runs for the wall spawning cycle.
+        else if (!this.spawned) {
+            // the bullet in the very center of the pattern is owned by walls[0], and is used as a reference for bullet spacing.
+            if (this.walls[0].length == 0) {
+                this.walls[0].push(new DuckBullet(this.scene, this.x, this.y, Colors.GRAY, this.damagePlayer));
+
+                this.spawnClock = 0;
+
+                let length = Phaser.Geom.Line.Length(this.wallGeoms[0]);
+                for (let geom of this.wallGeoms) {
+                    if (Phaser.Geom.Line.Length(geom) > length) length = Phaser.Geom.Line.Length(geom);
+                }
+                this.delay = WALL_PATTERN_EXTEND_TIME / (length / (this.walls[0][0].hitbox.radius * WALL_PATTERN_BULLET_GAP));
+            }
+            else if (this.spawnClock > this.delay) {
+                for (let wall of this.walls) {
+                    if (this.wallGeoms[this.walls.indexOf(wall)] != null) {
+                        let radius = this.walls[0][0].hitbox.radius;
+
+                        let currGeom = this.wallGeoms[this.walls.indexOf(wall)];
+                        let vec = {x: currGeom.x2 - currGeom.x1, y: currGeom.y2 - currGeom.y1};
+
+                        vec = vecNormalize(vec);
+                        vec = vecScale(vec, radius);
+
+                        let scalar = Number(this.walls.indexOf(wall) != 0);
+                        scalar += wall.length;
+                        scalar *= WALL_PATTERN_BULLET_GAP;
+                        vec = vecScale(vec, scalar);
+
+                        vec = vecAdd(vec, {x: this.x, y: this.y});
+
+                        let currColor = Colors.GRAY;
+                        if ((scalar / WALL_PATTERN_BULLET_GAP) % (WALL_PATTERN_HOLE_WIDTH + WALL_PATTERN_HOLE_SPACING) >= WALL_PATTERN_HOLE_SPACING) currColor = this.color;
+                        
+                        if (vec.x > radius * -1 && vec.x < this.scene.sys.scale.width + radius &&
+                            vec.y > radius * -1 && vec.y < this.scene.sys.scale.height + radius) {
+                                wall.push(new DuckBullet(this.scene, vec.x, vec.y, currColor, this.damagePlayer));
+                        }
+                        else { // mark wall as completed
+                            this.wallGeoms[this.walls.indexOf(wall)] = null;
+                        }
+                    }
+                }
+
+                let doneFlag = true;
+                for(let geom of this.wallGeoms) {
+                    if (geom != null) {
+                        doneFlag = false;
+                        break;
+                    }
+                }
+
+                if (doneFlag) {
+                    this.spawned = true;
+                    if (DEBUG) console.log("wall pattern done spawning");
+                }
+
+                this.spawnClock = this.spawnClock % this.delay;
+            }
+        }
+        this.spawnClock += delta;
     }
 
     updateWallPattern(delta) {
-
+        // TODO: maybe add a little idle animation to the wall bullets so they're not totally static
+        this.lifeClock += delta;
+        if (this.doKill()) {
+            for (let wall of this.walls) {
+                for (let bullet of wall) {
+                    bullet.destroyChildren();
+                    bullet.destroy();
+                }
+                wall.bullets = [];
+            }
+            this.walls = [];
+        }
     }
 
 

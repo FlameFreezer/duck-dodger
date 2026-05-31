@@ -23,6 +23,7 @@ class AttackTest extends Phaser.Scene {
         this.hitboxGraphics.strokeCircleShape(this.player.hitbox);
         this.atk_T = new Attack(this, this.atkOwner, this.player, "t-pattern");
         this.atk_Ring = new Attack(this, this.atkOwner, this.player, "ring");
+        this.atk_Wall = new Attack(this, this.atkOwner, this.player, "wall");
 
     }
 
@@ -30,6 +31,7 @@ class AttackTest extends Phaser.Scene {
         if (time > 1000) {
             this.atk_T.update(delta);
             this.atk_Ring.update(delta);
+            this.atk_Wall.update(delta);
         }
     }
 }
