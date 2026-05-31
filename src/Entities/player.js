@@ -10,6 +10,7 @@ class Player extends Phaser.GameObjects.Sprite {
         this.setScale(json.scale);
         this.angle = json.angle;
         this.shootDelay = PLAYER_FIRE_RATE;
+        this.baseShootDelay = PLAYER_FIRE_RATE;
         this.shootOffset = json.shootOffset;
         this.activeColor = yellow;
         this.displayColor = yellow;
@@ -20,6 +21,12 @@ class Player extends Phaser.GameObjects.Sprite {
         this.canShoot = true;
         this.bullets = [];
         this.bulletKillList = [];
+
+        this.upgrades = {
+            homing: 0,
+            projectiles: 0,
+            fireRate: 0
+        };
 
         this.hitbox = new Phaser.Geom.Circle(this.x, this.y, this.displayWidth / 2 - 2);
         if(DEBUG) {
@@ -97,7 +104,7 @@ class Player extends Phaser.GameObjects.Sprite {
     }
     updateBullets(delta) {
         for(let bullet of this.bullets) {
-            bullet.update(delta);
+            bullet.update(delta, this.upgrades.homing);
             if(bullet.killed) {
                 this.bulletKillList.push(bullet);
             }
@@ -113,7 +120,13 @@ class Player extends Phaser.GameObjects.Sprite {
         this.bulletKillList = [];
     }
     shootBullet() {
-        this.bullets.push(new PlayerBullet(this.scene, this.x + this.shootOffset.x, this.y + this.shootOffset.y));
+        const BULLET_SPACING = 0;
+        const BULLET_WIDTH = 15;
+        let shootRegionWidth = this.upgrades.projectiles * (BULLET_WIDTH + BULLET_SPACING);
+        for(let i = 0; i < this.upgrades.projectiles + 1; i++) {
+            let regionOffset = -shootRegionWidth / 2 + i * (BULLET_WIDTH + BULLET_SPACING);
+            this.bullets.push(new PlayerBullet(this.scene, this.x + this.shootOffset.x + regionOffset, this.y + this.shootOffset.y));
+        }
         this.canShoot = false;
         this.scene.time.delayedCall(
             this.shootDelay,
@@ -148,6 +161,14 @@ class Player extends Phaser.GameObjects.Sprite {
     }
     addHP(amount) {
         this.hp += amount;
+    }
+    upgradeFireRate() {
+        this.upgrades.fireRate++;
+        this.shootDelay = this.baseShootDelay - 25 * this.upgrades.fireRate;
+        if(this.shootDelay < 50) this.shootDelay = 50;
+    }
+    upgradeProjectiles() {
+        this.upgrades.projectiles++;
     }
     updateColorTransition(delta) {
         if(this.didChangeColor) {
