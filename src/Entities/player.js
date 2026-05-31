@@ -6,10 +6,10 @@ class Player extends Phaser.GameObjects.Sprite {
         scene.add.existing(this);
 
         this.scene = scene;
-        this.speed = json.speed;
+        this.speed = PLAYER_BASE_SPEED;
         this.setScale(json.scale);
         this.angle = json.angle;
-        this.shootDelay = json.shootDelay;
+        this.shootDelay = PLAYER_FIRE_RATE;
         this.shootOffset = json.shootOffset;
         this.activeColor = yellow;
         this.displayColor = yellow;
@@ -61,12 +61,7 @@ class Player extends Phaser.GameObjects.Sprite {
     update(delta) {
         let scene = this.scene;
 
-        for(let bullet of this.bullets) {
-            bullet.update(delta);
-            if(bullet.killed) {
-                this.bulletKillList.push(bullet);
-            }
-        }
+        this.updateBullets(delta);
 
         //Move, shoot, change color
         this.handleInputs(delta);
@@ -90,7 +85,19 @@ class Player extends Phaser.GameObjects.Sprite {
             this.debugGraphics.lineStyle(1, 0xffffff, 1);
             this.debugGraphics.strokeCircleShape(this.hitbox);
         }
-
+        if(this.bulletKillList.length > 0) {
+            this.destroyBullets();
+        }
+    }
+    updateBullets(delta) {
+        for(let bullet of this.bullets) {
+            bullet.update(delta);
+            if(bullet.killed) {
+                this.bulletKillList.push(bullet);
+            }
+        }
+    }
+    destroyBullets() {
         for(let bullet of this.bulletKillList) {
             bullet.kill();
         }
@@ -158,16 +165,25 @@ class Player extends Phaser.GameObjects.Sprite {
     }
     handleInputs(delta) {
         let scene = this.scene;
-        //Move left
-        if(scene.keys.a.isDown) {
-            this.x -= this.speed * (delta / 1000);
+
+        //Slow down if holding shift
+        if(scene.keys.shift.isDown) {
+            this.speed = PLAYER_SLOW_SPEED;
         }
-        //Move right
-        if(scene.keys.d.isDown) {
-            this.x += this.speed * (delta / 1000)
+        else {
+            this.speed = PLAYER_BASE_SPEED;
         }
+
+        //Move player based on inputs
+        let inputVector = {};
+        inputVector.x = scene.keys.d.isDown - scene.keys.a.isDown;
+        inputVector.y = scene.keys.s.isDown - scene.keys.w.isDown;
+        inputVector = vecNormalize(inputVector);
+        this.x += inputVector.x * this.speed * (delta / 1000);
+        this.y += inputVector.y * this.speed * (delta / 1000);
+
         //Change color
-        if(Phaser.Input.Keyboard.JustDown(scene.keys.w)) {
+        if(Phaser.Input.Keyboard.JustDown(scene.keys.space)) {
             if(this.activeColor === yellow) {
                 this.activeColor = green;
             }
@@ -176,7 +192,7 @@ class Player extends Phaser.GameObjects.Sprite {
         }
 
         //Shoot
-        if(scene.keys.space.isDown && this.canShoot) {
+        if(this.canShoot) {
             this.shootBullet();
         }
     }

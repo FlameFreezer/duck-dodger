@@ -3,7 +3,7 @@ class PlayerBullet extends Phaser.GameObjects.Sprite {
         super(scene, x, y, "player", "worm.png");
         scene.add.existing(this);
 
-        this.speed = 900;
+        this.speed = PLAYER_BULLET_SPEED;
         this.setScale(0.25);
         this.angle = 90;
         this.killed = false;

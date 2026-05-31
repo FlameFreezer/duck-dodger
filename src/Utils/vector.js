@@ -23,6 +23,7 @@ function vecLength(vec) {
 
 function vecNormalize(vec) {
     let length = vecLength(vec);
+    if(length == 0) return vec;
     return vecScale(vec, 1 / length);
 }
 

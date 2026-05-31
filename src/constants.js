@@ -22,6 +22,11 @@ const WALL_PATTERN_HOLE_SPACING = 6; // number of gray bullets between each colo
 const WALL_PATTERN_MOVE_PERIOD = 2000; // ms
 const WALL_PATTERN_LIFETIME = 8000; // ms
 
+const PLAYER_BULLET_SPEED = 1300;
+const PLAYER_FIRE_RATE = 300;
+const PLAYER_BASE_SPEED = 400;
+const PLAYER_SLOW_SPEED = 250;
+
 const Colors = Object.freeze({
     YELLOW: 0,
     GREEN: 1,

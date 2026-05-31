@@ -7,7 +7,7 @@
         "fishPink.png",
         "fishPink_swim.png"
     ],
-    "speed" : 300,
+    "speed" : 500,
     "scale" : 0.5,
     "angle" : 90,
     "shootDelay" : 200,
