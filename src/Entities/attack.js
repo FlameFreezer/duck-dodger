@@ -353,8 +353,6 @@ class Attack {
         }
     }
 
-
-
     kill() {
         if (DEBUG) console.log("killing " + this.patternName + " attack");
         this.spawnPattern = null;

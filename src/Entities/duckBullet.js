@@ -57,7 +57,6 @@ class DuckBullet extends Phaser.GameObjects.Sprite {
 
     destroyChildren() {
         if (DEBUG) {
-            this.debugGraphics.clear();
             this.debugGraphics.destroy();
         }
         this.hitbox = null;

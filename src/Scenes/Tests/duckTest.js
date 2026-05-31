@@ -25,7 +25,7 @@ class DuckTest extends Phaser.Scene {
             hp: 5,
             points: 15
         };
-        this.duck = new Duck2(this, rubberDuckConfig);
+        this.duck = new Duck(this, rubberDuckConfig);
     }
     update(time, delta) {
         this.duck.update(delta);

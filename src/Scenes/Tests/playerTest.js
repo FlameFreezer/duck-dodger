@@ -45,6 +45,14 @@ class PlayerTest extends Phaser.Scene {
 
         this.player = new Player(this, this.cache.json.get("playerData"));
 
+        this.duck = new Duck(this, {
+            sprite: "duck_yellow.png",
+            pathFollower: new Path("arc", 150, 50, 0.25, 4000),
+            spawnTween: new SpawnTween(300, 0, 300, 250, 1000),
+            hp: 5,
+            points: 15
+        });
+
         this.keys.a = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
         this.keys.d = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
         this.keys.w = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
@@ -56,5 +64,11 @@ class PlayerTest extends Phaser.Scene {
 
     update(time, delta) {
         this.player.update(delta);
+        this.duck.update(delta);
+        for(let bullet of this.player.bullets) {
+            if(Phaser.Geom.Intersects.CircleToRectangle(this.duck.hitbox, bullet.hitbox)) {
+                bullet.killed = true;
+            }
+        }
     }
 }

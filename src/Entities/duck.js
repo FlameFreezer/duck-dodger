@@ -8,7 +8,7 @@ function getDuckSpriteFromType(type) {
             throw "Goose hasn't been defined yet!";
     }
 }
-class Duck2 extends Phaser.GameObjects.Sprite {
+class Duck extends Phaser.GameObjects.Sprite {
     // scene: Phaser.Scene  The scene where this duck will live.
     // config: Object with all of the following fields:
     //      sprite: string          The spritesheet frame the duck should use for display. 
@@ -21,27 +21,58 @@ class Duck2 extends Phaser.GameObjects.Sprite {
         super(scene, 0, 0, "ducks", config.sprite);
         scene.add.existing(this);
 
-        this.setScale(0.25);
+        const NULL_COMPONENT = {active: false};
+
+        this.setScale(0.45);
+        this.pathFollower = NULL_COMPONENT;
+        this.spawnTween = NULL_COMPONENT;
+        this.attacker = NULL_COMPONENT;
 
         //Initialize components
-        this.pathFollower = config.pathFollower.registerTo(this);
-        this.spawnTween = config.spawnTween.registerTo(this);
-        this.attacker = config.attacker.registerTo(this);
+        if(config.pathFollower) {
+            this.pathFollower = config.pathFollower.registerTo(this);
+        }
+        if(config.spawnTween) {
+            this.spawnTween = config.spawnTween.registerTo(this);
+            if(this.pathFollower) {
+                this.spawnTween.completeCallback = () => {
+                    this.pathFollower.activate(this.x, this.y);
+                }
+            }
+        }
+        if(config.attacker) {
+            this.attacker = config.attacker.registerTo(this);
+        }
 
         this.hp = config.hp;
         this.points = config.points;
 
-        this.spawnTween.completeCallback = () => {
-            this.pathFollower.activate(this.x, this.y);
+        this.hitbox = new Phaser.Geom.Circle(this.x, this.y, this.displayWidth / 2);
+        if(DEBUG) {
+            this.debugGraphics = scene.add.graphics();
         }
+
     }
     // ------ INTERFACE METHODS ------
 
     // delta: float     The amount of time, in miliseconds, since the last frame.
     update(delta) {
         this.updateComponents(delta);
+
+        //Move hitbox
+        this.hitbox.setPosition(this.x, this.y);
+        //Draw hitbox
+        if(DEBUG) {
+            this.debugGraphics.clear();
+            this.debugGraphics.lineStyle(1, 0xffffff, 1);
+            this.debugGraphics.strokeCircleShape(this.hitbox);
+        }
+
     }
     kill() {
+        if(DEBUG) {
+            this.debugGraphics.destroy();
+        }
         this.spawnTween.active = false;
         this.pathFollower.deactivate();
         this.attacker.deactivate();

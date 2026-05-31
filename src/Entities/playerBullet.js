@@ -8,6 +8,11 @@ class PlayerBullet extends Phaser.GameObjects.Sprite {
         this.setScale(0.25);
         this.angle = 90;
         this.killed = false;
+
+        this.hitbox = new Phaser.Geom.Rectangle(this.x - this.displayHeight / 2, this.y - this.displayWidth / 2, this.displayHeight, this.displayWidth);
+        if(DEBUG) {
+            this.debugGraphics = scene.add.graphics();
+        }
     }
     update(delta) {
         this.x += this.velocity.x * delta / 1000;
@@ -15,8 +20,20 @@ class PlayerBullet extends Phaser.GameObjects.Sprite {
         if(this.y + this.displayHeight / 2 <= 0) {
             this.killed = true;
         }
+
+        this.hitbox.setPosition(this.x - this.displayHeight / 2, this.y - this.displayWidth / 2);
+        //Draw hitbox
+        if(DEBUG) {
+            this.debugGraphics.clear();
+            this.debugGraphics.lineStyle(1, 0xffffff, 1);
+            this.debugGraphics.strokeRectShape(this.hitbox);
+        }
+
     }
     kill() {
+        if(DEBUG) {
+            this.debugGraphics.destroy();
+        }
         this.destroy();
     }
     //Deprecated
