@@ -120,11 +120,13 @@ class Player extends Phaser.GameObjects.Sprite {
         this.bulletKillList = [];
     }
     shootBullet() {
-        const BULLET_SPACING = 0;
-        const BULLET_WIDTH = 15;
-        let shootRegionWidth = this.upgrades.projectiles * (BULLET_WIDTH + BULLET_SPACING);
+        //Define a width which we will iterate through to shoot the bullets in a row
+        let shootRegionWidth = this.upgrades.projectiles * PLAYER_BULLET_SPACING;
+        //Repeat for each projectile we want to make (+1 so we can shoot at level 0)
         for(let i = 0; i < this.upgrades.projectiles + 1; i++) {
-            let regionOffset = -shootRegionWidth / 2 + i * (BULLET_WIDTH + BULLET_SPACING);
+            //Get an offset within the region. Start negative so we begin at the left side
+            let regionOffset = -shootRegionWidth / 2 + i * PLAYER_BULLET_SPACING;
+            //Shoot a bullet
             this.bullets.push(new PlayerBullet(this.scene, this.x + this.shootOffset.x + regionOffset, this.y + this.shootOffset.y));
         }
         this.canShoot = false;
@@ -164,8 +166,9 @@ class Player extends Phaser.GameObjects.Sprite {
     }
     upgradeFireRate() {
         this.upgrades.fireRate++;
-        this.shootDelay = this.baseShootDelay - 25 * this.upgrades.fireRate;
-        if(this.shootDelay < 50) this.shootDelay = 50;
+        this.shootDelay = this.baseShootDelay - PLAYER_FIRE_RATE_PER_LEVEL * this.upgrades.fireRate;
+        //Cap fire rate
+        this.shootDelay = Math.max(this.shootDelay, PLAYER_MAX_FIRE_RATE);
     }
     upgradeProjectiles() {
         this.upgrades.projectiles++;
