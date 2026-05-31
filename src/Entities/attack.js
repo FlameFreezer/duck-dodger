@@ -3,7 +3,12 @@ class Attack {
         this.scene = scene;
         this.owner = owner;
 
-        this.damagePlayer = player.onHit;
+        //Quincy: I don't like the idea of the attack handling the onHit, and I can't think of a
+        // nice way to pass the player to here from the attacker component. For now, I'm having the
+        // attacker just pass player as null, so this is here to prevent a crash
+        if(player) {
+            this.damagePlayer = player.onHit;
+        }
 
         this.x = owner.x;
         this.y = owner.y;
@@ -354,6 +359,9 @@ class Attack {
         if (DEBUG) console.log("killing " + this.patternName + " attack");
         this.spawnPattern = null;
         this.updatePattern = null;
+        //Remove self from the parent's attack array. I'm assuming here that the oldest active
+        // attack is always the one to be unloaded
+        this.owner.attacks.shift();
         this.killed = true;
     }
 }

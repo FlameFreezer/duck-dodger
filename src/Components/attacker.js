@@ -2,15 +2,15 @@ class Attacker {
     constructor(scene, config) {
         this.scene = scene;
 
-        this.shootDelay = config.shootDelay;
         this.patternDelay = config.patternDelay;
-        this.timer = null;
+        this.patternTimer = 0;
 
         this.shotIndex = 0;
 
         this.active = false;
 
-        this.initPattern(config);
+        this.pattern = config.pattern;
+        this.attacks = [];
     }
 
     // owner: Object. The owner of this component.
@@ -19,30 +19,17 @@ class Attacker {
         this.owner = owner;
         return this;
     }
-
-
-    shoot() {
-        //Make the bullets as part of the pattern
-        this.makeBullets();
-
-        this.shotIndex++;
-
-        //Assume we just have to wait for the next shot in the pattern
-        let timeToShoot = this.shootDelay;
-        //If we've reached the end of the pattern, we actually wait until the next pattern
-        if(this.shotIndex >= this.shotsPerPattern) {
-            this.shotIndex = 0;
-            this.timeToShoot = this.patternDelay;
+    update(delta) {
+        for(let attack of this.attacks) {
+            attack.update(delta);
         }
-
-        //Time the next shot
-        this.timer = this.scene.time.delayedCall(
-            timeToShoot,
-            (self) => {
-                self.shoot();
-            },
-            [this]
-        );
+        if(this.patternTimer >= this.patternDelay) {
+            this.attacks.push(new Attack(this.scene, this, null, this.pattern));
+            this.patternTimer = 0;
+        }
+        else {
+            this.patternTimer += delta;
+        }
     }
 
     activate() {
@@ -54,28 +41,5 @@ class Attacker {
         this.active = false;
         this.timer.remove();
         this.timer = null;
-    }
-
-    initPattern(config) {
-        switch(config.type) {
-            case "ring" : this.ringPattern(config); break;
-            case "t-pattern" : this.tPattern(config); break;
-        }
-    }
-
-    ringPattern(config) {
-        this.bulletsPerRing = config.bulletsPerRing;
-        this.rotationDirections = config.rotationDirections;
-        this.shotsPerPattern = this.rotationDirections.length;
-    
-        this.makeBullets = () => {
-            //TODO: make bullet ring, have it be owned by the scene
-        }
-    }
-
-    tPattern(config) {
-        this.makeBullets = () => {
-            //TODO: shoot the number of bullets for this step of the pattern, have them be owned by the scene
-        }
     }
 }
