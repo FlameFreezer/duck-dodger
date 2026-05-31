@@ -4,20 +4,22 @@ class PlayerBullet extends Phaser.GameObjects.Sprite {
         scene.add.existing(this);
 
         this.speed = PLAYER_BULLET_SPEED;
+        this.velocity = {x: 0, y: -this.speed};
         this.setScale(0.25);
         this.angle = 90;
         this.killed = false;
     }
     update(delta) {
-        this.y -= this.speed * delta / 1000;
+        this.x += this.velocity.x * delta / 1000;
+        this.y += this.velocity.y * delta / 1000;
         if(this.y + this.displayHeight / 2 <= 0) {
             this.killed = true;
         }
-        console.log("update!");
     }
     kill() {
         this.destroy();
     }
+    //Deprecated
     collisionCheck(other) {
         if(!other.active) return false;
         let scaleX = Math.abs(this.scaleX);

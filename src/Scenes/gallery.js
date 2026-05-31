@@ -1,9 +1,3 @@
-const canvasW = 600;
-const canvasH = 800;
-const healthUpInterval = 500;
-const heartGrowMaximum = 1.2;
-const heartGrowTime = 200;
-const bubbleRate = 1500;
 const yellow = {
     r: 255, g: 213, b: 0
 };

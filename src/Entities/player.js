@@ -70,11 +70,17 @@ class Player extends Phaser.GameObjects.Sprite {
         this.updateColorTransition(delta);
 
         //Keep fish within bounds
-        if(this.x + this.width * this.scaleX / 2 > canvasW) {
-            this.x = canvasW - this.width * this.scaleX / 2;
+        if(this.x + this.displayWidth / 2 > canvasW) {
+            this.x = canvasW - this.displayWidth / 2;
         }
-        if(this.x - this.width * this.scaleX / 2 < 0) {
-            this.x = this.width * this.scaleX / 2;
+        if(this.x - this.displayWidth / 2 < 0) {
+            this.x = this.displayWidth / 2;
+        }
+        if(this.y + this.displayHeight / 2 > canvasH) {
+            this.y = canvasH - this.displayHeight / 2;
+        }
+        if(this.y - this.displayHeight / 2 < 0) {
+            this.y = this.displayHeight / 2;
         }
 
         //Move hitbox

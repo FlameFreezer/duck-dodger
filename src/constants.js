@@ -27,6 +27,13 @@ const PLAYER_FIRE_RATE = 300;
 const PLAYER_BASE_SPEED = 400;
 const PLAYER_SLOW_SPEED = 250;
 
+const canvasW = 600;
+const canvasH = 950;
+const healthUpInterval = 500;
+const heartGrowMaximum = 1.2;
+const heartGrowTime = 200;
+const bubbleRate = 1500;
+
 const Colors = Object.freeze({
     YELLOW: 0,
     GREEN: 1,
