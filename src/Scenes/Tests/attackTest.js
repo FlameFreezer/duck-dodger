@@ -24,14 +24,18 @@ class AttackTest extends Phaser.Scene {
         this.atk_T = new Attack(this, this.atkOwner, "t-pattern");
         this.atk_Ring = new Attack(this, this.atkOwner, "ring");
         this.atk_Wall = new Attack(this, this.atkOwner, "wall");
+        this.attacker_T = new Attacker(this, "t-pattern", 3000);
+        this.attacker_T.registerTo(this.atkOwner);
 
     }
 
     update(time, delta) {
         if (time > 1000) {
-            this.atk_T.update(delta);
-            this.atk_Ring.update(delta);
-            this.atk_Wall.update(delta);
+            //this.atk_T.update(delta);
+            //this.atk_Ring.update(delta);
+            //this.atk_Wall.update(delta);
+            if (!this.attacker_T.active) this.attacker_T.activate();
+            this.attacker_T.update(delta);
         }
     }
 }

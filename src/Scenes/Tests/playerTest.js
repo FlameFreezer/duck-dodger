@@ -49,6 +49,7 @@ class PlayerTest extends Phaser.Scene {
             sprite: "duck_yellow.png",
             pathFollower: new Path("arc", 150, 50, 0.25, 4000),
             spawnTween: new SpawnTween(300, 0, 300, 250, 1000),
+            attacker: new Attacker(this, "t-pattern", 3000),
             hp: 5,
             points: 15
         });
