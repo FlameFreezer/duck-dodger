@@ -21,9 +21,9 @@ class AttackTest extends Phaser.Scene {
         this.hitboxGraphics.lineStyle(1, 0xffffff, 1);
         this.hitboxGraphics.strokeCircleShape(this.atkOwner.hitbox);
         this.hitboxGraphics.strokeCircleShape(this.player.hitbox);
-        this.atk_T = new Attack(this, this.atkOwner, this.player, "t-pattern");
-        this.atk_Ring = new Attack(this, this.atkOwner, this.player, "ring");
-        this.atk_Wall = new Attack(this, this.atkOwner, this.player, "wall");
+        this.atk_T = new Attack(this, this.atkOwner, "t-pattern");
+        this.atk_Ring = new Attack(this, this.atkOwner, "ring");
+        this.atk_Wall = new Attack(this, this.atkOwner, "wall");
 
     }
 

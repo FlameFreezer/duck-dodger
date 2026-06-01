@@ -1,23 +1,16 @@
 class Attack {
-    constructor(scene, owner, player, pattern) {
+    constructor(scene, owner, pattern) {
         this.scene = scene;
         this.owner = owner;
-
-        //Quincy: I don't like the idea of the attack handling the onHit, and I can't think of a
-        // nice way to pass the player to here from the attacker component. For now, I'm having the
-        // attacker just pass player as null, so this is here to prevent a crash
-        if(player) {
-            this.damagePlayer = player.onHit;
-        }
 
         this.x = owner.x;
         this.y = owner.y;
 
-        this.targetX = player.x;
-        this.targetY = player.y;
+        this.targetX = scene.player.x;
+        this.targetY = scene.player.y;
 
         // TODO: replace this with a different way of defining attack color, pending a design decision.
-        this.color = Number(player.activeColor != Colors.GREEN); // opposite color of player
+        this.color = Number(scene.player.activeColor != Colors.GREEN); // opposite color of player
 
         this.spawned = false;
         this.killed = false;
@@ -30,6 +23,24 @@ class Attack {
         if (DEBUG) this.patternName = pattern;
     }
 
+
+
+    // this should be called by the parent Attacker object every frame.
+    update(delta) {
+        if (!this.spawned) {
+            this.spawnPattern(delta);
+        }
+        if (!this.killed) {
+            this.updatePattern(delta);
+            if (this.doKill()) {
+                this.kill();
+            }
+        }
+    }
+
+
+
+    // ------ INTERNAL FUNCTIONS ------
     setPatternFromString(pattern) {
         switch(pattern) {
             case "t-pattern":
@@ -78,19 +89,11 @@ class Attack {
         }
     }
 
-
-
-    // this should be called by the parent Attacker object every frame.
-    update(delta) {
-        if (!this.spawned) {
-            this.spawnPattern(delta);
-        }
-        if (!this.killed) {
-            this.updatePattern(delta);
-            if (this.doKill()) {
-                this.kill();
-            }
-        }
+    kill() {
+        if (DEBUG) console.log("killing " + this.patternName + " attack");
+        this.spawnPattern = null;
+        this.updatePattern = null;
+        this.killed = true;
     }
 
 
@@ -98,17 +101,17 @@ class Attack {
     // ------ T PATTERN INTERNALS ------
     spawnTPattern(delta) {
         if (this.bullets.length == 0) {
-            this.bullets.push(new DuckBullet(this.scene, this.x, this.y, Colors.GRAY, this.damagePlayer));
+            this.bullets.push(new DuckBullet(this.scene, this.x, this.y, Colors.GRAY));
             this.delay = (this.bullets[0].hitbox.radius * T_PATTERN_BULLET_GAP / T_PATTERN_MOVE_SPEED) * 1000;
             this.spawnClock = 0;
         }
         else if (this.spawnClock >= this.delay) {
-            this.bullets.push(new DuckBullet(this.scene, this.x, this.y, Colors.GRAY, this.damagePlayer, true));
+            this.bullets.push(new DuckBullet(this.scene, this.x, this.y, Colors.GRAY));
             if (this.bullets.length > 2) {
                 let leftTOffset = vecRotate(vecScale(this.dir, this.bullets[0].hitbox.radius * T_PATTERN_BULLET_GAP), Math.PI / 2);
                 let rightTOffset = vecRotate(vecScale(this.dir, this.bullets[0].hitbox.radius * T_PATTERN_BULLET_GAP), Math.PI / -2);
-                this.bullets.push(new DuckBullet(this.scene, this.x + leftTOffset.x, this.y + leftTOffset.y, this.color, this.damagePlayer));
-                this.bullets.push(new DuckBullet(this.scene, this.x + rightTOffset.x, this.y + rightTOffset.y, this.color, this.damagePlayer));
+                this.bullets.push(new DuckBullet(this.scene, this.x + leftTOffset.x, this.y + leftTOffset.y, this.color));
+                this.bullets.push(new DuckBullet(this.scene, this.x + rightTOffset.x, this.y + rightTOffset.y, this.color));
                 this.spawned = true;
             }
             this.spawnClock = this.spawnClock % this.delay;
@@ -160,7 +163,7 @@ class Attack {
             let vec = {x: 0, y: ring.radius};
             vec = vecRotate(vec, ((i / RING_PATTERN_BULLETS) * Math.PI * 2) + rotOffset);
             vec = vecAdd(vec, {x: ring.x, y: ring.y});
-            ring.bullets.push(new DuckBullet(this.scene, vec.x, vec.y, currColor, this.damagePlayer));
+            ring.bullets.push(new DuckBullet(this.scene, vec.x, vec.y, currColor));
         }
         return ring;
     }
@@ -278,7 +281,7 @@ class Attack {
         else if (!this.spawned) {
             // the bullet in the very center of the pattern is owned by walls[0], and is used as a reference for bullet spacing.
             if (this.walls[0].length == 0) {
-                this.walls[0].push(new DuckBullet(this.scene, this.x, this.y, Colors.GRAY, this.damagePlayer));
+                this.walls[0].push(new DuckBullet(this.scene, this.x, this.y, Colors.GRAY));
 
                 this.spawnClock = 0;
 
@@ -311,7 +314,7 @@ class Attack {
                         
                         if (vec.x > radius * -1 && vec.x < this.scene.sys.scale.width + radius &&
                             vec.y > radius * -1 && vec.y < this.scene.sys.scale.height + radius) {
-                                wall.push(new DuckBullet(this.scene, vec.x, vec.y, currColor, this.damagePlayer));
+                                wall.push(new DuckBullet(this.scene, vec.x, vec.y, currColor));
                         }
                         else { // mark wall as completed
                             this.wallGeoms[this.walls.indexOf(wall)] = null;
@@ -351,12 +354,5 @@ class Attack {
             }
             this.walls = [];
         }
-    }
-
-    kill() {
-        if (DEBUG) console.log("killing " + this.patternName + " attack");
-        this.spawnPattern = null;
-        this.updatePattern = null;
-        this.killed = true;
     }
 }
