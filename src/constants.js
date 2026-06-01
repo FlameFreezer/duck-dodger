@@ -1,4 +1,4 @@
-const DEBUG = true;
+const DEBUG = false;
 
 const T_PATTERN_MOVE_SPEED = 400; // px/sec
 const T_PATTERN_BULLET_GAP = 4; // gap between bullet centerpoints, in bullet radii
@@ -29,6 +29,11 @@ const PLAYER_SLOW_SPEED = 250;
 const PLAYER_FIRE_RATE_PER_LEVEL = 25;
 const PLAYER_MAX_FIRE_RATE = 50;
 const PLAYER_BULLET_SPACING = 15;
+const PLAYER_BULLET_ROTATION_RATE = 2;
+const PLAYER_BULLET_BASE_HOMING_REGION_WIDTH = 75;
+const PLAYER_BULLET_BASE_HOMING_REGION_HEIGHT = 150;
+const PLAYER_BULLET_HOMING_REGION_SIZE_PER_LEVEL = 45;
+const PLAYER_BULLET_HOMING_ANGLE_PER_LEVEL = 0.15;
 
 const canvasW = 600;
 const canvasH = 950;
