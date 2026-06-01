@@ -20,14 +20,13 @@ class SpawnTween {
     // easeStart: float. How far into the tween the easing should kick in.
     //               Ranges from 0 (start immediately) to 1 (don't ease).
     // completeCallback: Function to fire on tween completion.
-    constructor(startX, startY, endX, endY, duration, easeStart = 1, completeCallback) {
+    constructor(startX, startY, endX, endY, duration, easeStart = 1, completeCallback = null) {
         this.startX = startX;
         this.startY = startY;
         this.endX = endX;
         this.endY = endY;
         this.duration = duration;
         this.easeStart = easeStart;
-        this.distance = Math.sqrt(Math.pow(startX - endX, 2) + Math.pow(startY - endY, 2));
         this.currTime = 0;
         this.completeCallback = completeCallback;
         this.active = false;
@@ -46,7 +45,6 @@ class SpawnTween {
         return this;
     }
 
-
     // delta: int. time since last update() call in milliseconds.
     update(delta) {
         if (this.active) {
@@ -64,6 +62,10 @@ class SpawnTween {
                 console.log(t, toX, toY);
             }
         }
+    }
+
+    deactivate() {
+        this.active = false;
     }
 
 

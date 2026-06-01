@@ -11,12 +11,13 @@ function getDuckSpriteFromType(type) {
 class Duck extends Phaser.GameObjects.Sprite {
     // scene: Phaser.Scene  The scene where this duck will live.
     // config: Object with all of the following fields:
-    //      sprite: string          The spritesheet frame the duck should use for display. 
-    //      pathFollower: Path      An unregistered Path component.
-    //      spawnTween: SpawnTween  An unregistered SpawnTween component.
-    //      attacker:   Attacker    An unregistered Attacker component.
-    //      hp: int                 The amount of HP the duck will have.
-    //      points: int             The amount of points the duck will reward on death.
+    //    sprite: string            The spritesheet frame the duck should use for display. 
+    //    pathFollower: Path        An unregistered Path component.
+    //    spawnTween: SpawnTween    An unregistered SpawnTween component.
+    //    attacker:   Attacker      An unregistered Attacker component.
+    //    deathAnim: DeathAnimator  An unregistered DeathAnimator component.
+    //    hp: int                   The amount of HP the duck will have.
+    //    points: int               The amount of points the duck will reward on death.
     constructor(scene, config) {
         super(scene, 0, 0, "ducks", config.sprite);
         scene.add.existing(this);
@@ -27,28 +28,32 @@ class Duck extends Phaser.GameObjects.Sprite {
         this.pathFollower = NULL_COMPONENT;
         this.attacker = NULL_COMPONENT;
         this.spawnTween = NULL_COMPONENT;
+        this.components = {};
 
         //Initialize components
         if(config.pathFollower) {
-            this.pathFollower = config.pathFollower.registerTo(this);
+            this.components.pathFollower = (config.pathFollower.registerTo(this));
         }
         if(config.attacker) {
-            this.attacker = config.attacker.registerTo(this);
+            this.components.attacker = (config.attacker.registerTo(this));
         }
         if(config.spawnTween) {
-            this.spawnTween = config.spawnTween.registerTo(this);
-            if(this.pathFollower) {
-                this.spawnTween.completeCallback = () => {
-                    if (Object.hasOwn(this, "pathFollower")) {
+            this.components.spawnTween = (config.spawnTween.registerTo(this));
+            if(this.components.pathFollower) {
+                this.components.spawnTween.completeCallback = () => {
+                    if (Object.hasOwn(this.components, "pathFollower")) {
                         if (DEBUG) console.log("Duck: activating pathFollower");
-                        this.pathFollower.activate(this.x, this.y);
+                        this.components.pathFollower.activate(this.x, this.y);
                     }
-                    if (Object.hasOwn(this, "attacker")) {
+                    if (Object.hasOwn(this.components, "attacker")) {
                         if (DEBUG) console.log("Duck: activating attacker");
-                        this.attacker.activate();
+                        this.components.attacker.activate();
                     }
                 }
             }
+        }
+        if (config.deathAnim) {
+            this.components.deathAnim = config.deathAnim.registerTo(this);
         }
 
         this.hp = config.hp;
@@ -75,28 +80,33 @@ class Duck extends Phaser.GameObjects.Sprite {
             this.debugGraphics.strokeCircleShape(this.hitbox);
         }
 
+        if (Object.hasOwn(this.components, "deathAnim") && this.components.deathAnim.complete) this.destroy();
     }
+
     kill() {
         if(DEBUG) {
             this.debugGraphics.destroy();
         }
-        this.spawnTween.active = false;
-        this.pathFollower.deactivate();
-        this.attacker.deactivate();
-        this.destroy();
+
+        if (Object.hasOwn(this.components, "deathAnim") && !this.components.deathAnim.active) {
+            for (let component in this.components) {
+                this.components[component].deactivate();
+            }
+            this.components.deathAnim.activate();
+        }
+        else if (!Object.hasOwn(this.components, "deathAnim")) {
+            for (let component in this.components) {
+                this.components[component].deactivate();
+            }
+            this.destroy();
+        }
     }
 
     // ------ INTERNAL METHODS -----
 
     updateComponents(delta) {
-        if(this.spawnTween.active) {
-            this.spawnTween.update(delta);
-        }
-        if(this.pathFollower.active) {
-            this.pathFollower.update(delta);
-        }
-        if(this.attacker.active) {
-            this.attacker.update(delta);
+        for (let component in this.components) {
+            if (this.components[component].active) this.components[component].update(delta);
         }
     }
 }
