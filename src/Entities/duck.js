@@ -67,7 +67,7 @@ class Duck extends Phaser.GameObjects.Sprite {
     }
     // ------ INTERFACE METHODS ------
 
-    // delta: float     The amount of time, in miliseconds, since the last frame.
+    // delta: float. The amount of time, in miliseconds, since the last frame.
     update(delta) {
         this.updateComponents(delta);
 
@@ -80,8 +80,17 @@ class Duck extends Phaser.GameObjects.Sprite {
             this.debugGraphics.strokeCircleShape(this.hitbox);
         }
 
-        if (Object.hasOwn(this.components, "deathAnim") && this.components.deathAnim.complete) this.destroy();
+        // handle death
+        if (this.hp <= 0) this.kill();
+        if (Object.hasOwn(this.components, "deathAnim") && this.components.deathAnim.complete) {
+            for (let component in this.components) {
+                this.components[component].deactivate();
+            }
+            this.destroy();
+        }
     }
+
+    // ------ INTERNAL METHODS -----
 
     kill() {
         if(DEBUG) {
@@ -101,8 +110,6 @@ class Duck extends Phaser.GameObjects.Sprite {
             this.destroy();
         }
     }
-
-    // ------ INTERNAL METHODS -----
 
     updateComponents(delta) {
         for (let component in this.components) {

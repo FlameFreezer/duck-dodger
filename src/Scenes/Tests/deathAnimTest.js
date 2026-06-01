@@ -26,7 +26,12 @@ class DeathAnimTest extends Phaser.Scene {
     }
 
     update(time, delta) {
-        this.ducks[0].update(delta);
-        if (time > 3000) this.ducks[0].kill();
+        if (this.ducks.length > 0) {
+            this.ducks[0].update(delta);
+            if (time > 3000) this.ducks[0].hp = 0;
+            if (this.ducks[0].components.deathAnim.complete) {
+                this.ducks = [];
+            }
+        }
     }
 }
