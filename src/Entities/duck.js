@@ -25,23 +25,30 @@ class Duck extends Phaser.GameObjects.Sprite {
 
         this.setScale(0.45);
         this.pathFollower = NULL_COMPONENT;
-        this.spawnTween = NULL_COMPONENT;
         this.attacker = NULL_COMPONENT;
+        this.spawnTween = NULL_COMPONENT;
 
         //Initialize components
         if(config.pathFollower) {
             this.pathFollower = config.pathFollower.registerTo(this);
         }
+        if(config.attacker) {
+            this.attacker = config.attacker.registerTo(this);
+        }
         if(config.spawnTween) {
             this.spawnTween = config.spawnTween.registerTo(this);
             if(this.pathFollower) {
                 this.spawnTween.completeCallback = () => {
-                    this.pathFollower.activate(this.x, this.y);
+                    if (Object.hasOwn(this, "pathFollower")) {
+                        if (DEBUG) console.log("Duck: activating pathFollower");
+                        this.pathFollower.activate(this.x, this.y);
+                    }
+                    if (Object.hasOwn(this, "attacker")) {
+                        if (DEBUG) console.log("Duck: activating attacker");
+                        this.attacker.activate();
+                    }
                 }
             }
-        }
-        if(config.attacker) {
-            this.attacker = config.attacker.registerTo(this);
         }
 
         this.hp = config.hp;

@@ -13,7 +13,7 @@ const RING_PATTERN_GROWTH_RATE = 200; // radius growth rate in px/sec
 const RING_PATTERN_MAX_ANGULAR_SPEED = Math.PI / 3; // max ring radial speed in radians/sec
 const RING_PATTERN_ROTATION_SPEED = 240; // rotation around ring circumference in px/sec
 
-const WALL_PATTERN_WALLS = 4;
+const WALL_PATTERN_WALLS = 4; // number of walls per attack pattern
 const WALL_PATTERN_WARNING_TIME = 2000; // ms
 const WALL_PATTERN_EXTEND_TIME = 300; // ms
 const WALL_PATTERN_BULLET_GAP = 3; // gap between bullet centerpoints, in bullet radii

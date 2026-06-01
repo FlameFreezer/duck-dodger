@@ -1,10 +1,10 @@
 class Attack {
-    constructor(scene, owner, pattern) {
+    constructor(scene, parentDuck, pattern) {
         this.scene = scene;
-        this.owner = owner;
+        this.parentDuck = parentDuck;
 
-        this.x = owner.x;
-        this.y = owner.y;
+        this.x = parentDuck.x;
+        this.y = parentDuck.y;
 
         this.targetX = scene.player.x;
         this.targetY = scene.player.y;
@@ -50,7 +50,7 @@ class Attack {
                 this.dir = {x: this.targetX - this.x, y: this.targetY - this.y};
                 this.dir = vecNormalize(this.dir);
 
-                let spawnOffset = vecScale(this.dir, this.owner.hitbox.radius);
+                let spawnOffset = vecScale(this.dir, this.parentDuck.hitbox.radius);
                 this.x += spawnOffset.x;
                 this.y += spawnOffset.y;
 
@@ -73,6 +73,7 @@ class Attack {
             case "wall":
                 this.spawnPattern = this.spawnWallPattern;
                 this.updatePattern = this.updateWallPattern;
+                this.spawnIndex = 0;
 
                 this.dir = {x: this.targetX - this.x, y: this.targetY - this.y};
                 this.dir = vecNormalize(this.dir);
@@ -148,7 +149,7 @@ class Attack {
         let ring = {};
         ring.x = this.x;
         ring.y = this.y;
-        ring.radius = this.owner.hitbox.radius / 2;
+        ring.radius = this.parentDuck.hitbox.radius / 2;
         ring.rotDir = Math.sign((this.rings.length + 1) % 2 - 0.5)
         ring.bullets = [];
         let currColor = this.color;
@@ -284,6 +285,7 @@ class Attack {
                 this.walls[0].push(new DuckBullet(this.scene, this.x, this.y, Colors.GRAY));
 
                 this.spawnClock = 0;
+                this.spawnIndex++;
 
                 let length = Phaser.Geom.Line.Length(this.wallGeoms[0]);
                 for (let geom of this.wallGeoms) {
@@ -302,9 +304,7 @@ class Attack {
                         vec = vecNormalize(vec);
                         vec = vecScale(vec, radius);
 
-                        let scalar = Number(this.walls.indexOf(wall) != 0);
-                        scalar += wall.length;
-                        scalar *= WALL_PATTERN_BULLET_GAP;
+                        let scalar = this.spawnIndex * WALL_PATTERN_BULLET_GAP;
                         vec = vecScale(vec, scalar);
 
                         vec = vecAdd(vec, {x: this.x, y: this.y});
@@ -316,15 +316,21 @@ class Attack {
                             vec.y > radius * -1 && vec.y < this.scene.sys.scale.height + radius) {
                                 wall.push(new DuckBullet(this.scene, vec.x, vec.y, currColor));
                         }
-                        else { // mark wall as completed
-                            this.wallGeoms[this.walls.indexOf(wall)] = null;
+                        else if (Object.hasOwn(this.wallGeoms[this.walls.indexOf(wall)], "x1")){ // mark wall as completed
+                            let currGeom = this.wallGeoms[this.walls.indexOf(wall)];
+                            let vec = {x: currGeom.x2 - currGeom.x1, y: currGeom.y2 - currGeom.y1};
+                            vec = vecNormalize(vec);
+                            vec = vecRotate(vec, Math.PI / 2);
+                            console.log("vec: " + vec.x + " " + vec.y);
+                            this.wallGeoms[this.walls.indexOf(wall)] = vec;
                         }
                     }
                 }
+                this.spawnIndex++;
 
                 let doneFlag = true;
                 for(let geom of this.wallGeoms) {
-                    if (geom != null) {
+                    if (Object.hasOwn(geom, "x1")) {
                         doneFlag = false;
                         break;
                     }
@@ -344,6 +350,16 @@ class Attack {
     updateWallPattern(delta) {
         // TODO: maybe add a little idle animation to the wall bullets so they're not totally static
         this.lifeClock += delta;
+        for (let wall of this.walls) {
+            for (let bullet of wall) {
+                bullet.setPos({x: bullet.x, y: bullet.y});
+                if (bullet.doCollisionCheck()) {
+                    bullet.destroyChildren();
+                    bullet.destroy();
+                    wall.splice(wall.indexOf(bullet), 1);
+                }
+            }
+        }
         if (this.doKill()) {
             for (let wall of this.walls) {
                 for (let bullet of wall) {
