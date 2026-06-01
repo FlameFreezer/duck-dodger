@@ -48,6 +48,20 @@ const Colors = Object.freeze({
     GRAY: 2
 });
 
+const GetRGBFromColor = (color) => {
+    switch(color) {
+        case Colors.YELLOW:
+            return 0xffD500;
+        case Colors.GREEN:
+            return 0x05B300;
+        case Colors.GRAY:
+            return 0x888888;
+        default: // this should never happen
+            console.log("GetRGBFromColor: the requested color (" + color + ") does not exist.");
+            break;
+    }
+}
+
 const DuckTypes = Object.freeze({
     RUBBER_DUCKY: 0,
     MALLARD: 1,
