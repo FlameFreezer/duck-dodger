@@ -295,20 +295,23 @@ class Attack {
         else if (this.walls.length == 0) {
             this.wallWarningGraphics.clear();
             this.wallWarningGraphics.lineStyle(Math.cos(this.spawnClock / (this.delay / 3) * Math.PI * 2) * -1 + 1, Phaser.Display.Color.HSVToRGB(0, 0.75 * (this.spawnClock >= (this.delay * 2 / 3)), 1).color, 1);
-
-            this.x = this.parentDuck.x;
-            this.y = this.parentDuck.y;
+            
             if (this.spawnClock < this.delay * 2 / 3) {
+                this.x = this.parentDuck.x;
+                this.y = this.parentDuck.y;
+
                 this.targetX = this.scene.player.x;
                 this.targetY = this.scene.player.y;
+
                 this.dir = {x: this.targetX - this.x, y: this.targetY - this.y};
                 this.dir = vecNormalize(this.dir);
-            }
-            this.wallDirs = this.getWallDirs();
-            this.wallGeoms = [];
-            for (let dir of this.wallDirs) {
-                this.wallGeoms.push(new Phaser.Geom.Line(this.x, this.y, dir.x, dir.y));
-                dir = vecNormalize(dir);
+
+                this.wallDirs = this.getWallDirs();
+
+                this.wallGeoms = [];
+                for (let dir of this.wallDirs) {
+                    this.wallGeoms.push(new Phaser.Geom.Line(this.x, this.y, dir.x, dir.y));
+                }
             }
             for (let line of this.wallGeoms) {
                 this.wallWarningGraphics.strokeLineShape(line);
@@ -325,7 +328,7 @@ class Attack {
         else if (!this.spawned) {
             // the bullet in the very center of the pattern is owned by walls[0], and is used as a reference for bullet spacing.
             if (this.walls[0].length == 0) {
-                this.walls[0].push(new DuckBullet(this.scene, this.x, this.y, Colors.GRAY));
+                this.walls[0].push(new DuckBullet(this.scene, -50, -50, Colors.GRAY));
 
                 this.spawnClock = 0;
                 this.spawnIndex++;
@@ -337,6 +340,9 @@ class Attack {
                 this.delay = WALL_PATTERN_EXTEND_TIME / (length / (this.walls[0][0].hitbox.radius * WALL_PATTERN_BULLET_GAP));
             }
             else if (this.spawnClock > this.delay) {
+                if (this.walls[0][0].x < 0) {
+                    this.walls[0][0].setPos({x: this.x, y: this.y});
+                }
                 for (let wall of this.walls) {
                     if (this.wallGeoms[this.walls.indexOf(wall)] != null) {
                         let radius = this.walls[0][0].hitbox.radius;
@@ -357,6 +363,8 @@ class Attack {
                         
                         if (vecInCameraBounds(this.scene, vec, this.walls[0][0].hitbox.radius * -1)) {
                                 wall.push(new DuckBullet(this.scene, vec.x, vec.y, currColor));
+                                wall[wall.length - 1].basePos = vec;
+                                wall[wall.length - 1].oscillateDirection = Math.sign(scalar % 2 - 0.5);
                         }
                         else if (Object.hasOwn(this.wallGeoms[this.walls.indexOf(wall)], "x1")){ // mark wall as completed
                             let currGeom = this.wallGeoms[this.walls.indexOf(wall)];
@@ -394,7 +402,19 @@ class Attack {
         this.lifeClock += delta;
         for (let wall of this.walls) {
             for (let bullet of wall) {
-                bullet.setPos({x: bullet.x, y: bullet.y});
+                if (Object.hasOwn(bullet, "basePos")) {
+                    let posModifier = this.wallDirs[this.walls.indexOf(wall)];
+                    posModifier = vecSubtract(posModifier, {x: this.x, y: this.y});
+                    posModifier = vecNormalize(posModifier);
+                    posModifier = vecRotate(posModifier, Math.PI / 2);
+                    posModifier = vecScale(posModifier, 2 * bullet.oscillateDirection);
+                    let pos = vecAdd(bullet.basePos, vecScale(posModifier, Math.sin(this.lifeClock / (WALL_PATTERN_LIFETIME / 3) * Math.PI * 2)));
+                    bullet.setPos(pos);
+                }
+                else {
+                    bullet.setPos({x: bullet.x, y: bullet.y});
+                }
+
                 if (bullet.doCollisionCheck()) {
                     bullet.destroyChildren();
                     bullet.destroy();
@@ -402,6 +422,8 @@ class Attack {
                 }
             }
             if (this.spawned && wall.length == 0) {
+                this.wallDirs.splice(this.walls.indexOf(wall), 1);
+                this.wallGeoms.splice(this.walls.indexOf(wall), 1);
                 this.walls.splice(this.walls.indexOf(wall), 1);
             }
         }

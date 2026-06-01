@@ -17,8 +17,8 @@ const WALL_PATTERN_WALLS = 4; // number of walls per attack pattern
 const WALL_PATTERN_WARNING_TIME = 2000; // ms
 const WALL_PATTERN_EXTEND_TIME = 300; // ms
 const WALL_PATTERN_BULLET_GAP = 3; // gap between bullet centerpoints, in bullet radii
-const WALL_PATTERN_HOLE_WIDTH = 2; // number of colored bullets per colored bullet segment
-const WALL_PATTERN_HOLE_SPACING = 6; // number of gray bullets between each colored bullet segment
+const WALL_PATTERN_HOLE_WIDTH = 3; // number of colored bullets per colored bullet segment
+const WALL_PATTERN_HOLE_SPACING = 5; // number of gray bullets between each colored bullet segment
 const WALL_PATTERN_MOVE_PERIOD = 2000; // ms
 const WALL_PATTERN_LIFETIME = 8000; // ms
 
