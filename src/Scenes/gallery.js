@@ -1,9 +1,3 @@
-const yellow = {
-    r: 255, g: 213, b: 0
-};
-const green = {
-    r: 5, g: 179, b: 20
-};
 const states = Object.freeze({
     WAVE_ACTIVE: 0,
     WAVE_TRANSITION: 1,

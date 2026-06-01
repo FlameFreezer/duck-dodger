@@ -53,11 +53,9 @@ const Colors = Object.freeze({
 const GetRGBFromColor = (color) => {
     switch(color) {
         case Colors.YELLOW:
-            return 0xffD500;
+            return {r: 255, g: 213, b: 0};
         case Colors.GREEN:
-            return 0x05B300;
-        case Colors.GRAY:
-            return 0x888888;
+            return {r: 5, g: 179, b: 20};
         default: // this should never happen
             console.log("GetRGBFromColor: the requested color (" + color + ") does not exist.");
             break;

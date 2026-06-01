@@ -12,8 +12,8 @@ class Player extends Phaser.GameObjects.Sprite {
         this.shootDelay = PLAYER_FIRE_RATE;
         this.baseShootDelay = PLAYER_FIRE_RATE;
         this.shootOffset = json.shootOffset;
-        this.activeColor = yellow;
-        this.displayColor = yellow;
+        this.activeColor = Colors.YELLOW;
+        this.displayColor = GetRGBFromColor(Colors.YELLOW);
         this.hp = json.hp;
         this.isInvulnerable = false;
         this.colorChangeTime = 0;
@@ -178,21 +178,21 @@ class Player extends Phaser.GameObjects.Sprite {
     }
     updateColorTransition(delta) {
         if(this.didChangeColor) {
-            if(this.activeColor == green) {
+            if(this.activeColor == Colors.GREEN) {
                 this.colorChangeTime += delta;
                 if(this.colorChangeTime > COLOR_CHANGE_TIME) {
                     this.colorChangeTime = COLOR_CHANGE_TIME;
                     this.didChangeColor = false;
                 }
             }
-            else if(this.activeColor == yellow) {
+            else if(this.activeColor == Colors.YELLOW) {
                 this.colorChangeTime -= delta;
                 if(this.colorChangeTime < 0) {
                     this.colorChangeTime = 0;
                     this.didChangeColor = false;
                 }
             }
-            this.displayColor = vecLerp(yellow, green, this.colorChangeTime / COLOR_CHANGE_TIME);
+            this.displayColor = vecLerp(GetRGBFromColor(Colors.YELLOW), GetRGBFromColor(Colors.GREEN), this.colorChangeTime / COLOR_CHANGE_TIME);
         }
         this.scene.bgShader.setUniform("baseColor.value", colorToVector(this.displayColor));
     }
@@ -217,10 +217,10 @@ class Player extends Phaser.GameObjects.Sprite {
 
         //Change color
         if(Phaser.Input.Keyboard.JustDown(scene.keys.space)) {
-            if(this.activeColor === yellow) {
-                this.activeColor = green;
+            if(this.activeColor === Colors.YELLOW) {
+                this.activeColor = Colors.GREEN;
             }
-            else this.activeColor = yellow;
+            else this.activeColor = Colors.YELLOW;
             this.didChangeColor = true;
         }
 

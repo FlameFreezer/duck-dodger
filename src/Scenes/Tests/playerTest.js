@@ -32,7 +32,7 @@ class PlayerTest extends Phaser.Scene {
         this.bgShader = this.add.shader("background", 0, 0, canvasW * 2, canvasH * 2);
         this.bgShader.uniforms.baseColor = {
             type: '3f',
-            value: colorToVector(yellow)
+            value: colorToVector(Colors.YELLOW)
         };
         this.bgShader.uniforms.canvasDim = {
             type: '2f',
