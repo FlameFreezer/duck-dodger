@@ -113,12 +113,13 @@ class Attack {
             this.targetX = this.scene.player.x;
             this.targetY = this.scene.player.y;
 
+            this.x = this.parentDuck.x;
+            this.y = this.parentDuck.y;
+            
             this.dir = {x: this.targetX - this.x, y: this.targetY - this.y};
             this.dir = vecNormalize(this.dir);
 
             let spawnOffset = vecScale(this.dir, this.parentDuck.hitbox.radius);
-            this.x = this.parentDuck.x;
-            this.y = this.parentDuck.y;
             this.x += spawnOffset.x;
             this.y += spawnOffset.y;
 
