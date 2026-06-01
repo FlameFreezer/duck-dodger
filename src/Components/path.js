@@ -21,13 +21,15 @@ class Path {
     // startT: float. where in the path to start. ranges from 0 (start) to 1 (end).
     // T = 0 always represents the leftmost point of a path.
     // loopTime: float. how long it takes to complete a path cycle in milliseconds.
-    constructor(path, width, height, startT, loopTime) {
+    // rotateToPath: bool. if true, the owner will rotate to face in the direction of travel.
+    constructor(path, width, height, startT, loopTime, rotateToPath = false) {
         this.width = width;
         this.height = height;
         this.loopTime = loopTime;
         this.active = false;
         this.pathName = path;
         this.path = this.pathFromString(path);
+        this.controlsRotation = rotateToPath;
         this.getCoords = (delta) => {
             this.currTime = (this.currTime + delta) % this.loopTime;
             return this.path();
@@ -74,6 +76,19 @@ class Path {
     update(delta) {
         if (this.active) {
             let toPos = this.getCoords(delta);
+            if (this.controlsRotation) {
+                let diffVec = toPos;
+                diffVec = vecSubtract(toPos, {x: this.owner.x, y: this.owner.y});
+                this.owner.rotation = vecAngle(diffVec);
+            }
+            else {
+                if (toPos.x < this.owner.x) {
+                    this.owner.flipX = true;
+                }
+                else {
+                    this.owner.flipX = false;
+                }
+            }
             this.owner.setPosition(toPos.x, toPos.y);
         }
     }

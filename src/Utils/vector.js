@@ -21,6 +21,32 @@ function vecLength(vec) {
     return Math.sqrt(sum);
 }
 
+function vecAngle(vec) {
+    if (vec.x == 0) {
+        if (vec.y > 0) {
+            return Math.PI / 2;
+        }
+        if (vec.y < 0) {
+            return 3 * Math.PI / 2;
+        }
+        else {
+            console.log("vecAngle: The zero vector has no angle.")
+            return NaN;
+        }
+    }
+    else {
+        let m = vec.y / vec.x;
+        let theta = Math.atan(m);
+        if (vec.x > 0) {
+            if (vec.y >= 0) return theta;
+            else return 2 * Math.PI + theta;
+        }
+        else {
+            return Math.PI + theta;
+        }
+    }
+}
+
 function vecNormalize(vec) {
     let length = vecLength(vec);
     if(length == 0) return vec;

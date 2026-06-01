@@ -284,6 +284,7 @@ class Attack {
         // runs on the first frame. initializes warning graphics and geoms.
         if (this.walls.length == 0 && this.wallGeoms.length == 0) {
             this.wallWarningGraphics = this.scene.add.graphics();
+            this.scene.children.sendToBack(this.wallWarningGraphics);
             this.spawnClock = 0;
             this.delay = WALL_PATTERN_WARNING_TIME;
             this.wallDirs = this.getWallDirs();
