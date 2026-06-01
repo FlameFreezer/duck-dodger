@@ -66,3 +66,10 @@ function vecCross(v1, v2) {
     result.z = v1.x * v2.y - v1.y * v2.x;
     return result;
 }
+
+// margin: int. thickness of screen border margin in pixels.
+// use negative margin to allow vec to extend outside of camera bounds.
+function vecInCameraBounds(scene, vec, margin = 0) {
+    return (vec.x > 1 * margin && vec.x < scene.sys.scale.width - margin &&
+            vec.y > margin && vec.y < scene.sys.scale.height - margin);
+}

@@ -57,6 +57,7 @@ class Attack {
                 this.doKill = () => {return this.spawned && this.bullets.length == 0;};
 
                 this.bullets = [];
+                this.dirs = [];
 
                 break;
             case "ring":
@@ -79,10 +80,11 @@ class Attack {
                 this.dir = vecNormalize(this.dir);
 
                 this.lifeClock = 0;
-                this.doKill = () => {return this.lifeClock >= WALL_PATTERN_LIFETIME};
+                this.doKill = () => {return this.lifeClock >= WALL_PATTERN_LIFETIME || (this.spawned && this.walls.length == 0)};
 
                 this.walls = [];
                 this.wallGeoms = [];
+                this.wallDirs = [];
 
                 break;
             default: // this should never happen
@@ -103,16 +105,32 @@ class Attack {
     spawnTPattern(delta) {
         if (this.bullets.length == 0) {
             this.bullets.push(new DuckBullet(this.scene, this.x, this.y, Colors.GRAY));
+            this.dirs.push(this.dir);
             this.delay = (this.bullets[0].hitbox.radius * T_PATTERN_BULLET_GAP / T_PATTERN_MOVE_SPEED) * 1000;
             this.spawnClock = 0;
         }
         else if (this.spawnClock >= this.delay) {
+            this.targetX = this.scene.player.x;
+            this.targetY = this.scene.player.y;
+
+            this.dir = {x: this.targetX - this.x, y: this.targetY - this.y};
+            this.dir = vecNormalize(this.dir);
+
+            let spawnOffset = vecScale(this.dir, this.parentDuck.hitbox.radius);
+            this.x = this.parentDuck.x;
+            this.y = this.parentDuck.y;
+            this.x += spawnOffset.x;
+            this.y += spawnOffset.y;
+
             this.bullets.push(new DuckBullet(this.scene, this.x, this.y, Colors.GRAY));
+            this.dirs.push(this.dir);
             if (this.bullets.length > 2) {
-                let leftTOffset = vecRotate(vecScale(this.dir, this.bullets[0].hitbox.radius * T_PATTERN_BULLET_GAP), Math.PI / 2);
-                let rightTOffset = vecRotate(vecScale(this.dir, this.bullets[0].hitbox.radius * T_PATTERN_BULLET_GAP), Math.PI / -2);
+                let leftTOffset = vecRotate(vecScale(this.dir, this.bullets[0].hitbox.radius * T_PATTERN_BULLET_GAP), Math.PI / -2);
+                let rightTOffset = vecRotate(vecScale(this.dir, this.bullets[0].hitbox.radius * T_PATTERN_BULLET_GAP), Math.PI / 2);
                 this.bullets.push(new DuckBullet(this.scene, this.x + leftTOffset.x, this.y + leftTOffset.y, this.color));
+                this.dirs.push(vecRotate(this.dir, Math.PI / -36));
                 this.bullets.push(new DuckBullet(this.scene, this.x + rightTOffset.x, this.y + rightTOffset.y, this.color));
+                this.dirs.push(vecRotate(this.dir, Math.PI / 36));
                 this.spawned = true;
             }
             this.spawnClock = this.spawnClock % this.delay;
@@ -121,10 +139,11 @@ class Attack {
     }
 
     updateTPattern(delta) {
-        let vec = vecScale(this.dir, T_PATTERN_MOVE_SPEED * (delta / 1000));
         for (let bullet of this.bullets) {
+            let vec = vecScale(this.dirs[this.bullets.indexOf(bullet)], T_PATTERN_MOVE_SPEED * (delta / 1000));
             bullet.modifyPos(vec);
             if (bullet.doCollisionCheck()) {
+                this.dirs.splice(this.bullets.indexOf(bullet), 1);
                 this.bullets.splice(this.bullets.indexOf(bullet), 1);
                 bullet.destroyChildren();
                 bullet.destroy();
@@ -135,6 +154,7 @@ class Attack {
                 || bullet.x > this.scene.sys.scale.width + bullet.hitbox.radius
                 || bullet.y < bullet.radius * -1
                 || bullet.y > this.scene.sys.scale.height + bullet.hitbox.radius) {
+                    this.dirs.splice(this.bullets.indexOf(bullet), 1);
                     this.bullets.splice(this.bullets.indexOf(bullet), 1);
                     bullet.destroyChildren();
                     bullet.destroy();
@@ -244,29 +264,52 @@ class Attack {
 
 
     // ------ WALL PATTERN INTERNALS ------
+
+
+    getWallDirs() {
+        let dirs = [];
+        for (let i = 0; i < WALL_PATTERN_WALLS; i++) {
+            let wallDir = vecRotate(this.dir, i / WALL_PATTERN_WALLS * Math.PI * 2);
+            wallDir = vecScale(wallDir, 100);
+            let wallVec = {x: this.x, y: this.y};
+            while (vecInCameraBounds(this.scene, wallVec)) {
+                wallVec = vecAdd(wallVec, wallDir);
+            }
+            dirs.push(wallVec);
+        }
+        return dirs;
+    }
+
     spawnWallPattern(delta) {
         // runs on the first frame. initializes warning graphics and geoms.
         if (this.walls.length == 0 && this.wallGeoms.length == 0) {
             this.wallWarningGraphics = this.scene.add.graphics();
             this.spawnClock = 0;
             this.delay = WALL_PATTERN_WARNING_TIME;
-            for (let i = 0; i < WALL_PATTERN_WALLS; i++) {
-                let wallDir = vecRotate(this.dir, i / WALL_PATTERN_WALLS * Math.PI * 2);
-                wallDir = vecScale(wallDir, 10);
-
-                let wallVec = {x: this.x, y: this.y};
-                while(wallVec.x > 0 && wallVec.x < this.scene.sys.scale.width &&
-                      wallVec.y > 0 && wallVec.y < this.scene.sys.scale.height) {
-                          wallVec = vecAdd(wallVec, wallDir);
-                }
-                
-                this.wallGeoms.push(new Phaser.Geom.Line(this.x, this.y, wallVec.x, wallVec.y));
+            this.wallDirs = this.getWallDirs();
+            for (let dir of this.wallDirs) {
+                this.wallGeoms.push(new Phaser.Geom.Line(this.x, this.y, dir.x, dir.y));
             }
         }
         // runs for the rest of the warning cycle. controls warning graphics, then preps to spawn walls.
         else if (this.walls.length == 0) {
             this.wallWarningGraphics.clear();
             this.wallWarningGraphics.lineStyle(Math.cos(this.spawnClock / (this.delay / 3) * Math.PI * 2) * -1 + 1, Phaser.Display.Color.HSVToRGB(0, 0.75 * (this.spawnClock >= (this.delay * 2 / 3)), 1).color, 1);
+
+            this.x = this.parentDuck.x;
+            this.y = this.parentDuck.y;
+            if (this.spawnClock < this.delay * 2 / 3) {
+                this.targetX = this.scene.player.x;
+                this.targetY = this.scene.player.y;
+                this.dir = {x: this.targetX - this.x, y: this.targetY - this.y};
+                this.dir = vecNormalize(this.dir);
+            }
+            this.wallDirs = this.getWallDirs();
+            this.wallGeoms = [];
+            for (let dir of this.wallDirs) {
+                this.wallGeoms.push(new Phaser.Geom.Line(this.x, this.y, dir.x, dir.y));
+                dir = vecNormalize(dir);
+            }
             for (let line of this.wallGeoms) {
                 this.wallWarningGraphics.strokeLineShape(line);
             }
@@ -312,8 +355,7 @@ class Attack {
                         let currColor = Colors.GRAY;
                         if ((scalar / WALL_PATTERN_BULLET_GAP) % (WALL_PATTERN_HOLE_WIDTH + WALL_PATTERN_HOLE_SPACING) >= WALL_PATTERN_HOLE_SPACING) currColor = this.color;
                         
-                        if (vec.x > radius * -1 && vec.x < this.scene.sys.scale.width + radius &&
-                            vec.y > radius * -1 && vec.y < this.scene.sys.scale.height + radius) {
+                        if (vecInCameraBounds(this.scene, vec, this.walls[0][0].hitbox.radius * -1)) {
                                 wall.push(new DuckBullet(this.scene, vec.x, vec.y, currColor));
                         }
                         else if (Object.hasOwn(this.wallGeoms[this.walls.indexOf(wall)], "x1")){ // mark wall as completed
@@ -358,6 +400,9 @@ class Attack {
                     bullet.destroy();
                     wall.splice(wall.indexOf(bullet), 1);
                 }
+            }
+            if (this.spawned && wall.length == 0) {
+                this.walls.splice(this.walls.indexOf(wall), 1);
             }
         }
         if (this.doKill()) {
