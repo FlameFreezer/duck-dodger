@@ -28,6 +28,16 @@ class Player extends Phaser.GameObjects.Sprite {
             fireRate: 0
         };
 
+        for(let i = 0; i < 10; i++) {
+            this.upgradeHoming();
+        }
+        for(let i = 0; i < 7; i++) {
+            this.upgradeProjectiles();
+        }
+        for(let i = 0; i < 4; i++) {
+            this.upgradeFireRate();
+        }
+
         this.hitbox = new Phaser.Geom.Circle(this.x, this.y, this.displayWidth / 2 - 2);
         if(DEBUG) {
             this.debugGraphics = scene.add.graphics();
@@ -172,6 +182,9 @@ class Player extends Phaser.GameObjects.Sprite {
     }
     upgradeProjectiles() {
         this.upgrades.projectiles++;
+    }
+    upgradeHoming() {
+        this.upgrades.homing++;
     }
     updateColorTransition(delta) {
         if(this.didChangeColor) {
