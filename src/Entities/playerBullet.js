@@ -17,6 +17,7 @@ class PlayerBullet extends Phaser.GameObjects.Sprite {
         }
     }
     update(delta, homingLevel) {
+        //Don't do homing checks if at level 0
         if(homingLevel > 0) {
             this.doHoming(delta, homingLevel);
         }
