@@ -47,7 +47,7 @@ class DuckBullet extends Phaser.GameObjects.Sprite {
     
     doCollisionCheck() {
         if (this.color != this.player.activeColor && Phaser.Geom.Intersects.CircleToCircle(this.hitbox, this.player.hitbox)) {
-            let hitEvent = new Event("onHit");
+            let hitEvent = new Event("duckBulletHit");
             document.dispatchEvent(hitEvent);
             return true;
         }

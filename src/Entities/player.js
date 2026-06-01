@@ -1,5 +1,3 @@
-const PLAYER_HIT_FRAME_TIME = 400;
-const COLOR_CHANGE_TIME = 100;
 class Player extends Phaser.GameObjects.Sprite {
     constructor(scene, json) {
         super(scene, json.spawnPoint.x, json.spawnPoint.y, "player");
@@ -33,6 +31,12 @@ class Player extends Phaser.GameObjects.Sprite {
             this.debugGraphics = scene.add.graphics();
         }
 
+        document.addEventListener("duckBulletHit", 
+            () => {
+                if(!this.isInvulnerable) this.onHit()
+            }
+        );
+
         //Offsets are optional
         if(this.shootOffset.x === undefined) this.shootOffset.x = 0;
         if(this.shootOffset.y === undefined) this.shootOffset.y = 0;
@@ -63,6 +67,7 @@ class Player extends Phaser.GameObjects.Sprite {
             hideOnComplete: true,
             frames: [{key: "player", frame: "fishPink_hit.png"}]
         });
+
         this.play("playerSwim");
     }
     update(delta) {

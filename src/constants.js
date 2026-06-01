@@ -34,6 +34,9 @@ const PLAYER_BULLET_BASE_HOMING_REGION_WIDTH = 75; //initial width of the bullet
 const PLAYER_BULLET_BASE_HOMING_REGION_HEIGHT = 150; //initial height of the bullet homing region (px)
 const PLAYER_BULLET_HOMING_REGION_SIZE_PER_LEVEL = 45; //amount to increase both bullet homing region dimensions by per level (px)
 const PLAYER_BULLET_HOMING_ANGLE_PER_LEVEL = 0.15; //amount to increase homing rotation amount by per level (radians)
+const PLAYER_HIT_FRAME_TIME = 400;
+const COLOR_CHANGE_TIME = 100;
+
 
 const DEATH_ANIM_TIME = 750; // how long the death animation takes to play, in ms
 
