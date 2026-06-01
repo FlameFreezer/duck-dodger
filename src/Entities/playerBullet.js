@@ -62,7 +62,7 @@ class PlayerBullet extends Phaser.GameObjects.Sprite {
         };
         //Try to find a duck to home onto
         for(let duck of this.scene.ducks) {
-            if(Phaser.Geom.Intersects.CircleToRectangle(duck.hitbox, this.homingRegion)) {
+            if(duck.active && Phaser.Geom.Intersects.CircleToRectangle(duck.hitbox, this.homingRegion)) {
                 let duckPos = {x: duck.x, y: duck.y};
                 let bulletPos = {x: this.x, y: this.y};
                 let bulletToDuck = vecSubtract(duckPos, bulletPos);

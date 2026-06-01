@@ -44,14 +44,24 @@ class PlayerTest extends Phaser.Scene {
         this.bgShader.initUniforms();
 
         this.player = new Player(this, this.cache.json.get("playerData"));
+        for(let i = 0; i < 10; i++) {
+            this.player.upgradeHoming();
+        }
+        for(let i = 0; i < 1; i++) {
+            this.player.upgradeProjectiles();
+        }
+        for(let i = 0; i < 10; i++) {
+            this.player.upgradeFireRate();
+        }
 
         this.ducks = [];
         this.ducks.push(new Duck(this, {
             sprite: "duck_yellow.png",
             pathFollower: new Path("arc", 150, 50, 0.25, 4000),
             spawnTween: new SpawnTween(300, 0, 300, 250, 1000),
-            attacker: new Attacker(this, "t-pattern", 3000),
-            hp: 5,
+            attacker: new Attacker(this, "ring", 3000),
+            deathAnim: new DeathAnimator(),
+            hp: 300,
             points: 15
         }));
 
@@ -66,12 +76,19 @@ class PlayerTest extends Phaser.Scene {
 
     update(time, delta) {
         this.player.update(delta);
-        let duck = this.ducks[0];
-        duck.update(delta);
-        for(let bullet of this.player.bullets) {
-            if(Phaser.Geom.Intersects.CircleToRectangle(duck.hitbox, bullet.hitbox)) {
-                bullet.killed = true;
+        for(let duck of this.ducks) {
+            duck.update(delta);
+            if(duck.active) {
+                for(let bullet of this.player.bullets) {
+                    if(Phaser.Geom.Intersects.CircleToRectangle(duck.hitbox, bullet.hitbox)) {
+                        bullet.killed = true;
+                        duck.hp--;
+                    }
+                }
             }
         }
+        this.ducks = this.ducks.filter((duck) => {
+            if(!duck.components.deathAnim.complete || duck.components.attacker.attacks.length > 0) return duck;
+        });
     }
 }

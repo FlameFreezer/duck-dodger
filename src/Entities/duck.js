@@ -58,6 +58,7 @@ class Duck extends Phaser.GameObjects.Sprite {
 
         this.hp = config.hp;
         this.points = config.points;
+        this.active = true;
 
         this.hitbox = new Phaser.Geom.Circle(this.x, this.y, this.displayWidth / 2);
         if(DEBUG) {
@@ -97,6 +98,8 @@ class Duck extends Phaser.GameObjects.Sprite {
             this.debugGraphics.destroy();
         }
 
+        this.active = false;
+
         if (Object.hasOwn(this.components, "deathAnim") && !this.components.deathAnim.active) {
             for (let component in this.components) {
                 this.components[component].deactivate();
@@ -113,7 +116,7 @@ class Duck extends Phaser.GameObjects.Sprite {
 
     updateComponents(delta) {
         for (let component in this.components) {
-            if (this.components[component].active) this.components[component].update(delta);
+            this.components[component].update(delta);
         }
     }
 }
