@@ -34,7 +34,7 @@ class Player extends Phaser.GameObjects.Sprite {
         for(let i = 0; i < 7; i++) {
             this.upgradeProjectiles();
         }
-        for(let i = 0; i < 4; i++) {
+        for(let i = 0; i < 10; i++) {
             this.upgradeFireRate();
         }
 
