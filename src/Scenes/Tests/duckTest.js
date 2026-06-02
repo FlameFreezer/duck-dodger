@@ -3,7 +3,6 @@ class DuckTest extends Phaser.Scene {
         super("duckTest");
     }
     preload() {
-        this.colors = {YELLOW: 0, GREEN: 1, GRAY: 2};
         //Load sprites
         this.load.setPath("./assets/spritesheets/");
         //Load in player sprite

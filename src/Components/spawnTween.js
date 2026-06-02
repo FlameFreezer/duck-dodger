@@ -27,7 +27,7 @@ class SpawnTween {
         this.endY = endY;
         this.duration = duration;
         this.easeStart = easeStart;
-        this.currTime = 0;
+        this.animClock = 0;
         this.completeCallback = completeCallback;
         this.active = false;
     }
@@ -48,8 +48,8 @@ class SpawnTween {
     // delta: int. time since last update() call in milliseconds.
     update(delta) {
         if (this.active) {
-            this.currTime += delta;
-            if (this.currTime >= this.duration) {
+            this.animClock += delta;
+            if (this.animClock >= this.duration) {
                 this.owner.setPosition(this.endX, this.endY);
                 this.completeCallback();
                 this.active = false;
@@ -75,11 +75,11 @@ class SpawnTween {
     getT() {
         let constPortion = this.duration * this.easeStart;
         let easePortion = this.duration - constPortion;
-        if (this.currTime < constPortion) {
-            return 2 / ((2 * constPortion) + easePortion) * this.currTime;
+        if (this.animClock < constPortion) {
+            return 2 / ((2 * constPortion) + easePortion) * this.animClock;
         }
         else {
-            return 1 - Math.pow(this.duration - this.currTime, 2) / (2 * easePortion * constPortion + Math.pow(easePortion, 2));
+            return 1 - Math.pow(this.duration - this.animClock, 2) / (2 * easePortion * constPortion + Math.pow(easePortion, 2));
         }
     }
 
