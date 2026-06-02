@@ -31,9 +31,11 @@ class Player extends Phaser.GameObjects.Sprite {
             this.debugGraphics = scene.add.graphics();
         }
 
+        this.update = this.updateAlive;
+
         document.addEventListener("duckBulletHit", 
             () => {
-                if(!this.isInvulnerable) this.onHit()
+                this.onHit()
             }
         );
 
@@ -70,7 +72,7 @@ class Player extends Phaser.GameObjects.Sprite {
 
         this.play("playerSwim");
     }
-    update(delta) {
+    updateAlive(delta) {
         let scene = this.scene;
 
         this.updateBullets(delta);
@@ -97,6 +99,21 @@ class Player extends Phaser.GameObjects.Sprite {
 
         //Move hitbox
         this.hitbox.setPosition(this.x, this.y);
+        //Draw hitbox
+        if(DEBUG) {
+            this.debugGraphics.clear();
+            this.debugGraphics.lineStyle(1, 0xffffff, 1);
+            this.debugGraphics.strokeCircleShape(this.hitbox);
+        }
+        if(this.bulletKillList.length > 0) {
+            this.destroyBullets();
+        }
+    }
+    updateDead(delta) {
+        this.updateBullets(delta);
+
+        this.updateColorTransition(delta);
+
         //Draw hitbox
         if(DEBUG) {
             this.debugGraphics.clear();
@@ -146,6 +163,9 @@ class Player extends Phaser.GameObjects.Sprite {
     onHit() {
         this.hp -= 1;
         this.isInvulnerable = true;
+        if(this.hp <= 0) {
+            return this.onDeath();
+        }
         this.stop("playerSwim");
         this.play("playerHit");
         this.hitTimer = this.scene.time.delayedCall(
@@ -162,9 +182,7 @@ class Player extends Phaser.GameObjects.Sprite {
         this.stop("playerSwim");
         this.play("playerDead");
 
-        this.update = (delta) => {
-            this.updateColorTransition(delta);
-        };
+        this.update = this.updateDead;
     }
     addHP(amount) {
         this.hp += amount;

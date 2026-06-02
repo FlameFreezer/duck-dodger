@@ -47,8 +47,11 @@ class DuckBullet extends Phaser.GameObjects.Sprite {
     
     doCollisionCheck() {
         if (this.color != this.player.activeColor && Phaser.Geom.Intersects.CircleToCircle(this.hitbox, this.player.hitbox)) {
-            let hitEvent = new Event("duckBulletHit");
-            document.dispatchEvent(hitEvent);
+            //Only dispatch the hit event if the player isn't invulnerable
+            if(!this.player.isInvulnerable) {
+                let hitEvent = new Event("duckBulletHit");
+                document.dispatchEvent(hitEvent);
+            }
             return true;
         }
         return false;
