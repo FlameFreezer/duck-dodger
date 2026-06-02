@@ -4,7 +4,6 @@ class PathTest extends Phaser.Scene {
     }
 
     preload() {
-        this.colors = {YELLOW: 0, GREEN: 1, GRAY: 2};
         //Load sprites
         this.load.setPath("./assets/spritesheets/");
         //Load in player sprite

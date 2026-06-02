@@ -15,7 +15,6 @@ class Duck extends Phaser.GameObjects.Sprite {
     //    pathFollower: Path        An unregistered Path component.
     //    spawnTween: SpawnTween    An unregistered SpawnTween component.
     //    attacker:   Attacker      An unregistered Attacker component.
-    //    deathAnim: DeathAnimator  An unregistered DeathAnimator component.
     //    hp: int                   The amount of HP the duck will have.
     //    points: int               The amount of points the duck will reward on death.
     constructor(scene, config) {
@@ -39,22 +38,18 @@ class Duck extends Phaser.GameObjects.Sprite {
         }
         if(config.spawnTween) {
             this.components.spawnTween = (config.spawnTween.registerTo(this));
-            if(this.components.pathFollower) {
-                this.components.spawnTween.completeCallback = () => {
-                    if (Object.hasOwn(this.components, "pathFollower")) {
-                        if (DEBUG) console.log("Duck: activating pathFollower");
-                        this.components.pathFollower.activate(this.x, this.y);
-                    }
-                    if (Object.hasOwn(this.components, "attacker")) {
-                        if (DEBUG) console.log("Duck: activating attacker");
-                        this.components.attacker.activate();
-                    }
+            this.components.spawnTween.completeCallback = () => {
+                if (Object.hasOwn(this.components, "pathFollower")) {
+                    if (DEBUG) console.log("Duck: activating pathFollower");
+                    this.components.pathFollower.activate(this.x, this.y);
+                }
+                if (Object.hasOwn(this.components, "attacker")) {
+                    if (DEBUG) console.log("Duck: activating attacker");
+                    this.components.attacker.activate();
                 }
             }
         }
-        if (config.deathAnim) {
-            this.components.deathAnim = config.deathAnim.registerTo(this);
-        }
+        this.components.deathAnim = new DeathAnimator().registerTo(this);
 
         this.hp = config.hp;
         this.points = config.points;
@@ -70,7 +65,9 @@ class Duck extends Phaser.GameObjects.Sprite {
 
     // delta: float. The amount of time, in miliseconds, since the last frame.
     update(delta) {
-        this.updateComponents(delta);
+        for (let component in this.components) {
+            this.components[component].update(delta);
+        }
 
         //Move hitbox
         this.hitbox.setPosition(this.x, this.y);
@@ -83,7 +80,7 @@ class Duck extends Phaser.GameObjects.Sprite {
 
         // handle death
         if (this.hp <= 0) this.kill();
-        if (Object.hasOwn(this.components, "deathAnim") && this.components.deathAnim.complete) {
+        if (this.components.deathAnim.complete) {
             for (let component in this.components) {
                 this.components[component].deactivate();
             }
@@ -100,23 +97,11 @@ class Duck extends Phaser.GameObjects.Sprite {
 
         this.active = false;
 
-        if (Object.hasOwn(this.components, "deathAnim") && !this.components.deathAnim.active) {
+        if (!this.components.deathAnim.active) {
             for (let component in this.components) {
                 this.components[component].deactivate();
             }
             this.components.deathAnim.activate();
-        }
-        else if (!Object.hasOwn(this.components, "deathAnim")) {
-            for (let component in this.components) {
-                this.components[component].deactivate();
-            }
-            this.destroy();
-        }
-    }
-
-    updateComponents(delta) {
-        for (let component in this.components) {
-            this.components[component].update(delta);
         }
     }
 }
