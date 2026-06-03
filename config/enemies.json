@@ -1,7 +1,5 @@
 {
-    "RubberDucky": {
-        "sprite" : "duck_yellow.png",
-        "spriteOnHit" : "duck_outline_yellow.png",
+    "RUBBER_DUCKY": {
         "hp" : 7,
         "points" : 10,
         "scale" : 0.45,
@@ -12,16 +10,10 @@
             "start" : 0.25,
             "cycleTime" : 1500
         },
-        "duration" : 1500,
-        "attack" : {
-            "type" : "t-pattern",
-            "shootDelay" : 250,
-            "patternDelay" : 1500
-        }
+        "attack" : "t-pattern",
+        "attackGap": 2000
     },
-    "Mallard" : {
-        "sprite" : "duck_brown.png",
-        "spriteOnHit" : "duck_outline_brown.png",
+    "MALLARD" : {
         "hp" : 10,
         "points" : 15,
         "scale" : 0.45,
@@ -32,20 +24,10 @@
             "start" : 0.25,
             "cycleTime" : 2500
         },
-        "yoyo" : false,
-        "duration" : 2500,
-        "attack" : {
-            "type" : "ring",
-            "shootDelay" : 500,
-            "patternDelay" : 2000,
-            "bulletsPerRing" : 10,
-            "rotationDirections" : [0, -1, -1, 1]
-        }
+        "attack" : "ring",
+        "attackGap": 2000
     },
-    "Bread" : {
-        "sprite" : "bread",
-        "spriteOnHit" : "breadHit",
-        "type" : "bread",
+    "BREAD" : {
         "hp" :  15,
         "points" : 100,
         "scale" : 0.10,

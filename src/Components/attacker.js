@@ -53,7 +53,9 @@ class Attacker {
         this.active = false;
     }
 
-
+    canBeDeleted() {
+        return (!this.active && this.attacks.length == 0);
+    }
 
     // ------ INTERNAL FUNCTIONS ------
     shoot() {

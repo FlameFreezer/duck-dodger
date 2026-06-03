@@ -105,6 +105,8 @@ class Path {
                 return this.circlePath;
             case "figure_infinite":
                 return this.figureInfinitePath;
+            case "random":
+                return this.randomPath;
             default: // this should never happen
                 return;
         }

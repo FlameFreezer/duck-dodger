@@ -1,11 +1,13 @@
 function getDuckSpriteFromType(type) {
     switch(type) {
         case DuckTypes.RUBBER_DUCKY:
-            return "duck_yellow.png";
+            return {base: "duck_yellow.png", onHit: "duck_outline_yellow.png"};
         case DuckTypes.MALLARD:
-            return "duck_brown.png";
+            return {base: "duck_brown.png", onHit: "duck_outline_brown.png"};
         case DuckTypes.GOOSE:
             throw "Goose hasn't been defined yet!";
+        default: // this should never happen
+            throw "Duck.getDuckSpriteFromType: Bad duck type requested!"
     }
 }
 class Duck extends Phaser.GameObjects.Sprite {
@@ -86,6 +88,10 @@ class Duck extends Phaser.GameObjects.Sprite {
             }
             this.destroy();
         }
+    }
+
+    canBeDeleted() {
+        return (!this.active && this.components.attacker.canBeDeleted());
     }
 
     // ------ INTERNAL METHODS -----
