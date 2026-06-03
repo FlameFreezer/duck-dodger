@@ -19,6 +19,9 @@ class Player extends Phaser.GameObjects.Sprite {
         this.canShoot = true;
         this.bullets = [];
         this.bulletKillList = [];
+        this.velocity = {
+            x: 0, y: 0
+        };
 
         this.upgrades = {
             homing: 0,
@@ -38,6 +41,35 @@ class Player extends Phaser.GameObjects.Sprite {
                 this.onHit()
             }
         );
+
+        let player = this;
+        this.swimVfx = scene.add.particles(0, 0, "bubble", {
+            scale: {
+                onEmit: (particle, key, t, value) => {
+                    return Math.random() * (0.35 - 0.15) + 0.05;
+                }
+            },
+            angle: {
+                onEmit: (particle, key, t, value) => {
+                    let angle = -90;
+                    if(player.velocity.x != 0 || player.velocity.y != 0) {
+                        angle = radToDeg(vecAngle(player.velocity));
+                    }
+                    const range = 30;
+                    const randomOffset = Math.random() * range - range / 2;
+                    return angle + 180 + randomOffset;
+                }
+            },
+            speed: {
+                onEmit: (particle, key, t, value) => {
+                    let randomOffset = Math.random() * 50 - 25;
+                    return 200 + randomOffset;
+                }
+            },
+            lifespan: 500,
+            frequency: 100,
+            alpha: {start: 0.75, end: 0.0}
+        });
 
         //Offsets are optional
         if(this.shootOffset.x === undefined) this.shootOffset.x = 0;
@@ -108,6 +140,9 @@ class Player extends Phaser.GameObjects.Sprite {
         if(this.bulletKillList.length > 0) {
             this.destroyBullets();
         }
+
+        this.swimVfx.x = this.x;
+        this.swimVfx.y = this.y;
     }
     updateDead(delta) {
         this.updateBullets(delta);
@@ -181,6 +216,7 @@ class Player extends Phaser.GameObjects.Sprite {
         this.hitTimer.remove();
         this.stop("playerSwim");
         this.play("playerDead");
+        this.swimVfx.stop();
 
         this.update = this.updateDead;
     }
@@ -235,8 +271,10 @@ class Player extends Phaser.GameObjects.Sprite {
         inputVector.x = scene.keys.d.isDown - scene.keys.a.isDown;
         inputVector.y = scene.keys.s.isDown - scene.keys.w.isDown;
         inputVector = vecNormalize(inputVector);
-        this.x += inputVector.x * this.speed * (delta / 1000);
-        this.y += inputVector.y * this.speed * (delta / 1000);
+        this.velocity.x = inputVector.x * this.speed;
+        this.velocity.y = inputVector.y * this.speed;
+        this.x += this.velocity.x * (delta / 1000);
+        this.y += this.velocity.y * (delta / 1000);
 
         //Change color
         if(Phaser.Input.Keyboard.JustDown(scene.keys.space)) {
