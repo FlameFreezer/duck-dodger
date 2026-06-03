@@ -11,20 +11,6 @@ class PlayerTest extends Phaser.Scene {
     }
 
     preload() {
-        //Load sprites
-        this.load.setPath("./assets/spritesheets/");
-        //Load in player sprite
-        this.load.atlasXML("player", "enemies.png", "enemies.xml");
-        //Load in duck sprites
-        this.load.atlasXML("ducks", "spritesheet_objects.png", "spritesheet_objects.xml");
-
-        //Load in player JSON
-        this.load.setPath("./config/");
-        this.load.json("playerData", "player.json");
-
-        //Load shader
-        this.load.setPath("./src/Shaders/");
-        this.load.glsl("background", "backgroundEffect.frag");
     }
 
     create() {
