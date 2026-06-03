@@ -66,6 +66,7 @@ class Attacker {
         let randomOffsetRange = this.basePatternDelay / 20;
         let randomOffset = Math.random() * randomOffsetRange - randomOffsetRange / 2;
         this.patternDelay = this.basePatternDelay + randomOffset;
+        //Reset the pattern timer to 0
         this.patternTimer = 0;
     }
 
