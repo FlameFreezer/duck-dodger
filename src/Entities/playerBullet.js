@@ -10,10 +10,6 @@ class PlayerBullet extends Phaser.GameObjects.Sprite {
         this.setScale(0.25);
         this.angle = 90;
         this.killed = false;
-        this.homingTarget = {
-            duck: null,
-            vecBulletToDuck: null
-        };
 
         this.hitbox = new Phaser.Geom.Rectangle(this.x - this.displayHeight / 2, this.y - this.displayWidth / 2, this.displayHeight, this.displayWidth);
         if(DEBUG) {
@@ -35,17 +31,8 @@ class PlayerBullet extends Phaser.GameObjects.Sprite {
         //Update position
         this.x += this.velocity.x * delta / 1000;
         this.y += this.velocity.y * delta / 1000;
-        //Kill bullet if it goes offscreen
+        //Kill bullet if it goes beyond top bound
         if(this.y + this.displayHeight / 2 <= 0) {
-            this.killed = true;
-        }
-        else if(this.y - this.displayHeight / 2 > canvasH) {
-            this.killed = true;
-        }
-        else if(this.x + this.displayWidth / 2 <= 0) {
-            this.killed = true;
-        }
-        else if(this.x - this.displayWidth / 2 > canvasW) {
             this.killed = true;
         }
 
@@ -62,21 +49,6 @@ class PlayerBullet extends Phaser.GameObjects.Sprite {
         }
     }
     doHoming(delta, homingLevel) {
-        if(this.homingTarget.duck === null) {
-            this.findHomingTarget(homingLevel);
-        }
-        if(this.homingTarget.duck !== null) {
-            this.homingTarget.vecBulletToDuck = vecSubtract({x: this.homingTarget.duck.x, y: this.homingTarget.duck.y}, {x:this.x, y: this.y});
-            //Rotate the bullet towards the duck
-            let angleBetween = Math.acos(vecDot(vecNormalize(this.homingTarget.vecBulletToDuck), vecNormalize(this.velocity)));
-            let axis = vecCross({x: this.homingTarget.vecBulletToDuck.x, y: this.homingTarget.vecBulletToDuck.y, z: 0}, {x: this.velocity.x, y: this.velocity.y, z: 0});
-            let direction = Math.sign(vecDot(axis, {x: 0, y: 0, z: -1}));
-            let distance = vecLength(this.homingTarget.vecBulletToDuck);
-            let rotationRate = PLAYER_BULLET_ROTATION_RATE + 25 / distance;
-            this.velocity = vecRotate(this.velocity, direction * rotationRate * delta / 1000);
-        }
-    }
-    findHomingTarget(homingLevel) {
         //Define shape of the region to check for ducks to home onto
         let homingRegionHeight = PLAYER_BULLET_BASE_HOMING_REGION_HEIGHT + PLAYER_BULLET_HOMING_REGION_SIZE_PER_LEVEL * homingLevel;
         let homingRegionWidth = PLAYER_BULLET_BASE_HOMING_REGION_WIDTH + PLAYER_BULLET_HOMING_REGION_SIZE_PER_LEVEL * homingLevel;
@@ -105,9 +77,13 @@ class PlayerBullet extends Phaser.GameObjects.Sprite {
         }
         //did we find a duck to home onto?
         if(target.duck !== null) {
-            this.homingTarget.duck = target.duck;
-            this.homingTarget.vecBulletToDuck = target.vecBulletToDuck;
+            //Rotate the bullet towards the duck
+            let angleBetween = Math.acos(vecDot(vecNormalize(target.vecBulletToDuck), vecNormalize(this.velocity)));
+            let axis = vecCross({x: target.vecBulletToDuck.x, y: target.vecBulletToDuck.y, z: 0}, {x: this.velocity.x, y: this.velocity.y, z: 0});
+            let direction = Math.sign(vecDot(axis, {x: 0, y: 0, z: -1}));
+            this.velocity = vecRotate(this.velocity, direction * PLAYER_BULLET_ROTATION_RATE * delta / 1000);
         }
+
     }
     kill() {
         if(DEBUG) {

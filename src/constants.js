@@ -37,6 +37,7 @@ const PLAYER_BULLET_HOMING_ANGLE_PER_LEVEL = 0.15; //amount to increase homing r
 const PLAYER_HIT_FRAME_TIME = 400;
 const COLOR_CHANGE_TIME = 100;
 
+
 const DEATH_ANIM_TIME = 750; // how long the death animation takes to play, in ms
 
 const canvasW = 600;
