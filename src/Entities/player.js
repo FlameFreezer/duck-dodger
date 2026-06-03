@@ -62,8 +62,13 @@ class Player extends Phaser.GameObjects.Sprite {
             },
             speed: {
                 onEmit: (particle, key, t, value) => {
-                    let randomOffset = Math.random() * 50 - 25;
+                    const randomOffset = Math.random() * 50 - 25;
                     return 200 + randomOffset;
+                },
+                onUpdate: (particle, key, t, value) => {
+                    const deceleration = 50;
+                    console.log("update bubble particle!");
+                    return value - deceleration * t;
                 }
             },
             lifespan: 500,
