@@ -39,15 +39,16 @@ class Gallery extends Phaser.Scene {
             args: [this]
         });
         //Create initial swarm of bubbles
-        for(let i = 0; i < canvasH / 100; i++) {
-            this.makeBackgroundBubble(Math.random() * canvasW, i * 100);
+        let interval = BUBBLE_RATE * BUBBLE_SCROLL_SPEED / 1000;
+        for(let i = 0; i < canvasH / interval; i++) {
+            this.makeBackgroundBubble(Math.random() * canvasW, i * interval);
         }
     }
     update(time, delta) {
         this.player.update(delta);
 
         for(let bubble of this.bubbles) {
-            bubble.y += 100 * delta / 1000;
+            bubble.y += BUBBLE_SCROLL_SPEED * delta / 1000;
             if(bubble.y - bubble.height * bubble.scaleY / 2 >= canvasH) {
                 this.bubbleRemoveQueue.push(bubble);
             }

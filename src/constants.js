@@ -50,6 +50,7 @@ const BUBBLE_SIZE_RANGE = Object.freeze({
     MIN: 0.35,
     MAX: 0.75
 });
+const BUBBLE_SCROLL_SPEED = 100;
 
 const Colors = Object.freeze({
     YELLOW: 0,
