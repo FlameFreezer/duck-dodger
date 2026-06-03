@@ -55,20 +55,17 @@ class Player extends Phaser.GameObjects.Sprite {
                     if(player.velocity.x != 0 || player.velocity.y != 0) {
                         angle = radToDeg(vecAngle(player.velocity));
                     }
-                    const range = 30;
-                    const randomOffset = Math.random() * range - range / 2;
+                    const randomOffset = Math.random() * PLAYER_SWIM_VFX_BUBBLE_ANGLE_RANGE - PLAYER_SWIM_VFX_BUBBLE_ANGLE_RANGE / 2;
                     return angle + 180 + randomOffset;
                 }
             },
             speed: {
                 onEmit: (particle, key, t, value) => {
-                    const randomOffset = Math.random() * 50 - 25;
-                    return 200 + randomOffset;
+                    const randomOffset = Math.random() * PLAYER_SWIM_VFX_BUBBLE_SPEED_RANGE - PLAYER_SWIM_VFX_BUBBLE_SPEED_RANGE / 2;
+                    return PLAYER_SWIM_VFX_BUBBLE_BASE_SPEED + randomOffset + vecLength(player.velocity) / 4;
                 },
                 onUpdate: (particle, key, t, value) => {
-                    const deceleration = 50;
-                    console.log("update bubble particle!");
-                    return value - deceleration * t;
+                    return value - PLAYER_SWIM_VFX_BUBBLE_DECELERATION * t;
                 }
             },
             lifespan: 500,
@@ -147,7 +144,7 @@ class Player extends Phaser.GameObjects.Sprite {
         }
 
         this.swimVfx.x = this.x;
-        this.swimVfx.y = this.y;
+        this.swimVfx.y = this.y + PLAYER_SWIM_VFX_OFFSET;
     }
     updateDead(delta) {
         this.updateBullets(delta);
@@ -276,8 +273,25 @@ class Player extends Phaser.GameObjects.Sprite {
         inputVector.x = scene.keys.d.isDown - scene.keys.a.isDown;
         inputVector.y = scene.keys.s.isDown - scene.keys.w.isDown;
         inputVector = vecNormalize(inputVector);
-        this.velocity.x = inputVector.x * this.speed;
-        this.velocity.y = inputVector.y * this.speed;
+        //Friction
+        if(inputVector.x == 0 && inputVector.y == 0) {
+            let friction = Math.min(PLAYER_ACCELERATION * (delta / 1000), vecLength(this.velocity));
+            this.velocity = vecSubtract(this.velocity, vecScale(vecNormalize(this.velocity), friction));
+        }
+        //Acceleration
+        else {
+            this.velocity = vecAdd(this.velocity, vecScale(inputVector, PLAYER_ACCELERATION * (delta / 1000)));
+        }
+        //Keep speed below max
+        if(vecLength(this.velocity) > this.speed) {
+            this.velocity = vecScale(vecNormalize(this.velocity), this.speed);
+        }
+        //Set very small speeds to 0
+        if(vecLength(this.velocity) <= 0.1) {
+            this.velocity = vecScale(this.velocity, 0);
+        }
+        //this.velocity.x = inputVector.x * this.speed;
+        //this.velocity.y = inputVector.y * this.speed;
         this.x += this.velocity.x * (delta / 1000);
         this.y += this.velocity.y * (delta / 1000);
 

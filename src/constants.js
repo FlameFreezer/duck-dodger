@@ -36,6 +36,12 @@ const PLAYER_BULLET_HOMING_REGION_SIZE_PER_LEVEL = 25; //amount to increase both
 const PLAYER_BULLET_HOMING_ANGLE_PER_LEVEL = 0.15; //amount to increase homing rotation amount by per level (radians)
 const PLAYER_HIT_FRAME_TIME = 400;
 const COLOR_CHANGE_TIME = 100;
+const PLAYER_ACCELERATION = PLAYER_BASE_SPEED / 0.05;
+const PLAYER_SWIM_VFX_OFFSET = 15;
+const PLAYER_SWIM_VFX_BUBBLE_ANGLE_RANGE = 45;
+const PLAYER_SWIM_VFX_BUBBLE_SPEED_RANGE = 50;
+const PLAYER_SWIM_VFX_BUBBLE_BASE_SPEED = 200;
+const PLAYER_SWIM_VFX_BUBBLE_DECELERATION = 50;
 
 const DEATH_ANIM_TIME = 750; // how long the death animation takes to play, in ms
 
