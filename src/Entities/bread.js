@@ -74,4 +74,8 @@ class Bread extends Phaser.GameObjects.Image {
             this.destroy();
         }
     }
+
+    canBeDeleted() {
+        return (this.fleeTween.complete || this.components.deathAnim.complete);
+    }
 }

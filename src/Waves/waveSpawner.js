@@ -40,6 +40,7 @@ class WaveSpawner {
 
         this.active = false;
         this.allDucksSpawned = false;
+        this.spawnBread = false;
         this.breadSpawned = false;
         this.currWave = -1;
         this.spawnTimer = 0;
@@ -61,7 +62,7 @@ class WaveSpawner {
                     }
                     spawn.spawned = true;
                     if (this.waves[currWave].indexOf(spawn) == this.waves[currWave].length - 1) {
-                        this.allDucksSpawned = true;
+                        this.spawnBread = true;
                         this.spawnTimer = 0;
                     }
                 }
@@ -74,9 +75,11 @@ class WaveSpawner {
                     hp: data.hp,
                     points: data.points
                 };
-                this.ducks.push(new Bread(this.scene, ))
+                this.ducks.push(new Bread(this.scene, breadConfig));
+                this.allDucksSpawned = true;
             }
         }
+        
         for (let duck of this.ducks) {
             duck.update(delta);
             if (duck.canBeDeleted()) {
@@ -91,6 +94,7 @@ class WaveSpawner {
         this.currWave++;
         this.spawnTimer = 0;
         this.allDucksSpawned = false;
+        this.spawnBread = false;
         this.activate();
     }
 
