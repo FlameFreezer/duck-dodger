@@ -47,10 +47,10 @@ class PlayerTest extends Phaser.Scene {
         for(let i = 0; i < 10; i++) {
             this.player.upgradeHoming();
         }
-        for(let i = 0; i < 1; i++) {
+        for(let i = 0; i < 6; i++) {
             this.player.upgradeProjectiles();
         }
-        for(let i = 0; i < 10; i++) {
+        for(let i = 0; i < 7; i++) {
             this.player.upgradeFireRate();
         }
 
