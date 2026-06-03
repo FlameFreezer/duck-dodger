@@ -25,7 +25,7 @@ class PlayerBullet extends Phaser.GameObjects.Sprite {
         //Rotate bullet sprite towards direction of motion
         let axis = vecCross({x: this.velocity.x, y: this.velocity.y, z: 0}, {x: 0, y: -1, z: 0});
         let direction = Math.sign(vecDot(axis, {x: 0, y: 0, z: -1}));
-        this.angle = 90 + direction * radToDeg(Math.acos(vecDot(vecNormalize(this.velocity), {x: 0, y: -1})));
+        this.angle = 90 + direction * Math.acos(vecDot(vecNormalize(this.velocity), {x: 0, y: -1})) * RAD_TO_DEG;
 
         //Update position
         this.x += this.velocity.x * delta / 1000;

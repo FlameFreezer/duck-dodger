@@ -107,7 +107,3 @@ function colorToVector(color) {
         z: color.b
     };
 }
-
-function radToDeg(radians) {
-    return 180 * radians / Math.PI;
-}

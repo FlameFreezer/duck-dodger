@@ -44,33 +44,29 @@ class Player extends Phaser.GameObjects.Sprite {
 
         let player = this;
         this.swimVfx = scene.add.particles(0, 0, "bubble", {
-            scale: {
-                onEmit: (particle, key, t, value) => {
-                    return Math.random() * (0.35 - 0.15) + 0.05;
-                }
-            },
-            angle: {
-                onEmit: (particle, key, t, value) => {
-                    let angle = -90;
-                    if(player.velocity.x != 0 || player.velocity.y != 0) {
-                        angle = radToDeg(vecAngle(player.velocity));
-                    }
-                    const randomOffset = Math.random() * PLAYER_SWIM_VFX_BUBBLE_ANGLE_RANGE - PLAYER_SWIM_VFX_BUBBLE_ANGLE_RANGE / 2;
-                    return angle + 180 + randomOffset;
-                }
-            },
-            speed: {
-                onEmit: (particle, key, t, value) => {
-                    const randomOffset = Math.random() * PLAYER_SWIM_VFX_BUBBLE_SPEED_RANGE - PLAYER_SWIM_VFX_BUBBLE_SPEED_RANGE / 2;
-                    return PLAYER_SWIM_VFX_BUBBLE_BASE_SPEED + randomOffset + vecLength(player.velocity) / 4;
-                },
-                onUpdate: (particle, key, t, value) => {
-                    return value - PLAYER_SWIM_VFX_BUBBLE_DECELERATION * t;
-                }
-            },
             lifespan: 500,
             frequency: 100,
-            alpha: {start: 0.75, end: 0.0}
+            alpha: {start: 0.75, end: 0.0},
+            emitCallback: (particle) => {
+                let angle = -90;
+                if(player.velocity.x != 0 || player.velocity.y != 0) {
+                    angle = vecAngle(player.velocity) * RAD_TO_DEG;
+                }
+                let randomOffset = Math.random() * PLAYER_SWIM_VFX_BUBBLE_ANGLE_RANGE - PLAYER_SWIM_VFX_BUBBLE_ANGLE_RANGE / 2;
+                particle.angle = angle + 180 + randomOffset;
+
+                randomOffset = Math.random() * PLAYER_SWIM_VFX_BUBBLE_SPEED_RANGE - PLAYER_SWIM_VFX_BUBBLE_SPEED_RANGE / 2;
+                let speed = PLAYER_SWIM_VFX_BUBBLE_BASE_SPEED + randomOffset + vecLength(player.velocity) / 4;
+                particle.velocityX = Math.cos(particle.angle * DEG_TO_RAD) * speed;
+                particle.velocityY = Math.sin(particle.angle * DEG_TO_RAD) * speed;
+
+                let scale = Math.random() * (0.35 - 0.15) + 0.05;
+                particle.scaleX = scale;
+                particle.scaleY = scale;
+
+                particle.accelerationX = -Math.cos(particle.angle * DEG_TO_RAD) * PLAYER_SWIM_VFX_BUBBLE_DECELERATION;
+                particle.accelerationY = -Math.sin(particle.angle * DEG_TO_RAD) * PLAYER_SWIM_VFX_BUBBLE_DECELERATION;
+            }
         });
 
         //Offsets are optional

@@ -20,10 +20,10 @@ class PlayerTest extends Phaser.Scene {
         for(let i = 0; i < 10; i++) {
             this.player.upgradeHoming();
         }
-        for(let i = 0; i < 0; i++) {
+        for(let i = 0; i < 4; i++) {
             this.player.upgradeProjectiles();
         }
-        for(let i = 0; i < 7; i++) {
+        for(let i = 0; i < 10; i++) {
             this.player.upgradeFireRate();
         }
 
@@ -34,7 +34,7 @@ class PlayerTest extends Phaser.Scene {
             spawnTween: new SpawnTween(300, 0, 300, 250, 1000),
             attacker: new Attacker(this, "ring", 4000),
             deathAnim: new DeathAnimator(),
-            hp: 300,
+            hp: 600,
             points: 15
         }));
 
