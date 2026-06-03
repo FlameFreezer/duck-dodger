@@ -45,7 +45,7 @@ const healthUpInterval = 500;
 const heartGrowMaximum = 1.2;
 const heartGrowTime = 200;
 
-const BUBBLE_RATE = 1500;
+const BUBBLE_RATE = 750;
 const BUBBLE_SIZE_RANGE = Object.freeze({
     MIN: 0.35,
     MAX: 0.75

@@ -30,7 +30,6 @@ class Gallery extends Phaser.Scene {
         //Init bubble background
         this.bubbles = [];
         this.bubbleRemoveQueue = [];
-        const bubbleSizes = [0.35, 0.45, 0.75];
         this.bubbleTimer = this.time.addEvent({
             delay: BUBBLE_RATE,
             loop: true,
@@ -39,10 +38,10 @@ class Gallery extends Phaser.Scene {
             },
             args: [this]
         });
-        for(let i = 0; i < canvasH / 200; i++) {
-            this.makeBackgroundBubble(Math.random() * canvasW, i * 200);
+        //Create initial swarm of bubbles
+        for(let i = 0; i < canvasH / 100; i++) {
+            this.makeBackgroundBubble(Math.random() * canvasW, i * 100);
         }
-
     }
     update(time, delta) {
         this.player.update(delta);
@@ -72,7 +71,7 @@ class Gallery extends Phaser.Scene {
     makeBackgroundBubble(x, y) {
         let bubble = this.add.image(x, y, "bubble");
         bubble.setScale(Math.random() * (BUBBLE_SIZE_RANGE.MAX - BUBBLE_SIZE_RANGE.MIN) + BUBBLE_SIZE_RANGE.MIN);
-        bubble.alpha = 0.55;
+        bubble.alpha = 0.25;
         this.children.sendToBack(bubble);
         this.bubbles.push(bubble);
     }
