@@ -14,20 +14,7 @@ class PlayerTest extends Phaser.Scene {
     }
 
     create() {
-        //Shader wants to be half-size for some reason. Hope that isn't platform specific
-        this.bgShader = this.add.shader("background", 0, 0, canvasW * 2, canvasH * 2);
-        this.bgShader.uniforms.baseColor = {
-            type: '3f',
-            value: colorToVector(Colors.YELLOW)
-        };
-        this.bgShader.uniforms.canvasDim = {
-            type: '2f',
-            value: {
-                x: canvasW,
-                y: canvasH
-            }
-        };
-        this.bgShader.initUniforms();
+        initBackgroundShader(this);
 
         this.player = new Player(this, this.cache.json.get("playerData"));
         for(let i = 0; i < 10; i++) {

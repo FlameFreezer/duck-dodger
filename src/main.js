@@ -10,7 +10,7 @@ let config = {
     backgroundColor: '#0c404c',
     width: canvasW,
     height: canvasH,
-    scene: [Load, PlayerTest, AttackTest, BreadTest, BulletTest, DeathAnimTest, DuckTest, PathTest, SpawnTest]
+    scene: [Load, Gallery, PlayerTest, AttackTest, BreadTest, BulletTest, DeathAnimTest, DuckTest, PathTest, SpawnTest]
 }
 
 const game = new Phaser.Game(config);

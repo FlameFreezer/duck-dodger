@@ -60,7 +60,7 @@ class Gallery extends Phaser.Scene {
     }
     create() {
         //Shader wants to be half-size for some reason. Hope that isn't platform specific
-        this.bgShader = this.add.shader("background", 0, 0, canvasW * 2, canvasH * 2);
+        this.bgShader = this.add.shader("background", 0, 0, CANVAS_WIDTH * 2, CANVAS_HEIGHT * 2);
         this.bgShader.uniforms.baseColor = {
             type: '3f',
             value: colorToVector(yellow)
@@ -68,35 +68,35 @@ class Gallery extends Phaser.Scene {
         this.bgShader.uniforms.canvasDim = {
             type: '2f',
             value: {
-                x: canvasW,
-                y: canvasH
+                x: CANVAS_WIDTH,
+                y: CANVAS_HEIGHT
             }
         };
         this.bgShader.initUniforms();
 
-        this.heart = this.add.sprite(canvasW - canvasW / 8 - 32, canvasH / 16 + 70, "hearts", "hud_heart");
+        this.heart = this.add.sprite(CANVAS_WIDTH - CANVAS_WIDTH / 8 - 32, CANVAS_HEIGHT / 16 + 70, "hearts", "hud_heart");
         this.heart.setScale(0.85);
         this.heart.maxSize = this.heart.scaleX * heartGrowMaximum;
 
         this.player = new Player(this, this.cache.json.get("playerData"));
         this.score = 0;
         this.ui = {};
-        this.ui.score = this.add.bitmapText(canvasW - canvasW / 8, canvasH / 16, "daydream_3", "Score: 0", 18)
+        this.ui.score = this.add.bitmapText(CANVAS_WIDTH - CANVAS_WIDTH / 8, CANVAS_HEIGHT / 16, "daydream_3", "Score: 0", 18)
             .setOrigin(0.5)
             .setBlendMode(Phaser.BlendModes.ADD);
-        this.ui.waveCounter = this.add.bitmapText(canvasW - canvasW / 8, canvasH / 16 + 32, "daydream_3", "Wave 0", 18)
+        this.ui.waveCounter = this.add.bitmapText(CANVAS_WIDTH - CANVAS_WIDTH / 8, CANVAS_HEIGHT / 16 + 32, "daydream_3", "Wave 0", 18)
             .setOrigin(0.5)
             .setBlendMode(Phaser.BlendModes.ADD);
-        this.ui.waveComplete = this.add.bitmapText(canvasW / 2, canvasH / 2, "daydream_3", "Wave Complete!", 24)
+        this.ui.waveComplete = this.add.bitmapText(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, "daydream_3", "Wave Complete!", 24)
             .setOrigin(0.5)
             .setBlendMode(Phaser.BlendModes.ADD);
-        this.ui.waveNumber = this.add.bitmapText(canvasW / 2, canvasH / 2, "daydream_3", "Wave 0", 24)
+        this.ui.waveNumber = this.add.bitmapText(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, "daydream_3", "Wave 0", 24)
             .setOrigin(0.5)
             .setBlendMode(Phaser.BlendModes.ADD);
-        this.ui.hp = this.add.bitmapText(canvasW - canvasW / 8 + 12, canvasH / 16 + 72, "daydream_3", "x0", 18)
+        this.ui.hp = this.add.bitmapText(CANVAS_WIDTH - CANVAS_WIDTH / 8 + 12, CANVAS_HEIGHT / 16 + 72, "daydream_3", "x0", 18)
             .setOrigin(0.5)
             .setBlendMode(Phaser.BlendModes.ADD);
-        this.ui.colorTutorial = this.add.bitmapText(canvasW / 2, canvasH / 2, "daydream_3", "Change color to phase through projectiles", 18)
+        this.ui.colorTutorial = this.add.bitmapText(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, "daydream_3", "Change color to phase through projectiles", 18)
             .setOrigin(0.5)
             .setBlendMode(Phaser.BlendModes.ADD);
         
@@ -151,10 +151,10 @@ class Gallery extends Phaser.Scene {
         this.bubbleRemoveQueue = [];
         const bubbleSizes = [0.35, 0.45, 0.75];
         this.bubbleTimer = this.time.addEvent({
-            delay: bubbleRate,
+            delay: BUBBLE_RATE,
             loop: true,
             callback: (self) => {
-                let bubble = self.add.image(Math.random() * canvasW, -50, "bubble");
+                let bubble = self.add.image(Math.random() * CANVAS_WIDTH, -50, "bubble");
                 bubble.setScale(bubbleSizes[Math.floor(Math.random() * bubbleSizes.length)]);
                 bubble.alpha = 0.55;
                 self.children.sendToBack(bubble);
@@ -162,8 +162,8 @@ class Gallery extends Phaser.Scene {
             },
             args: [this]
         });
-        for(let i = 0; i < canvasH / 200; i++) {
-            let bubble = this.add.image(Math.random() * canvasW, i * 200, "bubble");
+        for(let i = 0; i < CANVAS_HEIGHT / 200; i++) {
+            let bubble = this.add.image(Math.random() * CANVAS_WIDTH, i * 200, "bubble");
             bubble.setScale(bubbleSizes[Math.floor(Math.random() * bubbleSizes.length)]);
             bubble.alpha = 0.55;
             this.children.sendToBack(bubble);
@@ -365,7 +365,7 @@ class Gallery extends Phaser.Scene {
             let bubbles = this.bubbles.getChildren();
             for(let bubble of bubbles) {
                 bubble.y += 100 * delta / 1000;
-                if(bubble.y - bubble.height * bubble.scaleY / 2 >= canvasH) {
+                if(bubble.y - bubble.height * bubble.scaleY / 2 >= CANVAS_HEIGHT) {
                     this.bubbleRemoveQueue.push(bubble);
                 }
             }
@@ -402,13 +402,13 @@ class Gallery extends Phaser.Scene {
             if(bullet.x + bullet.width * bullet.scaleX / 2 <= 0) {
                 this.duckBulletRemoveQueue.push(bullet);
             };
-            if(bullet.x - bullet.width * bullet.scaleX / 2 >= canvasW) {
+            if(bullet.x - bullet.width * bullet.scaleX / 2 >= CANVAS_WIDTH) {
                 this.duckBulletRemoveQueue.push(bullet);
             }
             if(bullet.y + bullet.height * bullet.scaleY / 2 <= 0) {
                 this.duckBulletRemoveQueue.push(bullet);
             }
-            if(bullet.y - bullet.height * bullet.scaleY / 2 >= canvasH) {
+            if(bullet.y - bullet.height * bullet.scaleY / 2 >= CANVAS_HEIGHT) {
                 this.duckBulletRemoveQueue.push(bullet);
             }
         }
@@ -541,10 +541,10 @@ class Gallery extends Phaser.Scene {
         if(this.waveTransitionTimer) this.waveTransitionTimer.remove();
         this.gameOverSfx.play();
         this.currentState = states.GAME_OVER;
-        this.ui.gameOver = this.add.bitmapText(canvasW / 2, canvasH / 2, "daydream_3", "Game Over!\n", 18)
+        this.ui.gameOver = this.add.bitmapText(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, "daydream_3", "Game Over!\n", 18)
             .setOrigin(0.5)
             .setBlendMode(Phaser.BlendModes.ADD);
-        this.ui.returnToTile = this.add.bitmapText(canvasW / 2, canvasH / 2 + 20, "daydream_3", "Press Enter to go back to the Title Screen", 12)
+        this.ui.returnToTile = this.add.bitmapText(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 + 20, "daydream_3", "Press Enter to go back to the Title Screen", 12)
             .setOrigin(0.5)
             .setBlendMode(Phaser.BlendModes.ADD);
         this.keys.enter.on("down", (event) => {
