@@ -45,8 +45,8 @@ const PLAYER_SWIM_VFX_BUBBLE_DECELERATION = 50;
 
 const DEATH_ANIM_TIME = 750; // how long the death animation takes to play, in ms
 
-const canvasW = 600;
-const canvasH = 950;
+const CANVAS_WIDTH = 600;
+const CANVAS_HEIGHT = 950;
 const healthUpInterval = 500;
 const heartGrowMaximum = 1.2;
 const heartGrowTime = 200;

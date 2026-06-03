@@ -8,9 +8,9 @@ let config = {
         autoCenter: Phaser.Scale.CENTER_BOTH
     },
     backgroundColor: '#0c404c',
-    width: canvasW,
-    height: canvasH,
-    scene: [Load, Gallery, PlayerTest, AttackTest, BreadTest, BulletTest, DeathAnimTest, DuckTest, PathTest, SpawnTest]
+    width: CANVAS_WIDTH,
+    height: CANVAS_HEIGHT,
+    scene: [Load, UI, Gallery, PlayerTest, AttackTest, BreadTest, BulletTest, DeathAnimTest, DuckTest, PathTest, SpawnTest]
 }
 
 const game = new Phaser.Game(config);

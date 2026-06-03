@@ -4,6 +4,10 @@ class Gallery extends Phaser.Scene {
         this.keys = {};
     }
     create() {
+        //Launch UI scene
+        this.ui = this.scene.launch("ui");
+        this.scene.bringToTop("ui");
+
         initBackgroundShader(this);
 
         //Init inputs
@@ -30,36 +34,37 @@ class Gallery extends Phaser.Scene {
         //Init bubble background
         this.bubbles = [];
         this.bubbleRemoveQueue = [];
+        //bubble spawner
         this.bubbleTimer = this.time.addEvent({
             delay: BUBBLE_RATE,
             loop: true,
             callback: (self) => {
-                self.makeBackgroundBubble(Math.random() * canvasW, -50);
+                self.makeBackgroundBubble(Math.random() * CANVAS_WIDTH, -50);
             },
             args: [this]
         });
         //Create initial swarm of bubbles
         let interval = BUBBLE_RATE * BUBBLE_SCROLL_SPEED / 1000;
-        for(let i = 0; i < canvasH / interval; i++) {
-            this.makeBackgroundBubble(Math.random() * canvasW, i * interval);
+        for(let i = 0; i < CANVAS_HEIGHT / interval; i++) {
+            this.makeBackgroundBubble(Math.random() * CANVAS_WIDTH, i * interval);
         }
+
     }
+
     update(time, delta) {
         this.player.update(delta);
 
-        for(let bubble of this.bubbles) {
-            bubble.y += BUBBLE_SCROLL_SPEED * delta / 1000;
-            if(bubble.y - bubble.height * bubble.scaleY / 2 >= canvasH) {
-                this.bubbleRemoveQueue.push(bubble);
-            }
-        }
+        this.updateBubbles(delta);
+
         this.flushRemoveQueues();
     }
+
     flushRemoveQueues() {
         if(this.bubbleRemoveQueue.length > 0) {
             this.flushBubbleRemoveQueue();
         }
     }
+
     flushBubbleRemoveQueue() {
         for(let bubble of this.bubbleRemoveQueue) {
             bubble.destroy();
@@ -69,6 +74,16 @@ class Gallery extends Phaser.Scene {
         });
         this.bubbleRemoveQueue = [];
     }
+
+    updateBubbles(delta) {
+        for(let bubble of this.bubbles) {
+            bubble.y += BUBBLE_SCROLL_SPEED * delta / 1000;
+            if(bubble.y - bubble.height * bubble.scaleY / 2 >= CANVAS_HEIGHT) {
+                this.bubbleRemoveQueue.push(bubble);
+            }
+        }
+    }
+
     makeBackgroundBubble(x, y) {
         let bubble = this.add.image(x, y, "bubble");
         bubble.setScale(Math.random() * (BUBBLE_SIZE_RANGE.MAX - BUBBLE_SIZE_RANGE.MIN) + BUBBLE_SIZE_RANGE.MIN);
