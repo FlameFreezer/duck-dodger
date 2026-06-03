@@ -8,6 +8,7 @@ class Attacker {
         this.scene = scene;
 
         this.patternDelay = patternDelay;
+        this.basePatternDelay = patternDelay;
         this.patternTimer = 0;
 
         this.shotIndex = 0;
@@ -46,7 +47,8 @@ class Attacker {
 
     activate() {
         this.active = true;
-        if (this.patternTimer == 0) this.shoot();
+        //Attack begins after a random amount of time but it can't under half the total base delay
+        this.patternTimer = Math.random() * this.basePatternDelay / 2 + this.basePatternDelay / 2;
     }
 
     deactivate() {
@@ -60,7 +62,11 @@ class Attacker {
     // ------ INTERNAL FUNCTIONS ------
     shoot() {
         this.attacks.push(new Attack(this.scene, this.owner, this.pattern));
-        this.patternTimer = this.patternTimer % this.patternDelay;
+        //Randomly offset the delay from the base
+        let randomOffsetRange = this.basePatternDelay / 20;
+        let randomOffset = Math.random() * randomOffsetRange - randomOffsetRange / 2;
+        this.patternDelay = this.basePatternDelay + randomOffset;
+        this.patternTimer = 0;
     }
 
     flushDeleteList() {

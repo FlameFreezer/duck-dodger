@@ -168,8 +168,10 @@ class Attack {
     // ------ BULLET RING INTERNALS ------
     createBulletRing() {
         let ring = {};
-        ring.x = this.x;
-        ring.y = this.y;
+        //ring.x = this.x;
+        //ring.y = this.y;
+        ring.x = this.parentDuck.x;
+        ring.y = this.parentDuck.y;
         ring.radius = this.parentDuck.hitbox.radius / 2;
         ring.rotDir = Math.sign((this.rings.length + 1) % 2 - 0.5)
         ring.bullets = [];

@@ -33,7 +33,7 @@ class PlayerTest extends Phaser.Scene {
         for(let i = 0; i < 10; i++) {
             this.player.upgradeHoming();
         }
-        for(let i = 0; i < 6; i++) {
+        for(let i = 0; i < 0; i++) {
             this.player.upgradeProjectiles();
         }
         for(let i = 0; i < 7; i++) {
@@ -42,10 +42,10 @@ class PlayerTest extends Phaser.Scene {
 
         this.ducks = [];
         this.ducks.push(new Duck(this, {
-            sprite: "duck_yellow.png",
-            pathFollower: new Path("arc", 150, 50, 0.25, 4000),
+            sprite: "duck_brown.png",
+            pathFollower: new Path("circle", 50, 50, 0.25, 2000),
             spawnTween: new SpawnTween(300, 0, 300, 250, 1000),
-            attacker: new Attacker(this, "ring", 3000),
+            attacker: new Attacker(this, "ring", 4000),
             deathAnim: new DeathAnimator(),
             hp: 300,
             points: 15
