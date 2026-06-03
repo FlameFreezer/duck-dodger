@@ -99,3 +99,11 @@ function vecInCameraBounds(scene, vec, margin = 0) {
     return (vec.x > 1 * margin && vec.x < scene.sys.scale.width - margin &&
             vec.y > margin && vec.y < scene.sys.scale.height - margin);
 }
+
+function colorToVector(color) {
+    return {
+        x: color.r,
+        y: color.g,
+        z: color.b
+    };
+}

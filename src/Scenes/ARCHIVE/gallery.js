@@ -4,13 +4,6 @@ const states = Object.freeze({
     GAME_OVER: 2,
     GAME_INITIAL: 3
 });
-function colorToVector(color) {
-    return {
-        x: color.r,
-        y: color.g,
-        z: color.b
-    };
-}
 class Gallery extends Phaser.Scene {
     constructor() {
         super("gallery");
