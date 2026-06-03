@@ -81,7 +81,8 @@ class PlayerBullet extends Phaser.GameObjects.Sprite {
             let angleBetween = Math.acos(vecDot(vecNormalize(target.vecBulletToDuck), vecNormalize(this.velocity)));
             let axis = vecCross({x: target.vecBulletToDuck.x, y: target.vecBulletToDuck.y, z: 0}, {x: this.velocity.x, y: this.velocity.y, z: 0});
             let direction = Math.sign(vecDot(axis, {x: 0, y: 0, z: -1}));
-            this.velocity = vecRotate(this.velocity, direction * PLAYER_BULLET_ROTATION_RATE * delta / 1000);
+            let rotationRate = PLAYER_BULLET_ROTATION_RATE + 5 * angleBetween;
+            this.velocity = vecRotate(this.velocity, direction * rotationRate * delta / 1000);
         }
 
     }
