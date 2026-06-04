@@ -1,4 +1,4 @@
-class WaveSpawner {
+class WaveController {
     constructor(scene, waveData, duckData) {
         this.scene = scene;
         this.duckData = duckData;
@@ -39,10 +39,13 @@ class WaveSpawner {
         }
 
         this.active = false;
-        this.allDucksSpawned = false;
+        this.waveSpawned = false;
+        this.spawnBread = false;
         this.breadSpawned = false;
+        this.waveOver = false;
         this.currWave = -1;
         this.spawnTimer = 0;
+        this.fleeTimer = -1;
         this.ducks = [];
         this.duckDeleteList = [];
 
@@ -60,27 +63,55 @@ class WaveSpawner {
                         this.ducks.push(this.buildDuck(spawn.duckType, startVec.x, startVec.y, endVec.x, endVec.y, spawn.spawnDur));
                     }
                     spawn.spawned = true;
-                    if (this.waves[currWave].indexOf(spawn) == this.waves[currWave].length - 1) {
-                        this.allDucksSpawned = true;
+                    if (this.waves[this.currWave].indexOf(spawn) == this.waves[this.currWave].length - 1) {
+                        this.spawnBread = true;
                         this.spawnTimer = 0;
                     }
                 }
             }
-            if (this.allDucksSpawned && this.spawnTimer > 1500) {
+            if (this.spawnBread && this.spawnTimer > 1500) {
                 let data = this.duckData["BREAD"];
                 let breadConfig = {
                     pathFollower: new Path(data.path.type, data.path.width, data.path.height, data.path.start, data.path.loopTime, true),
-                    spawnTween: new SpawnTween(this.scene.sys.display.width / 2, -50, this.scene.sys.display.width / 2, 150, 1000),
+                    spawnTween: new SpawnTween(this.scene.sys.scale.width / 2, -50, this.scene.sys.scale.width / 2, 150, 1000),
                     hp: data.hp,
                     points: data.points
                 };
-                this.ducks.push(new Bread(this.scene, ))
+                this.ducks.push(new Bread(this.scene, breadConfig));
+                console.log("waveSpawner: bread spawned");
+                this.waveSpawned = true;
+                this.deactivate();
             }
         }
+
+        if (this.waveSpawned && this.ducks.length == 0 && !this.waveOver) {
+            let waveCompleteEvent = new Event("waveComplete");
+            document.dispatchEvent(waveCompleteEvent);
+            console.log("wave over!");
+            this.waveOver = true;
+        }
+        
         for (let duck of this.ducks) {
             duck.update(delta);
             if (duck.canBeDeleted()) {
                 this.duckDeleteList.push(duck);
+            }
+        }
+
+        if (this.waveSpawned && this.ducks.length == 1) {
+            if (this.fleeTimer < 0) {
+                this.fleeTimer = delta;
+            }
+            else if (this.fleeTimer < BREAD_FLEE_TIMER) {
+                this.fleeTimer += delta;
+            }
+            else {
+                for (let duck of this.ducks) {
+                    if (Object.hasOwn(duck.components, "fleeTween")) {
+                        console.log("WaveController: initiating duck flee");
+                        duck.flee();
+                    }
+                }
             }
         }
 
@@ -90,7 +121,10 @@ class WaveSpawner {
     startNextWave() {
         this.currWave++;
         this.spawnTimer = 0;
-        this.allDucksSpawned = false;
+        this.waveSpawned = false;
+        this.spawnBread = false;
+        this.fleeTimer = -1;
+        this.waveOver = false;
         this.activate();
     }
 
@@ -108,7 +142,7 @@ class WaveSpawner {
         let data = this.duckData[type];
         let currPath = data.path;
         let config = {
-            sprite: Duck.getDuckSpriteFromType(type).base,
+            sprite: getDuckSpriteFromType(DuckTypes[type]).base,
             pathFollower: new Path(currPath.type, currPath.width, currPath.height, currPath.start, currPath.loopTime, false),
             spawnTween: new SpawnTween(spawnX, spawnY, toX, toY, spawnDur),
             attacker: new Attacker(this.scene, data.attack, data.attackGap),
