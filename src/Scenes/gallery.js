@@ -55,7 +55,11 @@ class Gallery extends Phaser.Scene {
         this.waveController = new WaveController(this, json.get("rounds"), json.get("enemies"));
         this.waveController.startNextWave();
 
-        document.addEventListener("waveComplete", () => {this.waveController.startNextWave();});
+        document.addEventListener("waveComplete", () => {
+            let currentScore = this.registry.get('score');
+            this.registry.set('score', currentScore + 100);
+            this.waveController.startNextWave();
+        });
 
         this.registry.set('score', 0);
     }

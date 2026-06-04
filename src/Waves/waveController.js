@@ -78,7 +78,6 @@ class WaveController {
                     points: data.points
                 };
                 this.ducks.push(new Bread(this.scene, breadConfig));
-                console.log("waveSpawner: bread spawned");
                 this.waveSpawned = true;
                 this.deactivate();
             }
@@ -87,7 +86,6 @@ class WaveController {
         if (this.waveSpawned && this.ducks.length == 0 && !this.waveOver) {
             let waveCompleteEvent = new Event("waveComplete");
             document.dispatchEvent(waveCompleteEvent);
-            console.log("wave over!");
             this.waveOver = true;
         }
         
