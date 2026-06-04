@@ -4,6 +4,8 @@ class Gallery extends Phaser.Scene {
         this.keys = {};
     }
     create() {
+        let json = this.cache.json;
+
         //Launch UI scene
         this.ui = this.scene.launch("ui");
         this.scene.bringToTop("ui");
@@ -20,7 +22,7 @@ class Gallery extends Phaser.Scene {
         this.keys.enter = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
 
         //Init player
-        this.player = new Player(this, this.cache.json.get("playerData"));
+        this.player = new Player(this, json.get("playerData"));
         for(let i = 0; i < 10; i++) {
             this.player.upgradeHoming();
         }
@@ -49,10 +51,31 @@ class Gallery extends Phaser.Scene {
             this.makeBackgroundBubble(Math.random() * CANVAS_WIDTH, i * interval);
         }
 
+
+        this.waveController = new WaveController(this, json.get("rounds"), json.get("enemies"));
+        this.waveController.startNextWave();
+
+        document.addEventListener("waveComplete", () => {this.waveController.startNextWave();});
     }
 
     update(time, delta) {
+        this.waveController.update(delta);
+
         this.player.update(delta);
+
+        // bullet hit detection
+        for(let duck of this.waveController.ducks) {
+            if(duck.active) {
+                for(let bullet of this.player.bullets) {
+                    if (duck.hitbox == null) break;
+                    if(Phaser.Geom.Intersects.CircleToRectangle(duck.hitbox, bullet.hitbox)) {
+                        bullet.killed = true;
+                        duck.hp--;
+                    }
+                }
+            }
+        }
+
 
         this.updateBubbles(delta);
 
