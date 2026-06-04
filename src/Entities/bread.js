@@ -65,6 +65,10 @@ class Bread extends Phaser.GameObjects.Image {
         }
     }
 
+    onHit() {
+        this.hp--;
+    }
+
     flee() {
         for (let component in this.components) {
             this.components[component].deactivate();
@@ -85,6 +89,8 @@ class Bread extends Phaser.GameObjects.Image {
                 this.components[component].deactivate();
             }
             this.components.deathAnim.activate();
+            let currentScore = this.scene.registry.get('score');
+            this.scene.registry.set('score', currentScore + this.points);
         }
         else if (this.components.fleeTween.complete) {
             for (let component in this.components) {
@@ -92,8 +98,6 @@ class Bread extends Phaser.GameObjects.Image {
             }
             this.destroy();
         }
-        let currentScore = this.scene.registry.get('score');
-        this.scene.registry.set('score', currentScore + this.points);
     }
 
     canBeDeleted() {

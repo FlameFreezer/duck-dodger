@@ -58,6 +58,8 @@ const heartGrowMaximum = 1.2;
 const heartGrowTime = 200;
 const WAVE_TRANSITION_TIME = 4000;
 
+const DUCK_SCALE = 0.45;
+
 const BUBBLE_RATE = 750;
 const BUBBLE_SIZE_RANGE = Object.freeze({
     MIN: 0.35,

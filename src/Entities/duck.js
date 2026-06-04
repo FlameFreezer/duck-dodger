@@ -26,7 +26,7 @@ class Duck extends Phaser.GameObjects.Sprite {
 
         const NULL_COMPONENT = {active: false};
 
-        this.setScale(0.45);
+        this.setScale(DUCK_SCALE);
         this.pathFollower = NULL_COMPONENT;
         this.attacker = NULL_COMPONENT;
         this.spawnTween = NULL_COMPONENT;
@@ -63,6 +63,9 @@ class Duck extends Phaser.GameObjects.Sprite {
             this.debugGraphics = scene.add.graphics();
         }
 
+        this.spriteOnHit = scene.add.sprite(this.x, this.y, "ducks", config.spriteOnHit);
+        this.spriteOnHit.visible = false;
+        this.spriteOnHit.setScale(DUCK_SCALE);
     }
     // ------ INTERFACE METHODS ------
 
@@ -82,17 +85,42 @@ class Duck extends Phaser.GameObjects.Sprite {
         }
 
         // handle death
-        if (this.hp <= 0 && this.active) this.kill();
         if (this.components.deathAnim.complete) {
             for (let component in this.components) {
                 if (this.components[component].active) this.components[component].deactivate();
             }
             this.destroy();
         }
+
+        this.spriteOnHit.setPosition(this.x, this.y);
     }
 
     canBeDeleted() {
         return (this.components.deathAnim.complete && this.components.attacker.canBeDeleted());
+    }
+
+    onHit() {
+        this.hp--;
+        //Begin kill
+        if (this.hp <= 0 && this.active) {
+            if(this.onHitTimer) {
+                this.onHitTimer.remove();
+                this.spriteOnHit.visible = false;
+                this.visible = true;
+            }
+            this.kill();
+            return;
+        }
+        this.spriteOnHit.visible = true;
+        this.visible = false;
+        this.onHitTimer = this.scene.time.delayedCall(
+            100,
+            (self) => {
+                self.spriteOnHit.visible = false;
+                self.visible = true;
+            },
+            [this]
+        );
     }
 
     // ------ INTERNAL METHODS -----

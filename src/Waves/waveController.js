@@ -142,8 +142,10 @@ class WaveController {
     buildDuck(type, spawnX, spawnY, toX, toY, spawnDur) {
         let data = this.duckData[type];
         let currPath = data.path;
+        let sprites = getDuckSpriteFromType(DuckTypes[type]);
         let config = {
-            sprite: getDuckSpriteFromType(DuckTypes[type]).base,
+            sprite: sprites.base,
+            spriteOnHit: sprites.onHit,
             pathFollower: new Path(currPath.type, currPath.width, currPath.height, currPath.start, currPath.loopTime, false),
             spawnTween: new SpawnTween(spawnX, spawnY, toX, toY, spawnDur),
             attacker: new Attacker(this.scene, data.attack, data.attackGap),

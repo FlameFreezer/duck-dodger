@@ -101,7 +101,7 @@ class Gallery extends Phaser.Scene {
                 if (duck.hitbox == null) break;
                 if(Phaser.Geom.Intersects.CircleToRectangle(duck.hitbox, bullet.hitbox)) {
                     bullet.killed = true;
-                    duck.hp--;
+                    duck.onHit();
                 }
             }
         }
