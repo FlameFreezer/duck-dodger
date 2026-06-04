@@ -43,7 +43,8 @@ class WaveController {
         this.spawnBread = false;
         this.breadSpawned = false;
         this.waveOver = false;
-        this.currWave = -1;
+        this.currWave = 0;
+        this.scene.registry.set('waveNumber', this.currWave);
         this.spawnTimer = 0;
         this.fleeTimer = -1;
         this.ducks = [];
@@ -87,6 +88,9 @@ class WaveController {
             let waveCompleteEvent = new Event("waveComplete");
             document.dispatchEvent(waveCompleteEvent);
             this.waveOver = true;
+
+            this.currWave++;
+            this.scene.registry.set('waveNumber', this.currWave);
         }
         
         for (let duck of this.ducks) {
@@ -117,7 +121,6 @@ class WaveController {
     }
 
     startNextWave() {
-        this.currWave++;
         this.spawnTimer = 0;
         this.waveSpawned = false;
         this.spawnBread = false;

@@ -21,6 +21,16 @@ class UI extends Phaser.Scene {
             .setOrigin(0.5)
             .setBlendMode(Phaser.BlendModes.ADD);
 
+        this.waveCompleteText = this.add.bitmapText(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, "04b_30", "Wave Complete!", 32)
+            .setOrigin(0.5)
+            .setBlendMode(Phaser.BlendModes.ADD);
+        this.waveCompleteText.visible = false;
+
+        this.nextWaveText = this.add.bitmapText(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, "04b_30", "Wave 0", 32)
+            .setOrigin(0.5)
+            .setBlendMode(Phaser.BlendModes.ADD);
+        this.nextWaveText.visible = false;
+
         this.registry.events.on('changedata', (parent, key, data) => {
             switch(key) {
                 case 'health':
@@ -29,8 +39,60 @@ class UI extends Phaser.Scene {
                 case 'score':
                     this.scoreTxt.setText(`Score: ${data}`);
                     break;
+                case 'waveNumber':
+                    this.nextWaveText.setText(`Wave ${data + 1}`);
+                    break;
             }
         }, this);
+
+        this.startGameTimeline = this.add.timeline([
+            {
+                at: 0,
+                run() {
+                    this.nextWaveText.visible = true;
+                },
+                target: this
+            },
+            {
+                at: WAVE_TRANSITION_TIME / 2,
+                run() {
+                    this.nextWaveText.visible = false;
+                },
+                target: this
+            }
+        ]);
+
+        this.waveTransitionTimeline = this.add.timeline([
+            {
+                at: 0,
+                run() {
+                    this.waveCompleteText.visible = true;
+                },
+                target: this
+            },
+            {
+                at: WAVE_TRANSITION_TIME / 2,
+                run() {
+                    this.waveCompleteText.visible = false;
+                    this.nextWaveText.visible = true;
+                },
+                target: this
+            },
+            {
+                at: WAVE_TRANSITION_TIME,
+                run() {
+                    this.nextWaveText.visible = false;
+                },
+                target: this
+            }
+        ])
+
+        document.addEventListener("waveComplete", () => {
+            this.waveTransitionTimeline.play();
+        });
+        document.addEventListener("startGame", () => {
+            this.startGameTimeline.play();
+        });
     }
     update(time, delta) {
     }

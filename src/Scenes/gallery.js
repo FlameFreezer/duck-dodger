@@ -51,17 +51,34 @@ class Gallery extends Phaser.Scene {
             this.makeBackgroundBubble(Math.random() * CANVAS_WIDTH, i * interval);
         }
 
-
         this.waveController = new WaveController(this, json.get("rounds"), json.get("enemies"));
-        this.waveController.startNextWave();
+        this.startGame();
 
         document.addEventListener("waveComplete", () => {
             let currentScore = this.registry.get('score');
             this.registry.set('score', currentScore + 100);
-            this.waveController.startNextWave();
+            this.time.delayedCall(
+                WAVE_TRANSITION_TIME, 
+                (self) => {
+                    self.waveController.startNextWave();
+                }, 
+                [this]
+            );
         });
 
         this.registry.set('score', 0);
+    }
+
+    startGame() {
+        let startGameEvent = new Event("startGame");
+        document.dispatchEvent(startGameEvent);
+        this.time.delayedCall(
+            WAVE_TRANSITION_TIME / 2,
+            (self) => {
+                self.waveController.startNextWave();
+            },
+            [this]
+        );
     }
 
     update(time, delta) {
