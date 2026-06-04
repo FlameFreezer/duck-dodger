@@ -22,9 +22,10 @@ class Load extends Phaser.Scene {
         //Load shader
         this.load.setPath("./src/Shaders/");
         this.load.glsl("background", "backgroundEffect.frag");
-        //Load font
-        this.load.setPath("./assets/daydream_3");
-        this.load.bitmapFont("daydream_3", "daydream_3_0.png", "daydream_3.fnt");
+        //Load fonts
+        this.load.setPath("./assets/Fonts/");
+        this.load.bitmapFont("daydream_3", "daydream_3/daydream_3_0.png", "daydream_3/daydream_3.fnt");
+        this.load.bitmapFont("04b_30", "04b_30/04b_30_0.png", "04b_30/04b_30.fnt");
         //Load sounds
         this.load.setPath("./assets/Audio");
         this.load.audio("duckHit", "footstep_wood_001.ogg");
@@ -48,7 +49,7 @@ class Load extends Phaser.Scene {
         this.load.image("bubble", "bubble.png");
     }
     create() {
-        this.scene.start("waveSpawnTest");
+        this.scene.start("gallery");
     }
     update(time, delta) {
 

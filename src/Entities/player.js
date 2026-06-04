@@ -12,7 +12,8 @@ class Player extends Phaser.GameObjects.Sprite {
         this.shootOffset = json.shootOffset;
         this.activeColor = Colors.YELLOW;
         this.displayColor = GetRGBFromColor(Colors.YELLOW);
-        this.hp = json.hp;
+        this.hp = PLAYER_STARTING_HEALTH;
+        scene.registry.set('health', this.hp);
         this.isInvulnerable = false;
         this.colorChangeTime = 0;
         this.didChangeColor = false;
@@ -194,7 +195,7 @@ class Player extends Phaser.GameObjects.Sprite {
         );
     }
     onHit() {
-        this.hp -= 1;
+        this.addHP(-1);
         this.isInvulnerable = true;
         if(this.hp <= 0) {
             return this.onDeath();
@@ -220,6 +221,7 @@ class Player extends Phaser.GameObjects.Sprite {
     }
     addHP(amount) {
         this.hp += amount;
+        this.scene.registry.set('health', this.hp);
     }
     upgradeFireRate() {
         this.upgrades.fireRate++;
