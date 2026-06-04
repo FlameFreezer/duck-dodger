@@ -22,6 +22,7 @@ class Duck extends Phaser.GameObjects.Sprite {
     constructor(scene, config) {
         super(scene, 0, 0, "ducks", config.sprite);
         scene.add.existing(this);
+        this.scene = scene;
 
         const NULL_COMPONENT = {active: false};
 
@@ -102,7 +103,6 @@ class Duck extends Phaser.GameObjects.Sprite {
         }
 
         this.active = false;
-        console.log("Duck: killing");
 
         if (!this.components.deathAnim.active) {
             for (let component in this.components) {
@@ -110,5 +110,7 @@ class Duck extends Phaser.GameObjects.Sprite {
             }
             this.components.deathAnim.activate();
         }
+        let currentScore = this.scene.registry.get('score');
+        this.scene.registry.set('score', currentScore + this.points);
     }
 }

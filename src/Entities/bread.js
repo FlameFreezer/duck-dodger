@@ -8,6 +8,7 @@ class Bread extends Phaser.GameObjects.Image {
     constructor(scene, config) {
         super(scene, 0, 0, "bread");
         scene.add.existing(this);
+        this.scene = scene;
 
         this.setScale(0.15);
         this.components = {};
@@ -91,6 +92,8 @@ class Bread extends Phaser.GameObjects.Image {
             }
             this.destroy();
         }
+        let currentScore = this.scene.registry.get('score');
+        this.scene.registry.set('score', currentScore + this.points);
     }
 
     canBeDeleted() {

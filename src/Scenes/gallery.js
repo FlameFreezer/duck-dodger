@@ -56,6 +56,8 @@ class Gallery extends Phaser.Scene {
         this.waveController.startNextWave();
 
         document.addEventListener("waveComplete", () => {this.waveController.startNextWave();});
+
+        this.registry.set('score', 0);
     }
 
     update(time, delta) {
@@ -63,23 +65,24 @@ class Gallery extends Phaser.Scene {
 
         this.player.update(delta);
 
-        // bullet hit detection
+        this.updateBubbles(delta);
+
+        this.playerBulletCollisionResolution();
+
+        this.flushRemoveQueues();
+    }
+
+    playerBulletCollisionResolution() {
         for(let duck of this.waveController.ducks) {
-            if(duck.active) {
-                for(let bullet of this.player.bullets) {
-                    if (duck.hitbox == null) break;
-                    if(Phaser.Geom.Intersects.CircleToRectangle(duck.hitbox, bullet.hitbox)) {
-                        bullet.killed = true;
-                        duck.hp--;
-                    }
+            if(!duck.active) continue;
+            for(let bullet of this.player.bullets) {
+                if (duck.hitbox == null) break;
+                if(Phaser.Geom.Intersects.CircleToRectangle(duck.hitbox, bullet.hitbox)) {
+                    bullet.killed = true;
+                    duck.hp--;
                 }
             }
         }
-
-
-        this.updateBubbles(delta);
-
-        this.flushRemoveQueues();
     }
 
     flushRemoveQueues() {
