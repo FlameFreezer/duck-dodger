@@ -1,4 +1,4 @@
-const DEBUG = true;
+const DEBUG = false;
 
 const T_PATTERN_MOVE_SPEED = 400; // px/sec
 const T_PATTERN_BULLET_GAP = 4; // gap between bullet centerpoints, in bullet radii

@@ -27,7 +27,9 @@ class WaveSpawnTest extends Phaser.Scene {
         this.keys.shift = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
         this.keys.enter = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
 
-        this.waveController = new WaveController(this, this.cache.json.get("rounds"), this.cache.json.get("enemies"));
+        let json = this.cache.json;
+
+        this.waveController = new WaveController(this, json.get("rounds"), json.get("enemies"));
         this.waveController.startNextWave();
 
         document.addEventListener("waveComplete", () => {this.waveController.startNextWave();});
@@ -35,6 +37,8 @@ class WaveSpawnTest extends Phaser.Scene {
     update(time, delta) {
         this.waveController.update(delta);
         this.player.update(delta);
+
+        // bullet hit detection
         for(let duck of this.waveController.ducks) {
             //duck.update(delta);
             if(duck.active) {
@@ -46,10 +50,6 @@ class WaveSpawnTest extends Phaser.Scene {
                     }
                 }
             }
-        }
-
-        if (this.waveController.waveOver) {
-
         }
     }
 }
