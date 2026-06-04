@@ -52,7 +52,6 @@ class Gallery extends Phaser.Scene {
         }
 
         this.waveController = new WaveController(this, json.get("rounds"), json.get("enemies"));
-        this.startGame();
 
         document.addEventListener("waveComplete", () => {
             let currentScore = this.registry.get('score');
@@ -65,6 +64,8 @@ class Gallery extends Phaser.Scene {
                 [this]
             );
         });
+
+        document.addEventListener("uiInitialized", () => this.startGame());
 
         this.registry.set('score', 0);
     }

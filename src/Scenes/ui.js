@@ -26,7 +26,7 @@ class UI extends Phaser.Scene {
             .setBlendMode(Phaser.BlendModes.ADD);
         this.waveCompleteText.visible = false;
 
-        this.nextWaveText = this.add.bitmapText(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, "04b_30", "Wave 0", 32)
+        this.nextWaveText = this.add.bitmapText(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, "04b_30", "Wave 1", 32)
             .setOrigin(0.5)
             .setBlendMode(Phaser.BlendModes.ADD);
         this.nextWaveText.visible = false;
@@ -93,6 +93,9 @@ class UI extends Phaser.Scene {
         document.addEventListener("startGame", () => {
             this.startGameTimeline.play();
         });
+
+        let uiInitialized = new Event("uiInitialized");
+        document.dispatchEvent(uiInitialized);
     }
     update(time, delta) {
     }
