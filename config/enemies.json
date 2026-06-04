@@ -8,7 +8,7 @@
             "width" : 150,
             "height" : 20,
             "start" : 0.25,
-            "cycleTime" : 1500
+            "loopTime" : 3500
         },
         "attack" : "t-pattern",
         "attackGap": 2000
@@ -22,7 +22,7 @@
             "width" : 100,
             "height" : 100,
             "start" : 0.25,
-            "cycleTime" : 2500
+            "loopTime" : 4000
         },
         "attack" : "ring",
         "attackGap": 2000
@@ -36,7 +36,7 @@
             "width" : 500,
             "height" : 180,
             "start" : 0.75,
-            "cycleTime" : 7000
+            "loopTime" : 7000
         },
         "yoyo" : false,
         "duration" : 7000,

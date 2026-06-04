@@ -28,6 +28,13 @@ class Bread extends Phaser.GameObjects.Image {
         this.components.deathAnim = new DeathAnimator().registerTo(this);
         this.components.fleeTween = new FleeTween(null, this.displayHeight * -2, 1000, true).registerTo(this);
 
+        this.hitbox = new Phaser.Geom.Circle(this.x, this.y, this.displayWidth / 2 * 0.9);
+        if (DEBUG) {
+            this.debugGraphics = scene.add.graphics();
+            this.debugGraphics.lineStyle(1, 0xffffff, 1);
+            this.debugGraphics.strokeCircleShape(this.hitbox);
+        }
+
         this.hp = config.hp;
         this.points = config.points;
         this.active = true;
@@ -38,6 +45,13 @@ class Bread extends Phaser.GameObjects.Image {
     update(delta) {
         for (let component in this.components) {
             this.components[component].update(delta);
+        }
+
+        this.hitbox.setPosition(this.x, this.y);
+        if (DEBUG) {
+            this.debugGraphics.clear();
+            this.debugGraphics.lineStyle(1, 0xffffff, 1);
+            this.debugGraphics.strokeCircleShape(this.hitbox);
         }
 
         // handle death
@@ -60,6 +74,10 @@ class Bread extends Phaser.GameObjects.Image {
     kill() {
         if (!this.active) return;
         this.active = false;
+        if (DEBUG) {
+            this.debugGraphics.clear();
+            this.debugGraphics.destroy();
+        }
 
         if (!this.components.fleeTween.complete && !this.components.deathAnim.active) {
             for (let component in this.components) {
@@ -76,6 +94,6 @@ class Bread extends Phaser.GameObjects.Image {
     }
 
     canBeDeleted() {
-        return (this.fleeTween.complete || this.components.deathAnim.complete);
+        return (this.components.fleeTween.complete || this.components.deathAnim.complete);
     }
 }

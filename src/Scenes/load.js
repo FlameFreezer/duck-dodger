@@ -11,12 +11,14 @@ class Load extends Phaser.Scene {
         this.load.atlasXML("ducks", "spritesheet_objects.png", "spritesheet_objects.xml");
         //Load heart
         this.load.atlasXML("hearts", "spritesheet-tiles-default.png", "spritesheet-tiles-default.xml");
-        //Load player data
+        //Load JSON data
         this.load.setPath("./config");
         this.load.json("playerData", "player.json");
         this.load.json("duckData", "ducks.json");
         this.load.json("waveData", "waves.json");
         this.load.json("challengeWaveData", "challengeWaves.json");
+        this.load.json("enemies", "enemies.json");
+        this.load.json("rounds", "rounds.json");
         //Load shader
         this.load.setPath("./src/Shaders/");
         this.load.glsl("background", "backgroundEffect.frag");
@@ -46,7 +48,7 @@ class Load extends Phaser.Scene {
         this.load.image("bubble", "bubble.png");
     }
     create() {
-        this.scene.start("gallery");
+        this.scene.start("waveSpawnTest");
     }
     update(time, delta) {
 

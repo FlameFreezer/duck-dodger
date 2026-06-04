@@ -7,7 +7,7 @@ function getDuckSpriteFromType(type) {
         case DuckTypes.GOOSE:
             throw "Goose hasn't been defined yet!";
         default: // this should never happen
-            throw "Duck.getDuckSpriteFromType: Bad duck type requested!"
+            throw "Duck.getDuckSpriteFromType: Bad duck type " + type + " requested!"
     }
 }
 class Duck extends Phaser.GameObjects.Sprite {
@@ -81,17 +81,17 @@ class Duck extends Phaser.GameObjects.Sprite {
         }
 
         // handle death
-        if (this.hp <= 0) this.kill();
+        if (this.hp <= 0 && this.active) this.kill();
         if (this.components.deathAnim.complete) {
             for (let component in this.components) {
-                this.components[component].deactivate();
+                if (this.components[component].active) this.components[component].deactivate();
             }
             this.destroy();
         }
     }
 
     canBeDeleted() {
-        return (!this.active && this.components.attacker.canBeDeleted());
+        return (this.components.deathAnim.complete && this.components.attacker.canBeDeleted());
     }
 
     // ------ INTERNAL METHODS -----
@@ -102,6 +102,7 @@ class Duck extends Phaser.GameObjects.Sprite {
         }
 
         this.active = false;
+        console.log("Duck: killing");
 
         if (!this.components.deathAnim.active) {
             for (let component in this.components) {
