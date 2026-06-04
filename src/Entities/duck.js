@@ -93,6 +93,8 @@ class Duck extends Phaser.GameObjects.Sprite {
         }
 
         this.spriteOnHit.setPosition(this.x, this.y);
+        this.spriteOnHit.angle = this.angle;
+        this.spriteOnHit.flipX = this.flipX;
     }
 
     canBeDeleted() {
@@ -114,7 +116,7 @@ class Duck extends Phaser.GameObjects.Sprite {
         this.spriteOnHit.visible = true;
         this.visible = false;
         this.onHitTimer = this.scene.time.delayedCall(
-            100,
+            ENEMY_HIT_SPRITE_TIME,
             (self) => {
                 self.spriteOnHit.visible = false;
                 self.visible = true;

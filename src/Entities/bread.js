@@ -10,7 +10,7 @@ class Bread extends Phaser.GameObjects.Image {
         scene.add.existing(this);
         this.scene = scene;
 
-        this.setScale(0.15);
+        this.setScale(BREAD_SCALE);
         this.components = {};
 
         // initialize components
@@ -40,6 +40,10 @@ class Bread extends Phaser.GameObjects.Image {
         this.points = config.points;
         this.active = true;
 
+        this.spriteOnHit = scene.add.image(this.x, this.y, "breadHit");
+        this.spriteOnHit.visible = false;
+        this.spriteOnHit.setScale(BREAD_SCALE);
+
         return this;
     }
 
@@ -56,17 +60,36 @@ class Bread extends Phaser.GameObjects.Image {
         }
 
         // handle death
-        if (this.hp <= 0 || this.components.fleeTween.complete) this.kill();
         if (this.components.deathAnim.complete) {
             for (let component in this.components) {
                 this.components[component].deactivate();
             }
             this.destroy();
         }
+
+        this.spriteOnHit.setPosition(this.x, this.y);
+        this.spriteOnHit.angle = this.angle;
+        this.spriteOnHit.flipX = this.flipX;
     }
 
     onHit() {
         this.hp--;
+        if (this.hp <= 0 || this.components.fleeTween.complete) {
+            if(this.onHitTimer) this.onHitTimer.remove();
+            this.kill();
+            return;
+        }
+        this.spriteOnHit.visible = true;
+        this.visible = false;
+        this.onHitTimer = this.scene.time.delayedCall(
+            ENEMY_HIT_SPRITE_TIME,
+            (self) => {
+                self.spriteOnHit.visible = false;
+                self.visible = true;
+            },
+            [this]
+        );
+
     }
 
     flee() {
@@ -74,6 +97,8 @@ class Bread extends Phaser.GameObjects.Image {
             this.components[component].deactivate();
         }
         this.components.fleeTween.activate();
+        this.spriteOnHit.visible = false;
+        this.visible = true;
     }
 
     kill() {
