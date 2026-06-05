@@ -94,7 +94,6 @@ class WaveController {
             this.scene.time.delayedCall(WAVE_END_DELAY, () => {
                 let waveCompleteEvent = new Event("waveComplete");
                 document.dispatchEvent(waveCompleteEvent);
-
             });
         }
         
@@ -114,8 +113,7 @@ class WaveController {
             }
             else {
                 for (let duck of this.ducks) {
-                    if (Object.hasOwn(duck.components, "fleeTween")) {
-                        console.log("WaveController: initiating duck flee");
+                    if (Object.hasOwn(duck.components, "fleeTween") && !duck.components.deathAnim.active) {
                         duck.flee();
                     }
                 }
