@@ -51,6 +51,11 @@ class UI extends Phaser.Scene {
             .setOrigin(0.5)
             .setBlendMode(Phaser.BlendModes.ADD);
 
+        this.waveCompleteText = this.add.bitmapText(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, "04b_30", "Wave Complete!", 32)
+            .setOrigin(0.5)
+            .setBlendMode(Phaser.BlendModes.ADD);
+        this.waveCompleteText.visible = false;
+
         this.nextWaveText = this.add.bitmapText(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, "04b_30", "Wave 1", 32)
             .setOrigin(0.5)
             .setBlendMode(Phaser.BlendModes.ADD);
@@ -175,13 +180,21 @@ class UI extends Phaser.Scene {
 
         document.addEventListener("waveComplete", () => {
             if(this.gameOver) return;
-            this.upgradesTxt.visible = true;
-            this.upgrade1Txt.visible = true;
-            this.upgrade2Txt.visible = true;
-            this.zKey.visible = true;
-            this.xKey.visible = true;
+
+            let waveNumber = this.registry.get("waveNumber");
+            if(waveNumber % 2 != 0) {
+                this.waveCompleteText.visible = true;
+            }
+            else {
+                this.upgradesTxt.visible = true;
+                this.upgrade1Txt.visible = true;
+                this.upgrade2Txt.visible = true;
+                this.zKey.visible = true;
+                this.xKey.visible = true;
+            }
         });
         document.addEventListener("waveStart", () => {
+            this.waveCompleteText.visible = false;
             this.upgradesTxt.visible = false;
             this.upgrade1Txt.visible = false;
             this.upgrade2Txt.visible = false;

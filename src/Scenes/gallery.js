@@ -145,22 +145,44 @@ class Gallery extends Phaser.Scene {
             //Do nothing if the game is over
             if(this.gameOver) return;
 
-            this.onUpgradeScreen = true;
             //Add score
             this.addScore(POINTS_PER_WAVE);
 
-            //Pick two random upgrades
-            this.upgrade1.value = Math.floor(Math.random() * Upgrades.NUM_UPGRADES);
-            this.upgrade1.level = this.player.getUpgradeLevel(this.upgrade1.value) + 1;
-
-            this.upgrade2.value = Math.floor(Math.random() * Upgrades.NUM_UPGRADES);
-            //Ensure upgrade 2 is not the same as upgrade 1 so player always has a choice
-            while(this.upgrade2.value == this.upgrade1.value) {  
-                this.upgrade2.value = Math.floor(Math.random() * Upgrades.NUM_UPGRADES);
+            //Only get an upgrade every other wave
+            let waveNumber = this.registry.get("waveNumber");
+            if(waveNumber % 2 != 0) {
+                //Timer to dispatch the wave start
+                this.time.delayedCall(
+                    WAVE_TRANSITION_TIME,
+                    (self) => {
+                        document.dispatchEvent(waveStartEvent);
+                    },
+                    [this]
+                );
+                //Timer to start the next wave
+                this.time.delayedCall(
+                    WAVE_TRANSITION_TIME * 2,
+                    (self) => {
+                        self.waveController.startNextWave();;
+                    },
+                    [this]
+                );
             }
-            this.upgrade2.level = this.player.getUpgradeLevel(this.upgrade2.value) + 1;
-            this.registry.set("upgrade1", `${upgradeToString(this.upgrade1.value)} ${this.upgrade1.level}`);
-            this.registry.set("upgrade2", `${upgradeToString(this.upgrade2.value)} ${this.upgrade2.level}`);
+            else {
+                this.onUpgradeScreen = true;
+                //Pick two random upgrades
+                this.upgrade1.value = Math.floor(Math.random() * Upgrades.NUM_UPGRADES);
+                this.upgrade1.level = this.player.getUpgradeLevel(this.upgrade1.value) + 1;
+
+                this.upgrade2.value = Math.floor(Math.random() * Upgrades.NUM_UPGRADES);
+                //Ensure upgrade 2 is not the same as upgrade 1 so player always has a choice
+                while(this.upgrade2.value == this.upgrade1.value) {  
+                    this.upgrade2.value = Math.floor(Math.random() * Upgrades.NUM_UPGRADES);
+                }
+                this.upgrade2.level = this.player.getUpgradeLevel(this.upgrade2.value) + 1;
+                this.registry.set("upgrade1", `${upgradeToString(this.upgrade1.value)} ${this.upgrade1.level}`);
+                this.registry.set("upgrade2", `${upgradeToString(this.upgrade2.value)} ${this.upgrade2.level}`);
+            }
         });
 
         this.gameOver = false;
