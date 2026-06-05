@@ -5,7 +5,7 @@ function getDuckSpriteFromType(type) {
         case DuckTypes.MALLARD:
             return {base: "duck_brown.png", onHit: "duck_outline_brown.png"};
         case DuckTypes.GOOSE:
-            throw "Goose hasn't been defined yet!";
+            return {base: "duck_white.png", onHit: "duck_outline_white.png"}
         default: // this should never happen
             throw "Duck.getDuckSpriteFromType: Bad duck type " + type + " requested!"
     }

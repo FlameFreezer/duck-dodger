@@ -61,5 +61,27 @@
                 {"x": 400, "y": 300}
             ]
         }
+    ],
+    [
+        {
+            "time": 0,
+            "duckType": "GOOSE",
+            "spawnStarts": [
+                {"x": 600}
+            ],
+            "spawnEnds": [
+                {"x": 100, "y": 350}
+            ]
+        },
+        {
+            "time": 500,
+            "duckType":"RUBBER_DUCKY",
+            "spawnStarts": [
+                {"x": 450}
+            ],
+            "spawnEnds": [
+                {"x": 400, "y": 400}
+            ]
+        }
     ]
 ]

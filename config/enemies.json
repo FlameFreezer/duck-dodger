@@ -27,6 +27,20 @@
         "attack" : "ring",
         "attackGap": 2000
     },
+    "GOOSE": {
+        "hp" : 9,
+        "points" : 12,
+        "scale" : 0.45,
+        "path" : {
+            "type" : "arc",
+            "width" : 150,
+            "height" : 150,
+            "start" : 0,
+            "loopTime" : 9000
+        },
+        "attack" : "wall",
+        "attackGap" : 4000
+    },
     "BREAD" : {
         "hp" :  15,
         "points" : 100,
