@@ -23,15 +23,22 @@ class Gallery extends Phaser.Scene {
 
         //Init player
         this.player = new Player(this, json.get("playerData"));
+
+        //Set upgrades for testing
         for(let i = 0; i < 10; i++) {
             this.player.upgradeHoming();
         }
-        for(let i = 0; i < 0; i++) {
+        for(let i = 0; i < 5; i++) {
             this.player.upgradeProjectiles();
         }
         for(let i = 0; i < 7; i++) {
             this.player.upgradeFireRate();
         }
+
+        //Initialize score variables
+        this.score = 0;
+        this.lastHpMilestone = 0;
+        this.registry.set('score', this.score);
         
         //Init bubble background
         this.bubbles = [];
@@ -51,10 +58,36 @@ class Gallery extends Phaser.Scene {
             this.makeBackgroundBubble(Math.random() * CANVAS_WIDTH, i * interval);
         }
 
+        //Init wave controller
         this.waveController = new WaveController(this, json.get("rounds"), json.get("enemies"));
 
+        //Init sounds
+        this.duckHitSfx = this.sound.add("duckHit", {
+            volume: 0.5
+        });
+        this.duckDeathSfx = this.sound.add("duckDeath", {
+            volume: 0.5
+        });
+        this.healthUpSfx = this.sound.add("healthUp", {
+            volume: 0.5
+        });
+        this.gameOverSfx = this.sound.add("gameOver", {
+            volume: 0.5
+        });
+        this.breadSfx = this.sound.add("breadGot", {
+            volume: 0.5
+        });
+        this.playerHitSfx = this.sound.add("playerHit", {
+            volume : 0.5
+        });
+        this.bgMusic = this.sound.add("bgMusic", {
+            volume: 0.25,
+            loop: true
+        });
+        this.bgMusic.play();
+
         document.addEventListener("waveComplete", () => {
-            this.addScore(100);
+            this.addScore(POINTS_PER_WAVE);
             this.time.delayedCall(
                 WAVE_TRANSITION_TIME, 
                 (self) => {
@@ -66,9 +99,6 @@ class Gallery extends Phaser.Scene {
 
         document.addEventListener("uiInitialized", () => this.startGame());
 
-        this.score = 0;
-        this.lastHpMilestone = 0;
-        this.registry.set('score', this.score);
     }
 
     startGame() {
@@ -115,6 +145,7 @@ class Gallery extends Phaser.Scene {
         if(this.score - this.lastHpMilestone >= HEALTH_UP_INTERVAL) {
             this.lastHpMilestone = this.lastHpMilestone + HEALTH_UP_INTERVAL;
             this.player.addHP(1);
+            this.healthUpSfx.play();
             let healthUpEvent = new Event("healthUp");
             document.dispatchEvent(healthUpEvent);
         }

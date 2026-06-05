@@ -89,7 +89,7 @@ class Bread extends Phaser.GameObjects.Image {
             },
             [this]
         );
-
+        this.scene.duckHitSfx.play();
     }
 
     flee() {
@@ -115,6 +115,7 @@ class Bread extends Phaser.GameObjects.Image {
             }
             this.components.deathAnim.activate();
             this.scene.addScore(this.points);
+            this.scene.breadSfx.play();
         }
         else if (this.components.fleeTween.complete) {
             for (let component in this.components) {

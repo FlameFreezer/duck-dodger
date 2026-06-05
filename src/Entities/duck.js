@@ -123,6 +123,7 @@ class Duck extends Phaser.GameObjects.Sprite {
             },
             [this]
         );
+        this.scene.duckHitSfx.play();
     }
 
     // ------ INTERNAL METHODS -----

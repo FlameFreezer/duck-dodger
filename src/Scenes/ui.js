@@ -59,6 +59,11 @@ class UI extends Phaser.Scene {
             .setBlendMode(Phaser.BlendModes.ADD);
         this.nextWaveText.visible = false;
 
+        //Next wave sound effect
+        this.nextWaveSfx = this.sound.add("nextWave", {
+            volume: 0.5
+        });
+
         this.registry.events.on('changedata', (parent, key, data) => {
             switch(key) {
                 case 'health':
@@ -78,6 +83,7 @@ class UI extends Phaser.Scene {
                 at: 0,
                 run() {
                     this.nextWaveText.visible = true;
+                    this.nextWaveSfx.play();
                 },
                 target: this
             },
@@ -103,6 +109,7 @@ class UI extends Phaser.Scene {
                 run() {
                     this.waveCompleteText.visible = false;
                     this.nextWaveText.visible = true;
+                    this.nextWaveSfx.play();
                 },
                 target: this
             },
@@ -113,7 +120,8 @@ class UI extends Phaser.Scene {
                 },
                 target: this
             }
-        ])
+        ]);
+
 
         document.addEventListener("waveComplete", () => {
             this.waveTransitionTimeline.play();

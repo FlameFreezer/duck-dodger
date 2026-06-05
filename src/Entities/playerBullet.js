@@ -60,8 +60,7 @@ class PlayerBullet extends Phaser.GameObjects.Sprite {
             distance: null
         };
         //Try to find a duck to home onto
-        if(!Object.hasOwn(this.scene, "ducks")) return;
-        for(let duck of this.scene.ducks) {
+        for(let duck of this.scene.waveController.ducks) {
             if(duck.active && Phaser.Geom.Intersects.CircleToRectangle(duck.hitbox, this.homingRegion)) {
                 let duckPos = {x: duck.x, y: duck.y};
                 let bulletPos = {x: this.x, y: this.y};
