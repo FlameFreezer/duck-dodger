@@ -152,7 +152,7 @@ class WaveController {
             pathFollower: new Path(currPath.type, currPath.width, currPath.height, currPath.start, currPath.loopTime, false),
             spawnTween: new SpawnTween(spawnX, spawnY, toX, toY, spawnDur),
             attacker: new Attacker(this.scene, data.attack, data.attackGap),
-            hp: data.hp,
+            hp: data.hp + Math.floor(this.currWave / WAVES_PER_ENEMY_HEALTH),
             points: data.points
         };
         return new Duck(this.scene, config);

@@ -110,6 +110,7 @@ class Bread extends Phaser.GameObjects.Image {
         }
 
         if (!this.components.fleeTween.complete && !this.components.deathAnim.active) {
+            this.spriteOnHit.visible = false;
             for (let component in this.components) {
                 this.components[component].deactivate();
             }

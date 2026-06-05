@@ -64,6 +64,8 @@ const DUCK_SCALE = 0.45;
 const BREAD_SCALE = 0.15;
 const ENEMY_HIT_SPRITE_TIME = 100;
 const POINTS_PER_WAVE = 100;
+//Number of waves until enemies gain another health point
+const WAVES_PER_ENEMY_HEALTH = 2;
 
 const BUBBLE_RATE = 750;
 const BUBBLE_SIZE_RANGE = Object.freeze({
