@@ -49,6 +49,7 @@ class Load extends Phaser.Scene {
         this.load.image("bubble", "bubble.png");
         this.load.image("z", "keyboard_z.png");
         this.load.image("x", "keyboard_x.png");
+        this.load.image("s", "keyboard_s.png");
     }
     create() {
         this.scene.start("title");

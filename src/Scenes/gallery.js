@@ -159,7 +159,8 @@ class Gallery extends Phaser.Scene {
 
         this.gameOver = false;
 
-        this.startGame();
+        this.tutorialStage = 0;
+        this.tutorialTime = 0;
 
         document.addEventListener("gameOver", () => {
             if(this.nextWaveTimer) {
@@ -169,13 +170,22 @@ class Gallery extends Phaser.Scene {
             this.gameOverSfx.play();
             this.gameOver = true;
         });
+
+        this.w = this.add.image(0, 0, "w");
+        this.w.setScale(0.5);
+        this.a = this.add.image(0, 0, "a");
+        this.a.setScale(0.5);
+        this.s = this.add.image(0, 0, "s");
+        this.s.setScale(0.5);
+        this.d = this.add.image(0, 0, "d");
+        this.d.setScale(0.5);
     }
 
     startGame() {
         let startGameEvent = new Event("startGame");
         document.dispatchEvent(startGameEvent);
         this.time.delayedCall(
-            WAVE_TRANSITION_TIME / 2,
+            WAVE_TRANSITION_TIME,
             (self) => {
                 self.waveController.startNextWave();
             },
@@ -197,6 +207,109 @@ class Gallery extends Phaser.Scene {
         if(this.keys.enter.isDown && this.gameOver) {
             this.scene.stop("ui");
             this.scene.start("title");
+        }
+        if(!this.finishedTutorial) {
+            this.updateTutorial(delta);
+        } 
+    }
+
+    updateTutorial(delta) {
+        const bulletVelocity = {
+            x: 0, y: 400
+        };
+        switch(this.tutorialStage) {
+            //Movement tutorial
+            case 0: {
+                if(this.tutorialTime >= TUTORIAL_INTRO_PHASE_TIME) {
+                    this.tutorialStage++;
+                    this.w.destroy();
+                    this.a.destroy();
+                    this.s.destroy();
+                    this.d.destroy();
+                    break;
+                }
+                const OFFSET = 30;
+                this.w.setPosition(this.player.x, this.player.y - OFFSET);
+                this.a.setPosition(this.player.x - OFFSET, this.player.y);
+                this.s.setPosition(this.player.x, this.player.y + OFFSET);
+                this.d.setPosition(this.player.x + OFFSET, this.player.y);
+
+                this.tutorialTime += delta;
+                break;
+            }
+            //Color change 1: green
+            case 1: {
+                if(this.keys.space.isDown) {
+                    this.tutorialStage++;
+                    this.tutorialDucks = [];
+                    for(let i = 0; i < CANVAS_WIDTH; i += CANVAS_WIDTH / 32) {
+                        this.tutorialDucks.push(new DuckBullet(this, i, -25, Colors.GREEN));
+                    }
+                }
+                break;
+            }
+            //Update duck wall
+            case 2: {
+                if(this.tutorialDucks.length == 0) {
+                    this.tutorialStage++;
+                    break;
+                }
+                let destroyQueue = [];
+                for(let bullet of this.tutorialDucks) {
+                    bullet.modifyPos(vecScale(bulletVelocity, delta / 1000));
+                    bullet.doCollisionCheck();
+                    if(bullet.y - bullet.displayHeight >= CANVAS_HEIGHT) {
+                        destroyQueue.push(bullet);
+                    }
+                }
+                for(let bullet of destroyQueue) {
+                    this.tutorialDucks = this.tutorialDucks.filter((bullet) => {
+                        if(!destroyQueue.includes(bullet)) return bullet;
+                    });
+                    bullet.destroyChildren();
+                    bullet.destroy();
+                }
+                break;
+            }
+            //Color change 2: yellow
+            case 3: {
+                if(this.keys.space.isDown) {
+                    this.tutorialStage++;
+                    this.tutorialDucks = [];
+                    for(let i = 0; i < CANVAS_WIDTH; i += CANVAS_WIDTH / 32) {
+                        this.tutorialDucks.push(new DuckBullet(this, i, -25, Colors.YELLOW));
+                    }
+                }
+                break;
+            }
+            //Update duck wall
+            case 4: {
+                if(this.tutorialDucks.length == 0) {
+                    this.tutorialStage++;
+                    break;
+                }
+                let destroyQueue = [];
+                for(let bullet of this.tutorialDucks) {
+                    bullet.modifyPos(vecScale(bulletVelocity, delta / 1000));
+                    bullet.doCollisionCheck();
+                    if(bullet.y - bullet.displayHeight >= CANVAS_HEIGHT) {
+                        destroyQueue.push(bullet);
+                    }
+                }
+                for(let bullet of destroyQueue) {
+                    this.tutorialDucks = this.tutorialDucks.filter((bullet) => {
+                        if(!destroyQueue.includes(bullet)) return bullet;
+                    });
+                    bullet.destroyChildren();
+                    bullet.destroy();
+                }
+                break;
+            }
+            //Start game
+            case 5: {
+                this.startGame();
+                this.finishedTutorial = true;
+            }
         }
     }
 
