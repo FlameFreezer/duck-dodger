@@ -59,6 +59,16 @@ class UI extends Phaser.Scene {
             .setBlendMode(Phaser.BlendModes.ADD);
         this.nextWaveText.visible = false;
 
+        this.gameOverText = this.add.bitmapText(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, "04b_30", "Game Over!", 32)
+            .setOrigin(0.5)
+            .setBlendMode(Phaser.BlendModes.ADD);
+        this.gameOverText.visible = false;
+
+        this.restartText = this.add.bitmapText(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 + 32, "04b_30", "Press enter to restart", 18)
+            .setOrigin(0.5)
+            .setBlendMode(Phaser.BlendModes.ADD);
+        this.restartText.visible = false;
+
         //Next wave sound effect
         this.nextWaveSfx = this.sound.add("nextWave", {
             volume: 0.5
@@ -122,7 +132,6 @@ class UI extends Phaser.Scene {
             }
         ]);
 
-
         document.addEventListener("waveComplete", () => {
             this.waveTransitionTimeline.play();
         });
@@ -132,9 +141,12 @@ class UI extends Phaser.Scene {
         document.addEventListener("healthUp", () => {
             this.heart.doGrowAndShrink();
         });
-
-        let uiInitialized = new Event("uiInitialized");
-        document.dispatchEvent(uiInitialized);
+        document.addEventListener("gameOver", () => {
+            this.gameOverText.visible = true;
+            this.waveCompleteText.visible = false;
+            this.nextWaveText.visible = false;
+            this.restartText.visible = true;
+        });
     }
     update(time, delta) {
         this.heart.update(delta);

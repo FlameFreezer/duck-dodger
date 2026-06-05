@@ -49,7 +49,7 @@ class Load extends Phaser.Scene {
         this.load.image("bubble", "bubble.png");
     }
     create() {
-        this.scene.start("gallery");
+        this.scene.start("title");
     }
     update(time, delta) {
 

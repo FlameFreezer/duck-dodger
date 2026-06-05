@@ -6,8 +6,6 @@ class Gallery extends Phaser.Scene {
     create() {
         let json = this.cache.json;
 
-        //Launch UI scene
-        this.ui = this.scene.launch("ui");
         this.scene.bringToTop("ui");
 
         initBackgroundShader(this);
@@ -92,9 +90,11 @@ class Gallery extends Phaser.Scene {
         });
         this.bgMusic.play();
 
+        this.nextWaveTimer = null;
+
         document.addEventListener("waveComplete", () => {
             this.addScore(POINTS_PER_WAVE);
-            this.time.delayedCall(
+            this.nextWaveTimer = this.time.delayedCall(
                 WAVE_TRANSITION_TIME, 
                 (self) => {
                     self.waveController.startNextWave();
@@ -103,8 +103,18 @@ class Gallery extends Phaser.Scene {
             );
         });
 
-        document.addEventListener("uiInitialized", () => this.startGame());
+        this.gameOver = false;
 
+        this.startGame();
+
+        document.addEventListener("gameOver", () => {
+            if(this.nextWaveTimer) {
+                this.nextWaveTimer.remove();
+            }
+            this.bgMusic.stop();
+            this.gameOverSfx.play();
+            this.gameOver = true;
+        });
     }
 
     startGame() {
@@ -129,6 +139,11 @@ class Gallery extends Phaser.Scene {
         this.playerBulletCollisionResolution();
 
         this.flushRemoveQueues();
+
+        if(this.keys.enter.isDown && this.gameOver) {
+            this.scene.stop("ui");
+            this.scene.start("title");
+        }
     }
 
     playerBulletCollisionResolution() {

@@ -217,6 +217,8 @@ class Player extends Phaser.GameObjects.Sprite {
         this.stop("playerSwim");
         this.play("playerDead");
         this.swimVfx.stop();
+        let gameOverEvent = new Event("gameOver");
+        document.dispatchEvent(gameOverEvent);
 
         this.update = this.updateDead;
     }

@@ -6,20 +6,22 @@ class Title extends Phaser.Scene {
         };
     }
     preload() {
-        this.load.setPath("assets/daydream_3");
-        this.load.bitmapFont("daydream_3", "daydream_3_0.png", "daydream_3.fnt");
     }
     create() {
         this.keys.enter = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
-        this.text = this.add.bitmapText(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, "daydream_3", "press enter to play", 24)
+        this.text = this.add.bitmapText(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, "04b_30", "Press enter to play", 24)
             .setOrigin(0.5)
             .setBlendMode(Phaser.BlendModes.ADD);
 
-        this.creditTxt = this.add.bitmapText(CANVAS_WIDTH - CANVAS_WIDTH / 7, CANVAS_HEIGHT - CANVAS_HEIGHT / 32, "daydream_3", "By Quincy Hurst", 14)
+        this.creditTxt = this.add.bitmapText(CANVAS_WIDTH / 2, CANVAS_HEIGHT - CANVAS_HEIGHT / 32, "04b_30", "By Quincy Hurst and Iain Rogers", 14)
             .setOrigin(0.5)
             .setBlendMode(Phaser.BlendModes.ADD);
 
-        this.titleTxt = this.add.bitmapText(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 8, "daydream_3", "DUCK DODGER", 64)
+        this.titleTxt = this.add.bitmapText(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 8, "04b_30", "Duck Dodger", 64)
+            .setOrigin(0.5)
+            .setBlendMode(Phaser.BlendModes.ADD);
+
+        this.subtitleTxt = this.add.bitmapText(this.titleTxt.x, this.titleTxt.y + 45, "04b_30", "Reducks", 32)
             .setOrigin(0.5)
             .setBlendMode(Phaser.BlendModes.ADD);
 
@@ -40,6 +42,8 @@ class Title extends Phaser.Scene {
             args: [this, this.text]
         });
         this.keys.enter.on("down", (event) => {
+
+            this.scene.launch("ui");
             this.scene.start("gallery");
         });
     }
