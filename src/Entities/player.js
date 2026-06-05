@@ -192,10 +192,12 @@ class Player extends Phaser.GameObjects.Sprite {
         this.bulletKillList = [];
     }
     shootBullet() {
+        //Shoot a random amount of projectiles within the range of our upgrade
+        let numProjectiles = Math.round(Math.random() * this.upgrades.projectiles);
         //Define a width which we will iterate through to shoot the bullets in a row
-        let shootRegionWidth = this.upgrades.projectiles * PLAYER_BULLET_SPACING;
-        //Repeat for each projectile we want to make (+1 so we can shoot at level 0)
-        for(let i = 0; i < this.upgrades.projectiles + 1; i++) {
+        let shootRegionWidth = numProjectiles * PLAYER_BULLET_SPACING;
+        //Repeat for each projectile we want to make 
+        for(let i = 0; i < numProjectiles + 1; i++) {
             //Get an offset within the region. Start negative so we begin at the left side
             let regionOffset = -shootRegionWidth / 2 + i * PLAYER_BULLET_SPACING;
             //Shoot a bullet
