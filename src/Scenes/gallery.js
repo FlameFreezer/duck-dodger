@@ -161,6 +161,7 @@ class Gallery extends Phaser.Scene {
 
         this.tutorialStage = 0;
         this.tutorialTime = 0;
+        this.registry.set("tutorialStage", this.tutorialStage);
 
         document.addEventListener("gameOver", () => {
             if(this.nextWaveTimer) {
@@ -217,11 +218,32 @@ class Gallery extends Phaser.Scene {
         const bulletVelocity = {
             x: 0, y: 400
         };
+        //Hit enter to skip the tutorial
+        if(this.keys.enter.isDown) {
+            //sets to final stage, which just starts the game and sets finishedTutorial to true
+            this.tutorialStage = 5;
+            this.registry.set("tutorialStage", this.tutorialStage);
+            //Destroy any lingering duck bullets
+            if(this.tutorialDucks && this.tutorialDucks.length > 0) {
+                for(let bullet of this.tutorialDucks) {
+                    bullet.destroyChildren();
+                    bullet.destroy();
+                }
+                this.tutorialDucks = [];
+            }
+            //Destroy input prompts
+            this.w.destroy();
+            this.a.destroy();
+            this.s.destroy();
+            this.d.destroy();
+
+        }
         switch(this.tutorialStage) {
             //Movement tutorial
             case 0: {
                 if(this.tutorialTime >= TUTORIAL_INTRO_PHASE_TIME) {
                     this.tutorialStage++;
+                    this.registry.set("tutorialStage", this.tutorialStage);
                     this.w.destroy();
                     this.a.destroy();
                     this.s.destroy();
@@ -241,6 +263,7 @@ class Gallery extends Phaser.Scene {
             case 1: {
                 if(this.keys.space.isDown) {
                     this.tutorialStage++;
+                    this.registry.set("tutorialStage", this.tutorialStage);
                     this.tutorialDucks = [];
                     for(let i = 0; i < CANVAS_WIDTH; i += CANVAS_WIDTH / 32) {
                         this.tutorialDucks.push(new DuckBullet(this, i, -25, Colors.GREEN));
@@ -252,6 +275,7 @@ class Gallery extends Phaser.Scene {
             case 2: {
                 if(this.tutorialDucks.length == 0) {
                     this.tutorialStage++;
+                    this.registry.set("tutorialStage", this.tutorialStage);
                     break;
                 }
                 let destroyQueue = [];
@@ -275,6 +299,7 @@ class Gallery extends Phaser.Scene {
             case 3: {
                 if(this.keys.space.isDown) {
                     this.tutorialStage++;
+                    this.registry.set("tutorialStage", this.tutorialStage);
                     this.tutorialDucks = [];
                     for(let i = 0; i < CANVAS_WIDTH; i += CANVAS_WIDTH / 32) {
                         this.tutorialDucks.push(new DuckBullet(this, i, -25, Colors.YELLOW));
@@ -286,6 +311,7 @@ class Gallery extends Phaser.Scene {
             case 4: {
                 if(this.tutorialDucks.length == 0) {
                     this.tutorialStage++;
+                    this.registry.set("tutorialStage", this.tutorialStage);
                     break;
                 }
                 let destroyQueue = [];

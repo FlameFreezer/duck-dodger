@@ -64,6 +64,17 @@ class UI extends Phaser.Scene {
             .setBlendMode(Phaser.BlendModes.ADD);
         this.restartText.visible = false;
 
+        //Tutorial
+        this.colorChange1Text = this.add.bitmapText(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, "04b_30", "Press SPACE to change colors. A GREEN background lets you dodge green bullets", 18)
+            .setOrigin(0.5)
+            .setBlendMode(Phaser.BlendModes.ADD);
+        this.colorChange1Text.maxWidth = 400;
+        this.colorChange1Text.visible = false;
+        this.colorChange2Text = this.add.bitmapText(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, "04b_30", "Press SPACE to change colors. A YELLOW background lets you dodge yellow bullets", 18)
+            .setOrigin(0.5)
+            .setBlendMode(Phaser.BlendModes.ADD);
+        this.colorChange2Text.visible = false;
+        this.colorChange2Text.maxWidth = 400;
 
         //Upgrades
         this.upgradesTxt = this.add.bitmapText(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, "04b_30", "Upgrades", 32)
@@ -84,6 +95,7 @@ class UI extends Phaser.Scene {
             .setOrigin(0.5)
             .setBlendMode(Phaser.BlendModes.ADD);
         this.upgrade1Txt.visible = false;
+
         this.upgrade2Txt = this.add.bitmapText(this.upgrade2Pos.x, this.upgrade2Pos.y, "04b_30", "2", 16)
             .setOrigin(0.5)
             .setBlendMode(Phaser.BlendModes.ADD);
@@ -119,6 +131,24 @@ class UI extends Phaser.Scene {
                 case 'upgrade2':
                     this.upgrade2Txt.setText(data);
                     break;
+                case 'tutorialStage': {
+                    switch(data) {
+                        case 1: {
+                            this.colorChange1Text.visible = true;
+                            break;
+                        }
+                        case 3: {
+                            this.colorChange1Text.visible = false;
+                            this.colorChange2Text.visible = true;
+                            break;
+                        }
+                        case 5: {
+                            this.colorChange1Text.visible = false;
+                            this.colorChange2Text.visible = false;
+                            break;
+                        }
+                    }
+                }
             }
         }, this);
 
