@@ -94,7 +94,9 @@ class WaveController {
         if (this.active) {
             this.spawnTimer += delta;
             if(this.currentWaveIndex >= this.waves.length) {
-                this.currentWave = this.challengeWaves[Math.floor(Math.random() * this.challengeWaves.length)];
+                if(!this.currentWave) {
+                    this.currentWave = this.challengeWaves[Math.floor(Math.random() * this.challengeWaves.length)];
+                }
             }
             else {
                 this.currentWave = this.waves[this.currentWaveIndex];
@@ -125,6 +127,7 @@ class WaveController {
                 this.waveSpawned = true;
                 this.resetSpawns();
                 this.deactivate();
+                this.currentWave = null;
             }
         }
 

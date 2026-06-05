@@ -98,6 +98,9 @@ class Attack {
         this.spawnPattern = null;
         this.updatePattern = null;
         this.killed = true;
+        if(this.wallWarningGraphics) {
+            this.wallWarningGraphics.clear();
+        }
     }
 
     // ------ T PATTERN INTERNALS ------
