@@ -200,6 +200,7 @@ class Player extends Phaser.GameObjects.Sprite {
         if(this.hp <= 0) {
             return this.onDeath();
         }
+        this.scene.playerHitSfx.play();
         this.stop("playerSwim");
         this.play("playerHit");
         this.hitTimer = this.scene.time.delayedCall(

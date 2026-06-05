@@ -108,6 +108,7 @@ class Attack {
             this.dirs.push(this.dir);
             this.delay = (this.bullets[0].hitbox.radius * T_PATTERN_BULLET_GAP / T_PATTERN_MOVE_SPEED) * 1000;
             this.spawnClock = 0;
+            this.scene.tPatternSfx.play();
         }
         else if (this.spawnClock >= this.delay) {
             this.targetX = this.scene.player.x;
@@ -135,6 +136,8 @@ class Attack {
                 this.spawned = true;
             }
             this.spawnClock = this.spawnClock % this.delay;
+
+            this.scene.tPatternSfx.play();
         }
         this.spawnClock += delta;
     }
@@ -168,8 +171,6 @@ class Attack {
     // ------ BULLET RING INTERNALS ------
     createBulletRing() {
         let ring = {};
-        //ring.x = this.x;
-        //ring.y = this.y;
         ring.x = this.parentDuck.x;
         ring.y = this.parentDuck.y;
         ring.radius = this.parentDuck.hitbox.radius / 2;
@@ -189,6 +190,7 @@ class Attack {
             vec = vecAdd(vec, {x: ring.x, y: ring.y});
             ring.bullets.push(new DuckBullet(this.scene, vec.x, vec.y, currColor));
         }
+        this.scene.bulletRingSfx.play();
         return ring;
     }
 

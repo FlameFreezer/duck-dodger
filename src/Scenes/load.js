@@ -30,7 +30,7 @@ class Load extends Phaser.Scene {
         this.load.setPath("./assets/Audio");
         this.load.audio("duckHit", "footstep_wood_001.ogg");
         this.load.audio("bulletRing", "phaserUp6.ogg");
-        this.load.audio("duckBullet", "tone1.ogg");
+        this.load.audio("bulletTPattern", "tone1.ogg");
         this.load.audio("duckDeath", "highUp.ogg");
         this.load.audio("healthUp", "jingles_HIT03.ogg");
         this.load.audio("nextWave", "jingles_HIT04.ogg");

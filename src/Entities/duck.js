@@ -142,5 +142,6 @@ class Duck extends Phaser.GameObjects.Sprite {
             this.components.deathAnim.activate();
         }
         this.scene.addScore(this.points);
+        this.scene.duckDeathSfx.play();
     }
 }

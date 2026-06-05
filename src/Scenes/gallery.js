@@ -28,10 +28,10 @@ class Gallery extends Phaser.Scene {
         for(let i = 0; i < 10; i++) {
             this.player.upgradeHoming();
         }
-        for(let i = 0; i < 5; i++) {
+        for(let i = 0; i < 0; i++) {
             this.player.upgradeProjectiles();
         }
-        for(let i = 0; i < 7; i++) {
+        for(let i = 0; i < 2; i++) {
             this.player.upgradeFireRate();
         }
 
@@ -78,11 +78,17 @@ class Gallery extends Phaser.Scene {
             volume: 0.5
         });
         this.playerHitSfx = this.sound.add("playerHit", {
-            volume : 0.5
+            volume : 0.75
         });
         this.bgMusic = this.sound.add("bgMusic", {
             volume: 0.25,
             loop: true
+        });
+        this.bulletRingSfx = this.sound.add("bulletRing", {
+            volume: 0.5
+        });
+        this.tPatternSfx = this.sound.add("bulletTPattern", {
+            volume: 0.5
         });
         this.bgMusic.play();
 

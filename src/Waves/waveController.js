@@ -85,12 +85,17 @@ class WaveController {
         }
 
         if (this.waveSpawned && this.ducks.length == 0 && !this.waveOver) {
-            let waveCompleteEvent = new Event("waveComplete");
-            document.dispatchEvent(waveCompleteEvent);
             this.waveOver = true;
 
             this.currWave++;
             this.scene.registry.set('waveNumber', this.currWave);
+
+            //Delay wave end slightly cause of the bread's sound effect
+            this.scene.time.delayedCall(WAVE_END_DELAY, () => {
+                let waveCompleteEvent = new Event("waveComplete");
+                document.dispatchEvent(waveCompleteEvent);
+
+            });
         }
         
         for (let duck of this.ducks) {
