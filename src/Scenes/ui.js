@@ -123,6 +123,7 @@ class UI extends Phaser.Scene {
                     this.scoreTxt.setText(`Score: ${data}`);
                     break;
                 case 'waveNumber':
+                    //Waves are zero-indexed but I want to display the first as Wave 1
                     this.nextWaveText.setText(`Wave ${data + 1}`);
                     break;
                 case 'upgrade1':

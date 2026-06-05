@@ -75,7 +75,7 @@ class WaveController {
                 let breadConfig = {
                     pathFollower: new Path(data.path.type, data.path.width, data.path.height, data.path.start, data.path.loopTime, true),
                     spawnTween: new SpawnTween(this.scene.sys.scale.width / 2, -50, this.scene.sys.scale.width / 2, 150, 1000),
-                    hp: data.hp,
+                    hp: data.hp + Math.floor(this.currWave / WAVES_PER_ENEMY_HEALTH),
                     points: data.points
                 };
                 this.ducks.push(new Bread(this.scene, breadConfig));
