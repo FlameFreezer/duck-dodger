@@ -50,6 +50,8 @@ class Duck extends Phaser.GameObjects.Sprite {
                     if (DEBUG) console.log("Duck: activating attacker");
                     this.components.attacker.activate();
                 }
+                this.hittable = true;
+                this.alpha = 1.0;
             }
         }
         this.components.deathAnim = new DeathAnimator().registerTo(this);
@@ -57,6 +59,8 @@ class Duck extends Phaser.GameObjects.Sprite {
         this.hp = config.hp;
         this.points = config.points;
         this.active = true;
+        this.hittable = false;
+        this.alpha = 0.55;
 
         this.hitbox = new Phaser.Geom.Circle(this.x, this.y, this.displayWidth / 2);
         if(DEBUG) {

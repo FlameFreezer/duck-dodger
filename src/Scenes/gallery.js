@@ -375,6 +375,7 @@ class Gallery extends Phaser.Scene {
             if(!duck.active) continue;
             for(let bullet of this.player.bullets) {
                 if (duck.hitbox == null) break;
+                if (!duck.hittable) break;
                 if(Phaser.Geom.Intersects.CircleToRectangle(duck.hitbox, bullet.hitbox)) {
                     bullet.killed = true;
                     duck.onHit();

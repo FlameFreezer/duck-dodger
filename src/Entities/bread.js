@@ -44,6 +44,8 @@ class Bread extends Phaser.GameObjects.Image {
         this.spriteOnHit.visible = false;
         this.spriteOnHit.setScale(BREAD_SCALE);
 
+        this.hittable = true;
+
         return this;
     }
 
@@ -99,6 +101,7 @@ class Bread extends Phaser.GameObjects.Image {
         this.components.fleeTween.activate();
         this.spriteOnHit.visible = false;
         this.visible = true;
+        this.hittable = false;
     }
 
     kill() {
