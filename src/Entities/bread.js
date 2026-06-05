@@ -114,8 +114,7 @@ class Bread extends Phaser.GameObjects.Image {
                 this.components[component].deactivate();
             }
             this.components.deathAnim.activate();
-            let currentScore = this.scene.registry.get('score');
-            this.scene.registry.set('score', currentScore + this.points);
+            this.scene.addScore(this.points);
         }
         else if (this.components.fleeTween.complete) {
             for (let component in this.components) {

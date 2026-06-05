@@ -14,7 +14,6 @@ class DeathAnimator {
         if (this.animClock >= DEATH_ANIM_TIME) {
             this.owner.setScale(0);
             this.complete = true;
-            console.log("deathAnim complete");
             this.deactivate();
         }
         else if (this.active) {

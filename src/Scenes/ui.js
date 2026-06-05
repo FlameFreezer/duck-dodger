@@ -1,3 +1,31 @@
+class Heart extends Phaser.GameObjects.Sprite {
+    constructor(scene, x, y, key, frame) {
+        super(scene, x, y, key, frame);
+        scene.add.existing(this);
+        this.animTimer = 0;
+        this.update = this.updateBase;
+    }
+    updateBase(delta) {
+
+    }
+    doGrowAndShrink() {
+        this.baseScale = this.scale;
+        this.update = this.updateGrowAndShrink;
+    }
+    updateGrowAndShrink(delta) {
+        if(this.animTimer >= HEART_ANIMATION_TIME) {
+            this.setScale(this.baseScale);
+            this.animTimer = 0;
+            this.update = this.updateBase;
+        }
+        else {
+            let t = this.animTimer / HEART_ANIMATION_TIME;
+            let toScale = (-2 * Math.pow(t - 0.5, 2) + 1.5) * this.baseScale;
+            this.setScale(toScale);
+            this.animTimer += delta;
+        }
+    }
+}
 class UI extends Phaser.Scene {
     constructor() {
         super("ui");
@@ -15,7 +43,7 @@ class UI extends Phaser.Scene {
             .setBlendMode(Phaser.BlendModes.ADD);
 
         //Heart display
-        this.heart = this.add.sprite(HEALTH_SCORE_UI_X + 15, HEALTH_SCORE_UI_Y, "hearts", "hud_heart");
+        this.heart = new Heart(this,HEALTH_SCORE_UI_X + 15, HEALTH_SCORE_UI_Y, "hearts", "hud_heart");
         this.heart.setScale(0.85);
         this.healthTxt = this.add.bitmapText(this.heart.x + 40, this.heart.y + 10, "04b_30", `x${PLAYER_STARTING_HEALTH}`, 18)
             .setOrigin(0.5)
@@ -93,10 +121,14 @@ class UI extends Phaser.Scene {
         document.addEventListener("startGame", () => {
             this.startGameTimeline.play();
         });
+        document.addEventListener("healthUp", () => {
+            this.heart.doGrowAndShrink();
+        });
 
         let uiInitialized = new Event("uiInitialized");
         document.dispatchEvent(uiInitialized);
     }
     update(time, delta) {
+        this.heart.update(delta);
     }
 }

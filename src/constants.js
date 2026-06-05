@@ -53,14 +53,14 @@ const DEG_TO_RAD = Math.PI / 180;
 
 const CANVAS_WIDTH = 600;
 const CANVAS_HEIGHT = 950;
-const healthUpInterval = 500;
-const heartGrowMaximum = 1.2;
-const heartGrowTime = 200;
+const HEALTH_UP_INTERVAL = 500;
+const HEART_ANIMATION_TIME = 250;
 const WAVE_TRANSITION_TIME = 4000;
 
 const DUCK_SCALE = 0.45;
 const BREAD_SCALE = 0.15;
 const ENEMY_HIT_SPRITE_TIME = 100;
+
 
 const BUBBLE_RATE = 750;
 const BUBBLE_SIZE_RANGE = Object.freeze({

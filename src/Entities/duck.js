@@ -140,7 +140,6 @@ class Duck extends Phaser.GameObjects.Sprite {
             }
             this.components.deathAnim.activate();
         }
-        let currentScore = this.scene.registry.get('score');
-        this.scene.registry.set('score', currentScore + this.points);
+        this.scene.addScore(this.points);
     }
 }

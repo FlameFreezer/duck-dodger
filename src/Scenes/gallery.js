@@ -54,8 +54,7 @@ class Gallery extends Phaser.Scene {
         this.waveController = new WaveController(this, json.get("rounds"), json.get("enemies"));
 
         document.addEventListener("waveComplete", () => {
-            let currentScore = this.registry.get('score');
-            this.registry.set('score', currentScore + 100);
+            this.addScore(100);
             this.time.delayedCall(
                 WAVE_TRANSITION_TIME, 
                 (self) => {
@@ -67,7 +66,9 @@ class Gallery extends Phaser.Scene {
 
         document.addEventListener("uiInitialized", () => this.startGame());
 
-        this.registry.set('score', 0);
+        this.score = 0;
+        this.lastHpMilestone = 0;
+        this.registry.set('score', this.score);
     }
 
     startGame() {
@@ -104,6 +105,18 @@ class Gallery extends Phaser.Scene {
                     duck.onHit();
                 }
             }
+        }
+    }
+
+    addScore(amount) {
+        this.score += amount;
+        this.registry.set('score', this.score);
+
+        if(this.score - this.lastHpMilestone >= HEALTH_UP_INTERVAL) {
+            this.lastHpMilestone = this.lastHpMilestone + HEALTH_UP_INTERVAL;
+            this.player.addHP(1);
+            let healthUpEvent = new Event("healthUp");
+            document.dispatchEvent(healthUpEvent);
         }
     }
 
