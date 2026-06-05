@@ -45,7 +45,7 @@ const PLAYER_SWIM_VFX_BUBBLE_BASE_SPEED = 200;
 const PLAYER_SWIM_VFX_BUBBLE_DECELERATION = 250;
 const PLAYER_STARTING_HEALTH = 5;
 
-const BREAD_FLEE_TIMER = 5000; // how long the bread takes to flee when alone, in ms
+const BREAD_FLEE_TIMER = 1500; // how long the bread takes to flee when alone, in ms
 
 const DEATH_ANIM_TIME = 750; // how long the death animation takes to play, in ms
 
