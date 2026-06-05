@@ -1,14 +1,14 @@
-class DuckBullet extends Phaser.GameObjects.Sprite {
+class DuckBullet extends Phaser.GameObjects.Image {
     constructor(scene, x, y, color) {
         switch(color) {
             case Colors.YELLOW:
-                super(scene, x, y, "ducks", "duck_yellow.png");
+                super(scene, x, y, "duck_yellow");
                 break;
             case Colors.GREEN:
-                super(scene, x, y, "ducks", "duck_brown.png");
+                super(scene, x, y, "duck_green");
                 break;
             default:
-                super(scene, x, y, "ducks", "duck_back.png");
+                super(scene, x, y, "duck_back");
                 break;
         }
         this.color = color;
