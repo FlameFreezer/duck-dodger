@@ -99,6 +99,9 @@ class Gallery extends Phaser.Scene {
         this.tPatternSfx = this.sound.add("bulletTPattern", {
             volume: 0.5
         });
+        this.wallSfx = this.sound.add("wallPattern", {
+            volume: 3
+        });
         this.bgMusic.play();
 
         this.nextWaveTimer = null;

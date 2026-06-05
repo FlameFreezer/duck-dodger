@@ -18,6 +18,7 @@ class Attack {
         this.spawnPattern = 0;
         this.updatePattern = 0;
         this.dir = 0;
+        this.lockedOn = false;
 
         this.setPatternFromString(pattern);
         if (DEBUG) this.patternName = pattern;
@@ -330,6 +331,10 @@ class Attack {
         }
         // runs for the wall spawning cycle.
         else if (!this.spawned) {
+            if(!this.lockedOn) {
+                this.scene.wallSfx.play();
+                this.lockedOn = true;
+            }
             // the bullet in the very center of the pattern is owned by walls[0], and is used as a reference for bullet spacing.
             if (this.walls[0].length == 0) {
                 this.walls[0].push(new DuckBullet(this.scene, -50, -50, Colors.GRAY));
@@ -393,6 +398,7 @@ class Attack {
                 if (doneFlag) {
                     this.spawned = true;
                     if (DEBUG) console.log("wall pattern done spawning");
+                    this.lockedOn = false;
                 }
 
                 this.spawnClock = this.spawnClock % this.delay;

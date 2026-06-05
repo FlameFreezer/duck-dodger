@@ -36,6 +36,7 @@ class Load extends Phaser.Scene {
         this.load.audio("breadGot", "jingles_HIT15.ogg");
         this.load.audio("playerHit", "footstep_snow_000.ogg");
         this.load.audio("bgMusic", "Dagored - Lifestyle Groove (freetouse.com).mp3");
+        this.load.audio("wallPattern", "doorLock.ogg");
         //Load images
         this.load.setPath("./assets/Images");
         this.load.image("bread", "bread.png");
