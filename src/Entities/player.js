@@ -246,12 +246,15 @@ class Player extends Phaser.GameObjects.Sprite {
     }
     upgradeFireRate() {
         this.upgrades.fireRate++;
-        this.shootDelay = this.baseShootDelay - PLAYER_FIRE_RATE_PER_LEVEL * this.upgrades.fireRate;
+        //Recalculate fire rate
+        this.shootDelay = this.baseShootDelay - PLAYER_FIRE_RATE_PER_LEVEL * this.upgrades.fireRate + PLAYER_FIRE_RATE_PER_PROJECTILES_LEVEL * this.upgrades.projectiles;
         //Cap fire rate
         this.shootDelay = Math.max(this.shootDelay, PLAYER_MAX_FIRE_RATE);
     }
     upgradeProjectiles() {
         this.upgrades.projectiles++;
+        //Recalculate fire rate
+        this.shootDelay = this.baseShootDelay - PLAYER_FIRE_RATE_PER_LEVEL * this.upgrades.fireRate + PLAYER_FIRE_RATE_PER_PROJECTILES_LEVEL * this.upgrades.projectiles;
     }
     upgradeHoming() {
         this.upgrades.homing++;
