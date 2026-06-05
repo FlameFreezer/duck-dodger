@@ -37,6 +37,8 @@ class UI extends Phaser.Scene {
         const HEALTH_SCORE_UI_X = 430;
         const HEALTH_SCORE_UI_Y = 100;
 
+        this.gameOver = false;
+
         //Score
         this.scoreTxt = this.add.bitmapText(HEALTH_SCORE_UI_X, HEALTH_SCORE_UI_Y + 30, "04b_30", `Score: 0`, 18)
             .setOrigin(0)
@@ -172,6 +174,7 @@ class UI extends Phaser.Scene {
         ]);
 
         document.addEventListener("waveComplete", () => {
+            if(this.gameOver) return;
             this.upgradesTxt.visible = true;
             this.upgrade1Txt.visible = true;
             this.upgrade2Txt.visible = true;
@@ -200,6 +203,7 @@ class UI extends Phaser.Scene {
             this.heart.doGrowAndShrink();
         });
         document.addEventListener("gameOver", () => {
+            this.gameOver = true;
             this.gameOverText.visible = true;
             this.waveCompleteText.visible = false;
             this.nextWaveText.visible = false;

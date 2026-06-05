@@ -142,6 +142,9 @@ class Gallery extends Phaser.Scene {
 
         //Wave complete: add score and provide upgrades
         document.addEventListener("waveComplete", () => {
+            //Do nothing if the game is over
+            if(this.gameOver) return;
+
             this.onUpgradeScreen = true;
             //Add score
             this.addScore(POINTS_PER_WAVE);
