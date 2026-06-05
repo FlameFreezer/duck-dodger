@@ -2,6 +2,19 @@
     [
         {
             "time": 0,
+            "duckType": "MALLARD",
+            "spawnStarts": [
+                {"x": 100}
+            ],
+            "spawnDur": 1000,
+            "spawnEnds": [
+                {"x": 300, "y": 300}
+            ]
+        }
+    ],
+    [
+        {
+            "time": 0,
             "duckType": "RUBBER_DUCKY",
             "spawnStarts": [
                 {"x": 200}

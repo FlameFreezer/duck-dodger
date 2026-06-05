@@ -14,9 +14,6 @@ class Load extends Phaser.Scene {
         //Load JSON data
         this.load.setPath("./config");
         this.load.json("playerData", "player.json");
-        this.load.json("duckData", "ducks.json");
-        this.load.json("waveData", "waves.json");
-        this.load.json("challengeWaveData", "challengeWaves.json");
         this.load.json("enemies", "enemies.json");
         this.load.json("rounds", "rounds.json");
         //Load shader

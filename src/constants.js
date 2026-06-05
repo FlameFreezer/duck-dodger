@@ -4,7 +4,7 @@ const T_PATTERN_MOVE_SPEED = 400; // px/sec
 const T_PATTERN_BULLET_GAP = 4; // gap between bullet centerpoints, in bullet radii
 
 const RING_PATTERN_RINGS = 4; // number of bullet rings per attack pattern
-const RING_PATTERN_RING_GAP = 8; // gap between rings at bottommost points, in bullet radii
+const RING_PATTERN_RING_GAP = 16; // gap between rings at bottommost points, in bullet radii
 const RING_PATTERN_BULLETS = 18; // number of bullets per ring
 const RING_PATTERN_COLOR_SEGMENT_LENGTH = 3; // number of bullets per color segment
 const RING_PATTERN_COLOR_SEGMENT_GAP = 1; // number of color segments between each non-gray segment
