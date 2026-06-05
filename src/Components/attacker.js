@@ -53,6 +53,10 @@ class Attacker {
 
     deactivate() {
         this.active = false;
+        //Stop attacks from continuing if duck is killed mid-pattern
+        for(let attack of this.attacks) {
+            attack.spawned = true;
+        }
     }
 
     canBeDeleted() {

@@ -99,8 +99,6 @@ class Attack {
         this.killed = true;
     }
 
-
-
     // ------ T PATTERN INTERNALS ------
     spawnTPattern(delta) {
         if (this.bullets.length == 0) {
