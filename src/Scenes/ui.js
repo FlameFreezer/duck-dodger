@@ -49,11 +49,6 @@ class UI extends Phaser.Scene {
             .setOrigin(0.5)
             .setBlendMode(Phaser.BlendModes.ADD);
 
-        this.waveCompleteText = this.add.bitmapText(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, "04b_30", "Wave Complete!", 32)
-            .setOrigin(0.5)
-            .setBlendMode(Phaser.BlendModes.ADD);
-        this.waveCompleteText.visible = false;
-
         this.nextWaveText = this.add.bitmapText(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, "04b_30", "Wave 1", 32)
             .setOrigin(0.5)
             .setBlendMode(Phaser.BlendModes.ADD);
@@ -68,6 +63,39 @@ class UI extends Phaser.Scene {
             .setOrigin(0.5)
             .setBlendMode(Phaser.BlendModes.ADD);
         this.restartText.visible = false;
+
+
+        //Upgrades
+        this.upgradesTxt = this.add.bitmapText(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, "04b_30", "Upgrades", 32)
+            .setOrigin(0.5)
+            .setBlendMode(Phaser.BlendModes.ADD);
+        this.upgradesTxt.visible = false;
+
+        this.upgrade1Pos = {
+            x: this.upgradesTxt.x - 128,
+            y: this.upgradesTxt.y + 32
+        };
+        this.upgrade2Pos = {
+            x: this.upgradesTxt.x + 128,
+            y: this.upgradesTxt.y + 32
+        };
+
+        this.upgrade1Txt = this.add.bitmapText(this.upgrade1Pos.x, this.upgrade1Pos.y, "04b_30", "1", 16)
+            .setOrigin(0.5)
+            .setBlendMode(Phaser.BlendModes.ADD);
+        this.upgrade1Txt.visible = false;
+        this.upgrade2Txt = this.add.bitmapText(this.upgrade2Pos.x, this.upgrade2Pos.y, "04b_30", "2", 16)
+            .setOrigin(0.5)
+            .setBlendMode(Phaser.BlendModes.ADD);
+        this.upgrade2Txt.visible = false;
+
+        //Input prompts
+        this.zKey = this.add.image(this.upgrade1Pos.x, this.upgrade1Pos.y + 32, "z");
+        this.zKey.visible = false;
+        this.zKey.setScale(0.5);
+        this.xKey = this.add.image(this.upgrade2Pos.x, this.upgrade2Pos.y + 32, "x");
+        this.xKey.visible = false;
+        this.xKey.setScale(0.5);
 
         //Next wave sound effect
         this.nextWaveSfx = this.sound.add("nextWave", {
@@ -84,6 +112,12 @@ class UI extends Phaser.Scene {
                     break;
                 case 'waveNumber':
                     this.nextWaveText.setText(`Wave ${data + 1}`);
+                    break;
+                case 'upgrade1':
+                    this.upgrade1Txt.setText(data);
+                    break;
+                case 'upgrade2':
+                    this.upgrade2Txt.setText(data);
                     break;
             }
         }, this);
@@ -106,34 +140,27 @@ class UI extends Phaser.Scene {
             }
         ]);
 
-        this.waveTransitionTimeline = this.add.timeline([
-            {
-                at: 0,
-                run() {
-                    this.waveCompleteText.visible = true;
-                },
-                target: this
-            },
-            {
-                at: WAVE_TRANSITION_TIME / 2,
-                run() {
-                    this.waveCompleteText.visible = false;
-                    this.nextWaveText.visible = true;
-                    this.nextWaveSfx.play();
-                },
-                target: this
-            },
-            {
-                at: WAVE_TRANSITION_TIME,
-                run() {
-                    this.nextWaveText.visible = false;
-                },
-                target: this
-            }
-        ]);
-
         document.addEventListener("waveComplete", () => {
-            this.waveTransitionTimeline.play();
+            this.upgradesTxt.visible = true;
+            this.upgrade1Txt.visible = true;
+            this.upgrade2Txt.visible = true;
+            this.zKey.visible = true;
+            this.xKey.visible = true;
+        });
+        document.addEventListener("waveStart", () => {
+            this.upgradesTxt.visible = false;
+            this.upgrade1Txt.visible = false;
+            this.upgrade2Txt.visible = false;
+            this.zKey.visible = false;
+            this.xKey.visible = false;
+
+            this.nextWaveText.visible = true;
+
+            this.time.delayedCall(WAVE_TRANSITION_TIME, (self) => {
+                this.nextWaveText.visible = false;
+            }, [this]);
+
+            this.nextWaveSfx.play();
         });
         document.addEventListener("startGame", () => {
             this.startGameTimeline.play();

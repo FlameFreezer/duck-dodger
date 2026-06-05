@@ -42,7 +42,7 @@ const PLAYER_SWIM_VFX_BUBBLE_ANGLE_RANGE = 45;
 const PLAYER_SWIM_VFX_BUBBLE_SPEED_RANGE = 50;
 const PLAYER_SWIM_VFX_BUBBLE_BASE_SPEED = 200;
 const PLAYER_SWIM_VFX_BUBBLE_DECELERATION = 250;
-const PLAYER_STARTING_HEALTH = 2;
+const PLAYER_STARTING_HEALTH = 5;
 
 const BREAD_FLEE_TIMER = 5000; // how long the bread takes to flee when alone, in ms
 
@@ -55,7 +55,7 @@ const CANVAS_WIDTH = 600;
 const CANVAS_HEIGHT = 950;
 const HEALTH_UP_INTERVAL = 500;
 const HEART_ANIMATION_TIME = 250;
-const WAVE_TRANSITION_TIME = 4000;
+const WAVE_TRANSITION_TIME = 2000;
 const WAVE_END_DELAY = 200;
 
 const DUCK_SCALE = 0.45;
@@ -98,4 +98,11 @@ const spawnDataDefaults = Object.freeze({
     TIME: 0,
     SPAWN_STARTS: {y: -50},
     SPAWN_DUR: 1000
+});
+
+const Upgrades = Object.freeze({
+    HOMING: 0,
+    PROJECTILES: 1,
+    FIRE_RATE: 2,
+    NUM_UPGRADES: 3
 });

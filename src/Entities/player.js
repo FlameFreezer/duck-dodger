@@ -103,6 +103,22 @@ class Player extends Phaser.GameObjects.Sprite {
 
         this.play("playerSwim");
     }
+    getUpgradeLevel(upgrade) {
+        switch(upgrade) {
+            case Upgrades.FIRE_RATE: return this.upgrades.fireRate;
+            case Upgrades.HOMING: return this.upgrades.homing;
+            case Upgrades.PROJECTILES: return this.upgrades.projectiles;
+            default: throw `Invalid upgrade number \"${upgrade}\" passed to \"Player.getUpgradeLevel\"`; //should never happen
+        }
+    }
+    applyUpgrade(upgrade) {
+        switch(upgrade) {
+            case Upgrades.FIRE_RATE: return this.upgradeFireRate();
+            case Upgrades.HOMING: return this.upgradeHoming();
+            case Upgrades.PROJECTILES: return this.upgradeProjectiles();
+            default: throw `Invalid upgrade number \"${upgrade}\" passed to \"Player.applyUpgrade\"`; //should never happen
+        }
+    }
     updateAlive(delta) {
         let scene = this.scene;
 

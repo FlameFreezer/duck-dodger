@@ -1,3 +1,12 @@
+function upgradeToString(upgrade) {
+    switch(upgrade) {
+        case Upgrades.PROJECTILES: return "Projectiles";
+        case Upgrades.FIRE_RATE: return "Fire Rate";
+        case Upgrades.HOMING: return "Homing";
+        default: throw `Invalid upgrade number \"${upgrade}\" passed to \"upgradeToString\"`; //should never happen
+    }
+}
+
 class Gallery extends Phaser.Scene {
     constructor() {
         super("gallery");
@@ -15,6 +24,8 @@ class Gallery extends Phaser.Scene {
         this.keys.d = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
         this.keys.w = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
         this.keys.s = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
+        this.keys.z = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Z);
+        this.keys.x = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.X);
         this.keys.space = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         this.keys.shift = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
         this.keys.enter = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
@@ -23,13 +34,13 @@ class Gallery extends Phaser.Scene {
         this.player = new Player(this, json.get("playerData"));
 
         //Set upgrades for testing
-        for(let i = 0; i < 10; i++) {
+        for(let i = 0; i < 0; i++) {
             this.player.upgradeHoming();
         }
         for(let i = 0; i < 0; i++) {
             this.player.upgradeProjectiles();
         }
-        for(let i = 0; i < 2; i++) {
+        for(let i = 0; i < 0; i++) {
             this.player.upgradeFireRate();
         }
 
@@ -92,15 +103,58 @@ class Gallery extends Phaser.Scene {
 
         this.nextWaveTimer = null;
 
-        document.addEventListener("waveComplete", () => {
-            this.addScore(POINTS_PER_WAVE);
-            this.nextWaveTimer = this.time.delayedCall(
-                WAVE_TRANSITION_TIME, 
-                (self) => {
+        this.upgrade1 = {
+            value: 0,
+            level: 0
+        };
+        this.upgrade2 = {
+            value: 0,
+            level: 0
+        };
+
+        this.registry.set("upgrade1", "");
+        this.registry.set("upgrade2", "");
+
+        this.onUpgradeScreen = false;
+        let waveStartEvent = new Event("waveStart");
+        //Pick upgrade 1
+        this.keys.z.on("down", (event) => {
+            if(this.onUpgradeScreen) {
+                this.onUpgradeScreen = false;
+                this.player.applyUpgrade(this.upgrade1.value);
+                this.time.delayedCall(WAVE_TRANSITION_TIME, (self) => {
                     self.waveController.startNextWave();
-                }, 
-                [this]
-            );
+                }, [this]);
+                document.dispatchEvent(waveStartEvent);
+            }
+        });
+        //Pick upgrade 1
+        this.keys.x.on("down", (event) => {
+            if(this.onUpgradeScreen) {
+                this.onUpgradeScreen = false;
+                this.player.applyUpgrade(this.upgrade2.value);
+                this.time.delayedCall(WAVE_TRANSITION_TIME, (self) => {
+                    self.waveController.startNextWave();
+                }, [this]);
+                document.dispatchEvent(waveStartEvent);
+            }
+        });
+
+        document.addEventListener("waveComplete", () => {
+            this.onUpgradeScreen = true;
+            //Add score
+            this.addScore(POINTS_PER_WAVE);
+
+            //Pick two random upgrades
+            this.upgrade1.value = Math.floor(Math.random() * Upgrades.NUM_UPGRADES);
+            this.upgrade1.level = this.player.getUpgradeLevel(this.upgrade1.value) + 1;
+            this.upgrade2.value = Math.floor(Math.random() * Upgrades.NUM_UPGRADES);
+            while(this.upgrade2.value == this.upgrade1.value) {  
+                this.upgrade2.value = Math.floor(Math.random() * Upgrades.NUM_UPGRADES);
+            }
+            this.upgrade2.level = this.player.getUpgradeLevel(this.upgrade2.value) + 1;
+            this.registry.set("upgrade1", `${upgradeToString(this.upgrade1.value)} ${this.upgrade1.level}`);
+            this.registry.set("upgrade2", `${upgradeToString(this.upgrade2.value)} ${this.upgrade2.level}`);
         });
 
         this.gameOver = false;
