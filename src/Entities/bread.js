@@ -121,7 +121,9 @@ class Bread extends Phaser.GameObjects.Image {
             for (let component in this.components) {
                 this.components[component].deactivate();
             }
+            this.spriteOnHit.destroy();
             this.destroy();
+            return;
         }
     }
 

@@ -89,7 +89,9 @@ class Duck extends Phaser.GameObjects.Sprite {
             for (let component in this.components) {
                 if (this.components[component].active) this.components[component].deactivate();
             }
+            this.spriteOnHit.destroy();
             this.destroy();
+            return;
         }
 
         this.spriteOnHit.setPosition(this.x, this.y);

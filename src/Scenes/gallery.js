@@ -140,6 +140,7 @@ class Gallery extends Phaser.Scene {
             }
         });
 
+        //Wave complete: add score and provide upgrades
         document.addEventListener("waveComplete", () => {
             this.onUpgradeScreen = true;
             //Add score
@@ -148,7 +149,9 @@ class Gallery extends Phaser.Scene {
             //Pick two random upgrades
             this.upgrade1.value = Math.floor(Math.random() * Upgrades.NUM_UPGRADES);
             this.upgrade1.level = this.player.getUpgradeLevel(this.upgrade1.value) + 1;
+
             this.upgrade2.value = Math.floor(Math.random() * Upgrades.NUM_UPGRADES);
+            //Ensure upgrade 2 is not the same as upgrade 1 so player always has a choice
             while(this.upgrade2.value == this.upgrade1.value) {  
                 this.upgrade2.value = Math.floor(Math.random() * Upgrades.NUM_UPGRADES);
             }

@@ -77,7 +77,7 @@ class UI extends Phaser.Scene {
         this.colorChange2Text.maxWidth = 400;
 
         //Upgrades
-        this.upgradesTxt = this.add.bitmapText(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, "04b_30", "Upgrades", 32)
+        this.upgradesTxt = this.add.bitmapText(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 - 64, "04b_30", "Upgrades", 32)
             .setOrigin(0.5)
             .setBlendMode(Phaser.BlendModes.ADD);
         this.upgradesTxt.visible = false;
