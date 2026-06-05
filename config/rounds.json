@@ -2,19 +2,6 @@
     [
         {
             "time": 0,
-            "duckType": "MALLARD",
-            "spawnStarts": [
-                {"x": 100}
-            ],
-            "spawnDur": 1000,
-            "spawnEnds": [
-                {"x": 300, "y": 300}
-            ]
-        }
-    ],
-    [
-        {
-            "time": 0,
             "duckType": "RUBBER_DUCKY",
             "spawnStarts": [
                 {"x": 200}
@@ -48,6 +35,30 @@
             "spawnDur": 1000,
             "spawnEnds": [
                 {"x": 300, "y": 300}
+            ]
+        }
+    ],
+    [
+        {
+            "time": 0,
+            "duckType": "RUBBER_DUCKY",
+            "spawnStarts": [
+                {"x": 200},
+                {"x": 300}
+            ],
+            "spawnEnds": [
+                {"x": 200, "y": 200},
+                {"x": 300, "y": 200}
+            ]
+        },
+        {
+            "time": 1500,
+            "duckType":"RUBBER_DUCKY",
+            "spawnStarts": [
+                {"x": 400}
+            ],
+            "spawnEnds": [
+                {"x": 400, "y": 300}
             ]
         }
     ]

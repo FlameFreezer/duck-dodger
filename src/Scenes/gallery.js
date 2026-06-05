@@ -68,7 +68,7 @@ class Gallery extends Phaser.Scene {
         }
 
         //Init wave controller
-        this.waveController = new WaveController(this, json.get("rounds"), json.get("enemies"));
+        this.waveController = new WaveController(this, json.get("rounds"), json.get("enemies"), json.get("challengeRounds"));
 
         //Init sounds
         this.duckHitSfx = this.sound.add("duckHit", {

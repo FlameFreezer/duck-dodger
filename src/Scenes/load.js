@@ -16,6 +16,7 @@ class Load extends Phaser.Scene {
         this.load.json("playerData", "player.json");
         this.load.json("enemies", "enemies.json");
         this.load.json("rounds", "rounds.json");
+        this.load.json("challengeRounds", "challengeRounds.json");
         //Load shader
         this.load.setPath("./src/Shaders/");
         this.load.glsl("background", "backgroundEffect.frag");
