@@ -192,6 +192,7 @@ class Gallery extends Phaser.Scene {
 
         this.tutorialStage = 0;
         this.tutorialTime = 0;
+        this.finishedTutorial = false;
         this.registry.set("tutorialStage", this.tutorialStage);
 
         document.addEventListener("gameOver", () => {
