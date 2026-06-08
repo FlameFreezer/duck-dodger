@@ -2,18 +2,20 @@ class Title extends Phaser.Scene {
     constructor() {
         super("title");
         this.keys = {
-            enter: null
+            enter: null,
+            space: null
         };
     }
     preload() {
     }
     create() {
         this.keys.enter = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
+        this.keys.space = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         this.text = this.add.bitmapText(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, "04b_30", "Press enter to play", 24)
             .setOrigin(0.5)
             .setBlendMode(Phaser.BlendModes.ADD);
 
-        this.creditTxt = this.add.bitmapText(CANVAS_WIDTH / 2, CANVAS_HEIGHT - CANVAS_HEIGHT / 32, "04b_30", "By Quincy Hurst and Iain Rogers", 14)
+        this.creditTxt = this.add.bitmapText(CANVAS_WIDTH / 2, CANVAS_HEIGHT - CANVAS_HEIGHT / 32, "04b_30", "Press SPACE to see credits", 14)
             .setOrigin(0.5)
             .setBlendMode(Phaser.BlendModes.ADD);
 
@@ -45,6 +47,9 @@ class Title extends Phaser.Scene {
 
             this.scene.launch("ui");
             this.scene.start("gallery");
+        });
+        this.keys.space.on("down", (event) => {
+            this.scene.start("credits");
         });
     }
     update(time, delta) {

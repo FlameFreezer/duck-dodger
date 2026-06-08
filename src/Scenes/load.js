@@ -22,7 +22,6 @@ class Load extends Phaser.Scene {
         this.load.glsl("background", "backgroundEffect.frag");
         //Load fonts
         this.load.setPath("./assets/Fonts/");
-        this.load.bitmapFont("daydream_3", "daydream_3/daydream_3_0.png", "daydream_3/daydream_3.fnt");
         this.load.bitmapFont("04b_30", "04b_30/04b_30_0.png", "04b_30/04b_30.fnt");
         //Load sounds
         this.load.setPath("./assets/Audio");
