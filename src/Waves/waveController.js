@@ -115,7 +115,7 @@ class WaveController {
                     }
                 }
             }
-            if (this.spawnBread && this.spawnTimer > 1500) {
+            if (this.spawnBread && this.spawnTimer > BREAD_SPAWN_TIME) {
                 let data = this.duckData["BREAD"];
                 let breadConfig = {
                     pathFollower: new Path(data.path.type, data.path.width, data.path.height, data.path.start, data.path.loopTime, true),
@@ -137,11 +137,8 @@ class WaveController {
             this.currentWaveIndex++;
             this.scene.registry.set('waveNumber', this.currentWaveIndex);
 
-            //Delay wave end slightly cause of the bread's sound effect
-            this.scene.time.delayedCall(WAVE_END_DELAY, () => {
-                let waveCompleteEvent = new Event("waveComplete");
-                document.dispatchEvent(waveCompleteEvent);
-            });
+            let waveCompleteEvent = new Event("waveComplete");
+            document.dispatchEvent(waveCompleteEvent);
         }
         
         for (let duck of this.ducks) {
@@ -160,7 +157,7 @@ class WaveController {
             }
             else {
                 for (let duck of this.ducks) {
-                    if (Object.hasOwn(duck.components, "fleeTween") && !duck.components.deathAnim.active) {
+                    if (Object.hasOwn(duck.components, "fleeTween") && !duck.components.deathAnim.active && !duck.components.deathAnim.complete) {
                         duck.flee();
                     }
                 }

@@ -66,6 +66,13 @@ class Bread extends Phaser.GameObjects.Image {
             for (let component in this.components) {
                 this.components[component].deactivate();
             }
+            this.spriteOnHit.destroy();
+            this.destroy();
+        }
+
+        //Handle escape
+        if(this.components.fleeTween.complete) {
+            this.spriteOnHit.destroy();
             this.destroy();
         }
 
@@ -76,7 +83,7 @@ class Bread extends Phaser.GameObjects.Image {
 
     onHit() {
         this.hp--;
-        if (this.hp <= 0 || this.components.fleeTween.complete) {
+        if (this.hp <= 0) {
             if(this.onHitTimer) this.onHitTimer.remove();
             this.kill();
             return;
@@ -112,6 +119,8 @@ class Bread extends Phaser.GameObjects.Image {
             this.debugGraphics.destroy();
         }
 
+        //If we request to kill the bread and it's neither fleeing nor doing the death anim, do the
+        // death anim
         if (!this.components.fleeTween.complete && !this.components.deathAnim.active) {
             this.spriteOnHit.visible = false;
             this.visible = true;
@@ -124,7 +133,8 @@ class Bread extends Phaser.GameObjects.Image {
                 this.scene.breadSfx.play();
             }
         }
-        else if (this.components.fleeTween.complete) {
+        //Otherwise, if either the flee or death are complete, destroy the bread
+        else if (this.components.fleeTween.complete || this.components.deathAnim.complete) {
             for (let component in this.components) {
                 this.components[component].deactivate();
             }
