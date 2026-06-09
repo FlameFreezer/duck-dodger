@@ -117,6 +117,7 @@ class Bread extends Phaser.GameObjects.Image {
         if (DEBUG) {
             this.debugGraphics.clear();
             this.debugGraphics.destroy();
+            console.log("Bread: killing");
         }
 
         //If we request to kill the bread and it's neither fleeing nor doing the death anim, do the

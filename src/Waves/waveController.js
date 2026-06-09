@@ -139,6 +139,7 @@ class WaveController {
 
             let waveCompleteEvent = new Event("waveComplete");
             document.dispatchEvent(waveCompleteEvent);
+            if (DEBUG) console.log("waveController: wave complete");
         }
         
         for (let duck of this.ducks) {
@@ -209,11 +210,37 @@ class WaveController {
     }
 
     flushDeleteList() {
+        let oldLength = this.ducks.length;
         this.ducks = this.ducks.filter((duck) => {
             if(!this.duckDeleteList.includes(duck)) {
                 return duck;
             }
         });
         this.duckDeleteList = [];
+        if (DEBUG && this.ducks.length < oldLength) {
+            console.log("waveController.flushDeleteList: ducks.length updated to " + this.ducks.length);
+            if (this.ducks.length > 0) {
+                let str = "WaveController: A duck was killed. Remaining ducks are:\n";
+                for (let duck of this.ducks) {
+                    if (Object.hasOwn(duck.components, "attacker")) {
+                        switch(duck.components.attacker.pattern) {
+                            case "t-pattern":
+                                str += "Duck type is RubberDucky\n";
+                                break;
+                            case "ring":
+                                str += "Duck type is Mallard\n";
+                                break;
+                            case "wall":
+                                str += "Duck type is Goose\n";
+                                break;
+                            default:
+                                str += "WaveController: your switch statement at line 233 is broken. Type requested was " + duck.components.attacker.pattern + "\n";
+                        }
+                    }
+                    else str += "Duck type is bread";
+                }
+                console.log(str);
+            }
+        }
     }
 }

@@ -104,6 +104,7 @@ class Duck extends Phaser.GameObjects.Sprite {
     }
 
     canBeDeleted() {
+        if (this.active == false) console.log("deathAnim state: " + this.components.deathAnim.complete + "\nattacker state: " + this.components.attacker.canBeDeleted());
         return (this.components.deathAnim.complete && this.components.attacker.canBeDeleted());
     }
 
@@ -140,6 +141,22 @@ class Duck extends Phaser.GameObjects.Sprite {
         }
 
         this.active = false;
+
+        if (DEBUG) {
+            switch(this.components.attacker.pattern) {
+                        case "t-pattern":
+                            console.log("Duck: killing RubberDucky");
+                            break;
+                        case "ring":
+                            console.log("Duck: killing Mallard");
+                            break;
+                        case "wall":
+                            console.log("Duck: killing Goose");
+                            break;
+                        default: // this should never happen
+                            console.log("Duck: bug at line 156");
+                    }
+        }
 
         if (!this.components.deathAnim.active) {
             for (let component in this.components) {

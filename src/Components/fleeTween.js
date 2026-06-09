@@ -22,7 +22,7 @@ class FleeTween {
             this.animClock += delta;
             if (this.animClock >= this.duration && !this.complete) {
                 this.owner.setPosition(this.endX, this.endY);
-                console.log("FleeTween: completed");
+                if (DEBUG) console.log("FleeTween: completed");
                 this.complete = true;
                 this.deactivate();
             }

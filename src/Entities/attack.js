@@ -100,6 +100,7 @@ class Attack {
         this.killed = true;
         if(this.wallWarningGraphics) {
             this.wallWarningGraphics.clear();
+            this.wallWarningGraphics.destroy();
         }
     }
 

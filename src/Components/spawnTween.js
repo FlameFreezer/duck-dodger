@@ -59,7 +59,8 @@ class SpawnTween {
                 let toX = Math.floor(this.startX * (1 - t) + this.endX * t);
                 let toY = Math.floor(this.startY * (1 - t) + this.endY * t);
                 this.owner.setPosition(toX, toY);
-                if (DEBUG) console.log("spawnTween:\n\tt: " + t + "\n\ttoX: " + toX + "\n\ttoY: " + toY);
+                // this spams the console with messages, only uncomment if you really need it
+                // if (DEBUG) console.log("spawnTween:\n\tt: " + t + "\n\ttoX: " + toX + "\n\ttoY: " + toY);
             }
         }
     }
